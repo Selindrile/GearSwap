@@ -1,7 +1,47 @@
 -------------------------------------------------------------------------------------------------------------------
 -- Mappings, lists and sets to describe game relationships that aren't easily determinable otherwise.
 -------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
+-- Spell Degration
+-------------------------------------------------------------------------------------------------------------------
+degrade_tables = {}
+degrade_tables.Cure = {"Cure","Cure II","Cure III","Cure IV","Cure V","Cure VI"}
+degrade_tables.Curaga = {"Curaga","Curaga II","Curaga III","Curaga IV","Curaga V"}
+degrade_tables.Holy = {"Holy","Holy II"}
+degrade_tables.Raise = {"Raise","Raise II","Raise III","Arise"}
+degrade_tables.Reraise = {"Reraise","Reraise II","Reraise III","Reraise IV"}
+degrade_tables.Fire = {"Fire","Fire II","Fire III","Fire IV","Fire V","Fire VI"}
+degrade_tables.Stone = {"Stone","Stone II","Stone III","Stone IV","Stone V","Stone VI"}
+degrade_tables.Blizzard = {"Blizzard","Blizzard II","Blizzard III","Blizzard IV","Blizzard V","Blizzard VI"}
+degrade_tables.Water = {"Water","Water II","Water III","Water IV","Water V","Water VI"}
+degrade_tables.Aero = {"Aero","Aero II","Aero III","Aero IV","Aero V","Aero VI"}
+degrade_tables.Thunder = {"Thunder","Thunder II","Thunder III","Thunder IV","Thunder V","Thunder VI"}
+degrade_tables.Firaga = {'Firaga', 'Firaga II','Firaga III','Firaja'}
+degrade_tables.Blizzaga = {'Blizzaga', 'Blizzaga II','Blizzaga III','Blizzaja'}
+degrade_tables.Aeroga = {'Aeroga', 'Aeroga II','Aeroga III','Aeroja'}
+degrade_tables.Stonega = {'Stonega','Stonega II','Stonega III','Stoneja'}
+degrade_tables.Thundaga = {'Thundaga','Thundaga II','Thundaga III','Thundaja'}
+degrade_tables.Waterga = {'Waterga','Waterga II','Waterga III','Waterja'}
+degrade_tables.Fira = {'Fira', 'Fira II','Fira III'}
+degrade_tables.Blizzara = {'Blizzara', 'Blizzara II','Blizzara III'}
+degrade_tables.Aera = {'Aera', 'Aera II','Aera III'}
+degrade_tables.Stonera = {'Stonera','Stonera II','Stonera III'}
+degrade_tables.Thundara = {'Thundara','Thundara II','Thundara III'}
+degrade_tables.Watera = {'Watera','Watera II','Watera III'}
+degrade_tables.Aspir = {"Aspir","Aspir II","Aspir III"}
+degrade_tables.Drain = {"Drain","Drain II","Drain III"}
+degrade_tables.Sleep = {"Sleep","Sleep II"}
+degrade_tables.Sleepga = {"Sleepga","Sleepga II"}
+degrade_tables.Utsusemi = {"Utsusemi: Ichi","Utsusemi: Ni","Utsusemi: San"}
 
+degrade_tables_light = {}
+degrade_tables_light.Aspir = {"Aspir","Aspir II","Aspir III"}
+degrade_tables_light.Sleep = {"Sleep","Sleep II"}
+degrade_tables_light.Sleepga = {"Sleepga","Sleepga II"}
+degrade_tables_light.Raise = {"Raise","Raise II","Raise III","Arise"}
+degrade_tables_light.Reraise = {"Reraise","Reraise II","Reraise III","Reraise IV"}
+--degrade_tables.HordeLullaby = {"Horde Lullaby","Horde Lullaby II"} --need to check the correct name
+--degrade_tables.FoeLullaby = {"Foe Lullaby","Foe Lullaby II"}
 -------------------------------------------------------------------------------------------------------------------
 -- Elemental mappings for element relationships and certain types of spells and gear.
 -------------------------------------------------------------------------------------------------------------------
@@ -35,10 +75,10 @@ elements.rune_of = {['Light']='Lux', ['Dark']='Tenebrae', ['Fire']='Ignis', ['Ic
 
 elements.obi_of = {['Light']='Hachirin-no-obi', ['Dark']='Hachirin-no-obi', ['Fire']='Hachirin-no-obi', ['Ice']='Hachirin-no-obi', ['Wind']='Hachirin-no-obi',
      ['Earth']='Hachirin-no-obi', ['Lightning']='Hachirin-no-obi', ['Water']='Hachirin-no-obi'}
- 
+
 elements.gorget_of = {['Light']='Fotia Gorget', ['Dark']='Fotia Gorget', ['Fire']='Fotia Gorget', ['Ice']='Fotia Gorget',
     ['Wind']='Fotia Gorget', ['Earth']='Fotia Gorget', ['Lightning']='Fotia Gorget', ['Water']='Fotia Gorget'}
- 
+
 elements.belt_of = {['Light']='Fotia Belt', ['Dark']='Fotia Belt', ['Fire']='Fotia Belt', ['Ice']='Fotia Belt',
     ['Wind']='Fotia Belt', ['Earth']='Fotia Belt', ['Lightning']='Fotia Belt', ['Water']='Fotia Belt'}
 
@@ -130,7 +170,7 @@ data.weaponskills.empyrean = {
     ["Hvergelmir"] = "Myrkr",
     ["Gandiva"] = "Jishnu's Radiance",
     ["Armageddon"] = "Wildfire"}
-	
+
 -- Weaponskills that can be used at range.
 data.weaponskills.ranged = S{"Flaming Arrow","Piercing Arrow","Dulling Arrow","Sidewinder","Arching Arrow",
     "Empyreal Arrow","Refulgent Arrow","Apex Arrow","Namas Arrow","Jishnu's Radiance",
@@ -230,11 +270,11 @@ geo_buffs = S{'Regen','Refresh','Haste','STR','DEX','VIT','AGI','INT','MND','CHR
 
 addendum_white = {[14]="Poisona",[15]="Paralyna",[16]="Blindna",[17]="Silena",[18]="Stona",[19]="Viruna",[20]="Cursna",
     [143]="Erase",[13]="Raise II",[140]="Raise III",[141]="Reraise II",[142]="Reraise III",[135]="Reraise"}
-    
+
 addendum_black = {[253]="Sleep",[259]="Sleep II",[260]="Dispel",[162]="Stone IV",[163]="Stone V",[167]="Thunder IV",
     [168]="Thunder V",[157]="Aero IV",[158]="Aero V",[152]="Blizzard IV",[153]="Blizzard V",[147]="Fire IV",[148]="Fire V",
     [172]="Water IV",[173]="Water V",[255]="Break"}
-	
+
 unbridled_learning_set = {['Thunderbolt']=true,['Harden Shell']=true,['Absolute Terror']=true,
     ['Gates of Hades']=true,['Tourbillion']=true,['Pyric Bulwark']=true,['Bilgestorm']=true,
     ['Bloodrake']=true,['Droning Whirlwind']=true,['Carcharian Verve']=true,['Blistering Roar']=true,
@@ -245,7 +285,7 @@ unbridled_learning_set = {['Thunderbolt']=true,['Harden Shell']=true,['Absolute 
 
 mageJobs = S{'WHM','BLM','SCH','RDM','BRD','SMN','GEO'}
 meleeJobs = S{'WAR','MNK','THF','PLD','DRK','SAM','NIN','BLU','DNC','RUN','COR','PUP','PLD','DRK','BST'}
-	
+
 -- Item related Mappings.
 
 bayld_items = {'Tlalpoloani','Macoquetza','Camatlatia','Icoyoca','Tlamini','Suijingiri Kanemitsu','Zoquittihuitz',
@@ -253,7 +293,7 @@ bayld_items = {'Tlalpoloani','Macoquetza','Camatlatia','Icoyoca','Tlamini','Suij
 'Hatxiik','Kuakuakait','Azukinagamitsu','Atetepeyorg','Kaquljaan','Ajjub Bow','Baqil Staff','Ixtab','Otomi Helm',
 'Otomi Gloves','Kaabnax Hat','Kaabnax Trousers','Ejekamal Mask','Ejekamal Boots','Quiahuiz Helm','Quiahuiz Trousers',
 'Uk\'uxkaj Cap'}
-	
+
 cprings = L{"Trizek Ring","Vocation Ring","Capacity Ring","Facility Ring"}
 cprings_count = 1
 
@@ -353,13 +393,13 @@ universal_tool_map = {
     }
 
 -- Command related mappings.
-	
+
 outgoing_action_category_table = {['/ma']=3,['/ws']=7,['/ja']=9,['/ra']=16,['/ms']=25}
-	
+
 unify_prefix = {['/ma'] = '/ma', ['/magic']='/ma',['/jobability'] = '/ja',['/ja']='/ja',['/item']='/item',['/song']='/ma',
     ['/so']='/ma',['/ninjutsu']='/ma',['/weaponskill']='/ws',['/ws']='/ws',['/ra']='/ra',['/rangedattack']='/ra',['/nin']='/ma',
-    ['/throw']='/ra',['/range']='/ra',['/shoot']='/ra',['/monsterskill']='/ms',['/ms']='/ms',['/pet']='/ja',['Monster']='Monster',['/bstpet']='/ja'}	
-	
+    ['/throw']='/ra',['/range']='/ra',['/shoot']='/ra',['/monsterskill']='/ms',['/ms']='/ms',['/pet']='/ja',['Monster']='Monster',['/bstpet']='/ja'}
+
 -------------------------------------------------------------------------------------------------------------------
 -- Tables to specify general area groupings.  Creates the 'areas' table to be referenced in job files.
 -- Zone names provided by world.area/world.zone are currently in all-caps, so defining the same way here.
