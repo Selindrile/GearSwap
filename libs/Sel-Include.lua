@@ -35,11 +35,11 @@ function init_include()
 	--Snaps's Rnghelper extension for automatic ranged attacks that should be superior to my implementation.
 	require('Snaps-RngHelper')
 
-    -- Used to define various types of data mappings.  These may be used in the initialization, so load it up front.
-    include('Sel-Mappings')
+  -- Used to define various types of data mappings.  These may be used in the initialization, so load it up front.
+  include('Sel-Mappings')
 
-    -- Modes is the include for a mode-tracking variable class.  Used for state vars, below.
-    include('Modes')
+  -- Modes is the include for a mode-tracking variable class.  Used for state vars, below.
+  include('Modes')
 
 	-- Adding Organizer for gear management.
 	include('organizer-lib.lua')
@@ -90,6 +90,7 @@ function init_include()
 	state.UseCustomTimers 	  = M(true, 'Use Custom Timers')
 	state.CancelStoneskin	  	= M(true, 'Stoneskin Cancel Mode')
 	state.Contradance		  		= M(true, 'Auto Contradance Mode')
+	state.NotifyWS 		  			= M(false, 'Notify on WS')
 
 	state.RuneElement 		  	= M{['description'] = 'Rune Element','Ignis','Gelus','Flabra','Tellus','Sulpor','Unda','Lux','Tenebrae'}
 	state.ElementalMode 	  	= M{['description'] = 'Elemental Mode', 'Fire','Ice','Wind','Earth','Lightning','Water','Light','Dark'}
@@ -361,13 +362,17 @@ end
 -- versions of this function.
 if not file_unload then
     file_unload = function()
-        if user_unload then
-            user_unload()
-		end
+      if user_unload then
+        user_unload()
+			end
 
-        if job_unload then
-            job_unload()
-        end
+			if user_bind_ws then
+        user_bind_ws('unload')
+			end
+
+      if job_unload then
+        job_unload()
+      end
 
 		global_unload()
     end
@@ -375,16 +380,6 @@ end
 
 -- Function to bind GearSwap binds when loading a GS script, moved to globals to seperate per character and user.
 function global_on_load()
-	send_command('bind !@^f7 gs c toggle AutoWSMode') --Turns auto-ws mode on and off.
-	send_command('bind !^f7 gs c toggle AutoFoodMode') --Turns auto-ws mode on and off.
-	send_command('bind f7 gs c cycle Weapons') --Cycle through weapons sets.
-	--send_command('bind f8 g s c cycle ElementalMode') --Changes elements
-	--send_command('bind @f8 g s c toggle AutoNukeMode') --Turns auto-nuke mode on and off.
-	send_command('bind ^f8 gs c toggle AutoStunMode') --Turns auto-stun mode off and on.
-	send_command('bind !f8 gs c toggle AutoDefenseMode') --Turns auto-defense mode off and on.
-	send_command('bind ^@!f8 gs c toggle AutoTrustMode') --Summons trusts automatically.
-	send_command('bind @pause gs c toggle AutoBuffMode') --Automatically keeps certain buffs up, job-dependant.
-	send_command('bind @scrolllock gs c cycle Passive') --Changes offense settings such as accuracy.
 	send_command('bind f9 gs c cycle OffenseMode') --Changes offense settings such as accuracy.
 	send_command('bind ^f9 gs c cycle HybridMode') --Changes defense settings for melee such as PDT.
 	send_command('bind @f9 gs c cycle RangedMode') --Changes ranged offense settings such as accuracy.
@@ -802,6 +797,8 @@ function default_post_precast(spell, spellMap, eventArgs)
 		elseif spell.action_type == 'Magic' then
 			if spellMap == 'BarElement' and sets.midcast.BarElement then
 				equip(sets.midcast.BarElement)
+			elseif spell.skill == 'Enhancing Magic' and classes.NoSkillSpells:contains(spell.english) and sets.midcast.EnhancingDuration then
+				equip(sets.midcast.EnhancingDuration)
 			elseif spell.english:startswith('Utsusemi') then
 				if sets.precast.FC.Shadows and ((spell.english == 'Utsusemi: Ni' and player.main_job == 'NIN' and lastshadow == 'Utsusemi: San') or (spell.english == 'Utsusemi: Ichi' and lastshadow ~= 'Utsusemi: Ichi')) then
 					equip(sets.precast.FC.Shadows)
@@ -825,6 +822,8 @@ function default_post_precast(spell, spellMap, eventArgs)
 			if state.Capacity.value == true then
 				equip(sets.Capacity)
 			end
+
+			notifyws()
 		end
 
 		if state.DefenseMode.value ~= 'None' then
@@ -1883,9 +1882,16 @@ function status_change(newStatus, oldStatus)
     end
 end
 
+function bind_ws()
+	if user_bind_ws then
+		if user_bind_ws() then return end
+	end
+end
+
 -- Handle notifications of general state change.
 function state_change(stateField, newValue, oldValue)
     if stateField == 'Weapons' then
+			if bind_ws() then end
 			if sets.weapons[newValue] then
 				equip_weaponset(newValue)
 			elseif newValue == 'None' then

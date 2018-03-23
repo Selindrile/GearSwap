@@ -263,31 +263,31 @@ function refine_waltz(spell, spellMap, eventArgs)
             Divine Waltz II:  800 TP
         --]]
 
-		if player.tp < 350 then
-            newWaltz = 'Curing Waltz'
-        elseif player.tp < 500 then
-            newWaltz = 'Curing Waltz II'
-        elseif player.tp < 650 then
-            newWaltz = 'Curing Waltz III'
-        elseif player.tp < 800 then
-            newWaltz = 'Curing Waltz IV'
-        end
+  		if player.tp < 350 then
+        newWaltz = 'Curing Waltz'
+      elseif player.tp < 500 then
+        newWaltz = 'Curing Waltz II'
+      elseif player.tp < 650 then
+        newWaltz = 'Curing Waltz III'
+      elseif player.tp < 800 then
+        newWaltz = 'Curing Waltz IV'
+      end
 
-        downgrade = 'Insufficient TP ['..tostring(player.tp)..']. Downgrading to '..newWaltz..'.'
+      downgrade = 'Insufficient TP ['..tostring(player.tp)..']. Downgrading to '..newWaltz..'.'
     end
 
 
     if newWaltz ~= spell.english then
-        send_command('@input /ja "'..newWaltz..'" '..tostring(spell.target.raw))
-        if downgrade then
-            add_to_chat(122, downgrade)
-        end
-        eventArgs.cancel = true
-        return
+      send_command('@input /ja "'..newWaltz..'" '..tostring(spell.target.raw))
+      if downgrade then
+        add_to_chat(122, downgrade)
+      end
+      eventArgs.cancel = true
+      return
     end
 
     if missingHP and missingHP > 0 then
-        add_to_chat(122,'Trying to cure '..tostring(missingHP)..' HP using '..newWaltz..'.')
+      add_to_chat(122,'Trying to cure '..tostring(missingHP)..' HP using '..newWaltz..'.')
     end
 end
 
@@ -332,27 +332,27 @@ function auto_change_target(spell, spellMap)
 
     -- For spells that we can cast on players:
     if canUseOnPlayer and pcTargetMode ~= 'default' then
-        -- Do not adjust targetting for player-targettable spells where the target was <t>
-        if spell.target.raw ~= ('<t>') then
-            if pcTargetMode == 'stal' then
-                -- Use <stal> if possible, otherwise fall back to <stpt>.
-                if spell.targets.Ally then
-                    newTarget = '<stal>'
-                elseif spell.targets.Party then
-                    newTarget = '<stpt>'
-                end
-            elseif pcTargetMode == 'stpt' then
-                -- Even ally-possible spells are limited to the current party.
-                if spell.targets.Ally or spell.targets.Party then
-                    newTarget = '<stpt>'
-                end
-            elseif pcTargetMode == 'stpc' then
-                -- If it's anything other than a self-only spell, can change to <stpc>.
-                if spell.targets.Player or spell.targets.Party or spell.targets.Ally or spell.targets.NPC then
-                    newTarget = '<stpc>'
-                end
-            end
+      -- Do not adjust targetting for player-targettable spells where the target was <t>
+      if spell.target.raw ~= ('<t>') then
+        if pcTargetMode == 'stal' then
+          -- Use <stal> if possible, otherwise fall back to <stpt>.
+          if spell.targets.Ally then
+            newTarget = '<stal>'
+          elseif spell.targets.Party then
+            newTarget = '<stpt>'
+          end
+        elseif pcTargetMode == 'stpt' then
+          -- Even ally-possible spells are limited to the current party.
+          if spell.targets.Ally or spell.targets.Party then
+            newTarget = '<stpt>'
+          end
+        elseif pcTargetMode == 'stpc' then
+          -- If it's anything other than a self-only spell, can change to <stpc>.
+          if spell.targets.Player or spell.targets.Party or spell.targets.Ally or spell.targets.NPC then
+            newTarget = '<stpc>'
+          end
         end
+      end
     -- For spells that can be used on enemies:
     elseif spell.targets and spell.targets.Enemy and selectNPCTargets then
         -- Note: this means macros should be written for <t>, and it will change to <stnpc>
@@ -380,32 +380,32 @@ end
 -- Returns true if you're in a party solely comprised of Trust NPCs.
 -- TODO: Do we need a check to see if we're in a party partly comprised of Trust NPCs?
 function is_trust_party()
-    -- Check if we're solo
-    if party.count == 1 then
+  -- Check if we're solo
+  if party.count == 1 then
+    return false
+  end
+
+  -- If we're in an alliance, can't be a Trust party.
+  if alliance[2].count > 0 or alliance[3].count > 0 then
+    return false
+  end
+
+  -- Check that, for each party position aside from our own, the party
+  -- member has one of the Trust NPC names, and that those party members
+  -- are flagged is_npc.
+  for i = 2,6 do
+    if party[i] then
+      if not npcs.Trust:contains(party[i].name) then
         return false
-    end
-
-    -- If we're in an alliance, can't be a Trust party.
-    if alliance[2].count > 0 or alliance[3].count > 0 then
+      end
+      if party[i].mob and party[i].mob.is_npc == false then
         return false
+      end
     end
+  end
 
-    -- Check that, for each party position aside from our own, the party
-    -- member has one of the Trust NPC names, and that those party members
-    -- are flagged is_npc.
-    for i = 2,6 do
-        if party[i] then
-            if not npcs.Trust:contains(party[i].name) then
-                return false
-            end
-            if party[i].mob and party[i].mob.is_npc == false then
-                return false
-            end
-        end
-    end
-
-    -- If it didn't fail any of the above checks, return true.
-    return true
+  -- If it didn't fail any of the above checks, return true.
+  return true
 end
 
 
@@ -413,22 +413,22 @@ end
 -- Returns true if any of the specified slots are currently encumbered.
 -- Returns false if all specified slots are unencumbered.
 function is_encumbered(...)
-    local check_list = {...}
-    -- Compensate for people passing a table instead of a series of strings.
-    if type(check_list[1]) == 'table' then
-        check_list = check_list[1]
-    end
-    local check_set = S(check_list)
+  local check_list = {...}
+  -- Compensate for people passing a table instead of a series of strings.
+  if type(check_list[1]) == 'table' then
+    check_list = check_list[1]
+  end
+  local check_set = S(check_list)
 
-    for slot_id,slot_name in pairs(gearswap.default_slot_map) do
-        if check_set:contains(slot_name) then
-            if gearswap.encumbrance_table[slot_id] then
-                return true
-            end
-        end
+  for slot_id,slot_name in pairs(gearswap.default_slot_map) do
+    if check_set:contains(slot_name) then
+      if gearswap.encumbrance_table[slot_id] then
+        return true
+      end
     end
+  end
 
-    return false
+  return false
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -438,9 +438,9 @@ end
 -- General handler function to set all the elemental gear for an action.
 function set_elemental_gear(spell)
 	--No longer needed because of Fotia.
-    --set_elemental_gorget_belt(spell)
-    set_elemental_obi_cape_ring(spell)
-    set_elemental_staff(spell)
+  --set_elemental_gorget_belt(spell)
+  set_elemental_obi_cape_ring(spell)
+  set_elemental_staff(spell)
 end
 
 
@@ -463,9 +463,9 @@ end
 
 -- Function to get an appropriate obi/cape/ring for the current action.
 function set_elemental_obi_cape_ring(spell)
-    if spell.element == 'None' then
-        return
-    end
+  if spell.element == 'None' then
+    return
+  end
 
 	if spell.element == world.weather_element or spell.element == world.day_element then
 		gear.ElementalObi.name = "Hachirin-no-Obi"
@@ -476,7 +476,7 @@ function set_elemental_obi_cape_ring(spell)
 	end
 
 	if spell.element == world.day_element and spell.english ~= 'Impact' and not S{'Divine Magic','Dark Magic','Healing Magic'}:contains(spell.skill) then
-        gear.ElementalRing.name = "Zodiac Ring"
+    gear.ElementalRing.name = "Zodiac Ring"
 	else
 		gear.ElementalRing.name = gear.default.obi_ring
 	end
@@ -551,28 +551,28 @@ end
 -------------------------------------------------------------------------------------------------------------------
 
 function set_macro_page(set,book)
-    if not tonumber(set) then
-        add_to_chat(123,'Error setting macro page: Set is not a valid number ('..tostring(set)..').')
-        return
-    end
-    if set < 1 or set > 10 then
-        add_to_chat(123,'Error setting macro page: Macro set ('..tostring(set)..') must be between 1 and 10.')
-        return
-    end
+  if not tonumber(set) then
+    add_to_chat(123,'Error setting macro page: Set is not a valid number ('..tostring(set)..').')
+    return
+  end
+  if set < 1 or set > 10 then
+    add_to_chat(123,'Error setting macro page: Macro set ('..tostring(set)..') must be between 1 and 10.')
+    return
+  end
 
-    if book then
-        if not tonumber(book) then
-            add_to_chat(123,'Error setting macro page: book is not a valid number ('..tostring(book)..').')
-            return
-        end
-        if book < 1 or book > 20 then
-            add_to_chat(123,'Error setting macro page: Macro book ('..tostring(book)..') must be between 1 and 20.')
-            return
-        end
-        send_command('@input /macro book '..tostring(book)..';wait .1;input /macro set '..tostring(set))
-    else
-        send_command('@input /macro set '..tostring(set))
+  if book then
+    if not tonumber(book) then
+      add_to_chat(123,'Error setting macro page: book is not a valid number ('..tostring(book)..').')
+      return
     end
+    if book < 1 or book > 20 then
+      add_to_chat(123,'Error setting macro page: Macro book ('..tostring(book)..') must be between 1 and 20.')
+      return
+    end
+    send_command('@input /macro book '..tostring(book)..';wait .1;input /macro set '..tostring(set))
+  else
+    send_command('@input /macro set '..tostring(set))
+  end
 end
 
 
@@ -583,19 +583,19 @@ end
 -- Attempt to load user gear files in place of default gear sets.
 -- Return true if one exists and was loaded.
 function load_sidecar(job)
-    if not job then return false end
+  if not job then return false end
 
-    -- filename format example for user-local files: whm_gear.lua, or playername_whm_gear.lua
-    local filenames = {player.name..'_'..job..'_gear.lua', job..'_gear.lua',
-        'gear/'..player.name..'_'..job..'_gear.lua', 'gear/'..job..'_gear.lua',
-        'gear/'..player.name..'_'..job..'.lua', 'gear/'..job..'.lua'}
-    return optional_include(filenames)
+  -- filename format example for user-local files: whm_gear.lua, or playername_whm_gear.lua
+  local filenames = {player.name..'_'..job..'_gear.lua', job..'_gear.lua',
+    'gear/'..player.name..'_'..job..'_gear.lua', 'gear/'..job..'_gear.lua',
+    'gear/'..player.name..'_'..job..'.lua', 'gear/'..job..'.lua'}
+  return optional_include(filenames)
 end
 
 -- Attempt to include user-globals.  Return true if it exists and was loaded.
 function load_user_globals()
-    local filenames = {player.name..'-globals.lua', 'user-globals.lua'}
-    return optional_include(filenames)
+  local filenames = {player.name..'-globals.lua', 'user-globals.lua'}
+  return optional_include(filenames)
 end
 
 -- Optional version of include().  If file does not exist, does not
@@ -603,13 +603,13 @@ end
 -- filenames takes an array of possible file names to include and checks
 -- each one.
 function optional_include(filenames)
-    for _,v in pairs(filenames) do
-        local path = gearswap.pathsearch({v})
-        if path then
-            include(v)
-            return true
-        end
+  for _,v in pairs(filenames) do
+    local path = gearswap.pathsearch({v})
+    if path then
+      include(v)
+      return true
     end
+  end
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -618,27 +618,27 @@ end
 
 -- Attempt to locate a specified name within the current alliance.
 function find_player_in_alliance(name)
-    for party_index,ally_party in ipairs(alliance) do
-        for player_index,_player in ipairs(ally_party) do
-            if _player.name == name then
-                return _player
-            end
-        end
+  for party_index,ally_party in ipairs(alliance) do
+    for player_index,_player in ipairs(ally_party) do
+      if _player.name == name then
+        return _player
+      end
     end
+  end
 end
 
 function number_of_jps(jp_tab)
-    local count = 0
-    for _,v in pairs(jp_tab) do
-        count = count + v*(v+1)
-    end
-    return count/2
+  local count = 0
+  for _,v in pairs(jp_tab) do
+    count = count + v*(v+1)
+  end
+  return count/2
 end
 
 function add_table_to_chat(table)
-    for k, v in pairs( table ) do
-        add_to_chat(123,''..k..', '..v)
-    end
+  for k, v in pairs( table ) do
+    add_to_chat(123,''..k..', '..v)
+  end
 end
 
 function silent_can_use(spellid)
@@ -662,8 +662,8 @@ end
 function can_use(spell)
     local category = outgoing_action_category_table[unify_prefix[spell.prefix]]
     if world.in_mog_house then
-        add_to_chat(123,"Abort: You are currently in a Mog House zone.")
-        return false
+      add_to_chat(123,"Abort: You are currently in a Mog House zone.")
+      return false
     elseif category == 3 then
         local available_spells = windower.ffxi.get_spells()
         local spell_jobs = copy_entry(res.spells[spell.id].levels)
@@ -741,8 +741,8 @@ end
 -- This function checks if any of those buffs are present on the player.
 function has_any_buff_of(buff_set)
     return buff_set:any(
-        -- Returns true if any buff from buff set that is sent to this function returns true:
-        function (b) return buffactive[b] end
+      -- Returns true if any buff from buff set that is sent to this function returns true:
+      function (b) return buffactive[b] end
     )
 end
 
@@ -765,9 +765,9 @@ end
 function get_expanded_set(baseSet, str)
     local cur = baseSet
     for i in str:gmatch("[^.]+") do
-        if cur then
-            cur = cur[i]
-        end
+      if cur then
+        cur = cur[i]
+      end
     end
 
     return cur
@@ -972,42 +972,42 @@ function silent_check_silence()
 end
 
 function check_recast(spell, spellMap, eventArgs)
-      if spell.action_type == 'Ability' and  spell.type ~= 'WeaponSkill' then
-			if spell.recast_id == 231 or spell.recast_id == 255 or spell.recast_id == 102 or spell.recast_id == 195 then return false end
-        local abil_recasts = windower.ffxi.get_ability_recasts()
-			if not abil_recasts[spell.recast_id] then
-				add_to_chat(123,"Abort: You don't have access to ["..spell.english.."].")
+    if spell.action_type == 'Ability' and  spell.type ~= 'WeaponSkill' then
+		if spell.recast_id == 231 or spell.recast_id == 255 or spell.recast_id == 102 or spell.recast_id == 195 then return false end
+      local abil_recasts = windower.ffxi.get_ability_recasts()
+		if not abil_recasts[spell.recast_id] then
+			add_to_chat(123,"Abort: You don't have access to ["..spell.english.."].")
+			eventArgs.cancel = true
+			return true
+    elseif abil_recasts[spell.recast_id] > 0 then
+			if spell.english == "Lunge" and abil_recasts[241] == 0 then
+				eventArgs.cancel = true
+				windower.send_command('@input /ja "Swipe" <t>')
+				return true
+			else
+				add_to_chat(123,'Abort: ['..spell.english..'] waiting on recast. ('..seconds_to_clock(abil_recasts[spell.recast_id])..')')
 				eventArgs.cancel = true
 				return true
-      elseif abil_recasts[spell.recast_id] > 0 then
-				if spell.english == "Lunge" and abil_recasts[241] == 0 then
-					eventArgs.cancel = true
-					windower.send_command('@input /ja "Swipe" <t>')
-					return true
-				else
-					add_to_chat(123,'Abort: ['..spell.english..'] waiting on recast. ('..seconds_to_clock(abil_recasts[spell.recast_id])..')')
-					eventArgs.cancel = true
-					return true
-				end
+			end
+		else
+			return false
+          end
+      elseif spell.action_type == 'Magic' then
+          local spell_recasts = windower.ffxi.get_spell_recasts()
+          if spell_recasts[spell.recast_id] > 0 then
+			if stepdown(spell, eventArgs) then
+				return true
 			else
-				return false
-            end
-        elseif spell.action_type == 'Magic' then
-            local spell_recasts = windower.ffxi.get_spell_recasts()
-            if spell_recasts[spell.recast_id] > 0 then
-				if stepdown(spell, eventArgs) then
-					return true
-				else
-          add_to_chat(123,'Abort: ['..spell.english..'] waiting on recast. ('..seconds_to_clock(spell_recasts[spell.recast_id]/60)..')')
-          eventArgs.cancel = true
-          return true
-				end
-			else
-  			return false
-      end
+        add_to_chat(123,'Abort: ['..spell.english..'] waiting on recast. ('..seconds_to_clock(spell_recasts[spell.recast_id]/60)..')')
+        eventArgs.cancel = true
+        return true
+			end
 		else
 			return false
     end
+	else
+		return false
+  end
 
 end
 
@@ -1737,9 +1737,9 @@ function check_ws_acc()
 end
 
 function get_current_strategem_count()
-    -- returns recast in seconds.
-    local allRecasts = windower.ffxi.get_ability_recasts()
-    local stratsRecast = allRecasts[231]
+  -- returns recast in seconds.
+  local allRecasts = windower.ffxi.get_ability_recasts()
+  local stratsRecast = allRecasts[231]
 	local StratagemChargeTimer = 240
 	local maxStrategems = 1
 
@@ -1767,9 +1767,8 @@ function get_current_strategem_count()
 		maxStrategems = math.floor((player.main_job_level + 10) / 20)
 	end
 
-
-    local currentCharges = math.floor(maxStrategems - (stratsRecast / StratagemChargeTimer))
-    return currentCharges
+  local currentCharges = math.floor(maxStrategems - (stratsRecast / StratagemChargeTimer))
+  return currentCharges
 end
 
 function arts_active()
@@ -1853,5 +1852,12 @@ function add_spell_delay_aftercast(spell)
   aftercast_start = os.clock()
   if spell.action_type ~= 'Magic' then
     aftercast_start = nil
+  end
+end
+
+
+function notifyws(spell)
+  if state.NotifyWS.value then
+    send_command('@input /p **** '..spell.name..' Incoming ! ****')
   end
 end

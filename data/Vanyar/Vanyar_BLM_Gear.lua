@@ -259,14 +259,16 @@ function init_gear_sets()
 	sets.midcast.StatusRemoval = set_combine(sets.midcast.FastRecast, {})
 
 	sets.midcast['Enhancing Magic'] = {
-		head="Telchine Cap",
-		body="Telchine Chas.",
-		hands="Telchine Gloves",
-		legs="Telchine Braconi",
-		feet="Telchine Pigaches",
-		neck="Incanter's Torque",
-		back="Perimede Cape",
 	}
+	sets.midcast.EnhancingDuration = set_combine(sets.midcast['Enhancing Magic'],{
+			head="Telchine Cap",
+			body="Telchine Chas.",
+			hands="Telchine Gloves",
+			legs="Telchine Braconi",
+			feet="Telchine Pigaches",
+			neck="Incanter's Torque",
+			back="Perimede Cape",
+	})
 
   sets.midcast.Stoneskin = set_combine(sets.midcast['Enhancing Magic'], {neck="Nodens Gorget",ear2="Earthcry Earring",waist="Siegel Sash"})
 	sets.midcast.Refresh = set_combine(sets.midcast['Enhancing Magic'], {head="Amalric Coif +1"})
