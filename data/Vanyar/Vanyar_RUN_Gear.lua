@@ -34,6 +34,7 @@ function user_setup()
 	send_command('bind %6 input /ma "Refresh" <me>')
 	send_command('bind %7 input /ma "Regen IV" <me>')
 	send_command('bind %8 input /ma "Ice Spikes" <me>')
+	send_command('bind %9 input /ma "Temper" <me>')
 
 
 	-- Additional local binds
@@ -43,6 +44,7 @@ function user_setup()
 	send_command('bind ^- gs c cycleback RuneElement')
 	send_command('bind ^= gs c cycle RuneElement')
 	send_command('bind ^` gs c RuneElement')
+	send_command('bind %t input /ma "Temper" <me>')
 	send_command('bind @pause gs c toggle AutoRuneMode')
 	send_command('bind ^delete input /ja "Provoke" <stnpc>')
 	send_command('bind !delete input /ma "Cure IV" <stal>')
@@ -95,6 +97,7 @@ function user_unload()
 	send_command('unbind %e')
 	send_command('unbind !e')
 	send_command('unbind %q')
+	send_command('unbind %t')
 	send_command('unbind ^q')
 	send_command('unbind !q')
 	send_command('unbind home')
@@ -294,7 +297,7 @@ function init_gear_sets()
 		-- add SIR equipment
 		ammo="Staunch Tathlum +1",		-- 3
 		neck="Loricate Torque +1",		-- 6
-		hands=gear.Herc_DT_hands, 		-- 5/3
+		hands="Regal Gauntlets", 			-- SIR 10
 		ear1="Odnowa Earring +1",
 		ear2="Odnowa Earring",
 		ring1="Moonlight Ring",				-- 5/5
@@ -308,7 +311,7 @@ function init_gear_sets()
 	-- Weaponskill sets
 	sets.precast.WS = {
 		ammo="Knobkierrie",
-		head="Lilitu Headpiece",
+		head="Lustratio Cap +1",
 		body="Adhemar Jacket +1",
 		hands="Meg. Gloves +2",
 		legs=gear.Herc_WS_legs,
@@ -338,7 +341,7 @@ function init_gear_sets()
   sets.precast.WS['Resolution'] = set_combine(sets.precast.WS,{
 		ammo="Knobkierrie",
 		head="Lustratio Cap +1",
-		body="Adhemar Jacket +1",
+		body="Lustratio Harness +1",
 		hands="Adhemar Wrist. +1",
 		legs="Samnuha Tights",
     feet="Lustra. Leggings +1",
@@ -352,10 +355,11 @@ function init_gear_sets()
 	})
   sets.precast.WS['Resolution'].Acc = set_combine(sets.precast.WS['Resolution'],{
 		body="Adhemar Jacket +1",
+	})
+  sets.precast.WS['Resolution'].HighAcc = set_combine(sets.precast.WS['Resolution'].Acc,{
 		legs="Meg. Chausses +2",
 		ammo="Seething Bomblet +1"
 	})
-  sets.precast.WS['Resolution'].HighAcc = set_combine(sets.precast.WS['Resolution'].Acc,{})
 	sets.precast.WS['Resolution'].FullAcc = set_combine(sets.precast.WS['Resolution'].HighAcc,{})
 
   sets.precast.WS['Dimidiation'] = set_combine(sets.precast.WS,{
@@ -406,8 +410,8 @@ function init_gear_sets()
 		--500 // 541 (544 cap w/ +1 earring) atm (24% Temper)
 		head="Carmine Mask +1",				--11
 		body="Manasa Chasuble", 			--12
-		hands="Runeist's Mitons +3", 	--19
-		legs="Carmine Cuisses +1", 		--18
+		hands="Regal Gauntlets", 			--19
+		legs="Futhark trousers +1", 	--18
 		neck="Incanter's Torque", 		--10
 		ear2="Andoaa Earring",				--5
 		ring1="Stikini Ring +1", 			--8
@@ -421,6 +425,10 @@ function init_gear_sets()
 		hands=gear.Phalanx_hands,	--3
 		legs=gear.Phalanx_legs,		--3
 		feet=gear.Phalanx_feet,		--3
+	})
+	sets.midcast['Temper'] = set_combine(sets.midcast['Enhancing Magic'],{
+		hands="Runeist's Mitons +3", 	--19
+		legs="Carmine Cuisses +1", 		--18
 	})
   sets.midcast['Regen'] = set_combine(sets.midcast['Enhancing Magic'],{head="Runeist's Bandeau +3"})
 	sets.midcast['Refresh'] = set_combine(sets.midcast['Enhancing Magic'],{head="Erilaz Galea +1"})
@@ -461,11 +469,12 @@ function init_gear_sets()
 
 	sets.resting = {}
 
-  sets.idle = {
+  sets.idle = {	--41/28
 		ammo="Staunch Tathlum +1",		--3/3
 		head=gear.Herc_DT_head, 			--4/4
 		body="Runeist's Coat +3",			--Refresh 3
-		hands=gear.Herc_DT_hands, 		--5/3
+		--hands=gear.Herc_DT_hands, 		--5/3
+		hands="Regal Gauntlets",			--Regen+10,Refresh+1
 		legs=gear.Herc_Refresh_legs, 	--2/0 --Refresh 2
 		feet="Erilaz Greaves +1",			--5/0
 		neck="Loricate Torque +1",		--6/6
@@ -677,7 +686,7 @@ function init_gear_sets()
 		legs="Carmine Cuisses +1",
 		feet=gear.Herc_Acc_feet,
 		neck="Sanctity Necklace",
-		ear1="Mache Earring",
+		ear1="Mache Earring +1",
 		waist="Kentarch Belt +1",
 	})
 	sets.engaged.FullAcc = set_combine(sets.engaged,{})

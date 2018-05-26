@@ -1138,7 +1138,8 @@ function equip_gear_by_status(playerStatus, petStatus)
     if (playerStatus == 'Idle' or playerStatus == '') and player.hp > 0 then
         equip(get_idle_set(petStatus))
     elseif playerStatus == 'Engaged' then
-		if player.target and player.target.distance < (3.2 + player.target.model_size) then
+		if player.target and player.target.distance < 5 then
+		--(3.2 + player.target.model_size) then
 			equip(get_melee_set(petStatus))
 		else
 			equip(get_idle_set(petStatus))

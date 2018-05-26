@@ -158,7 +158,7 @@ function job_setup()
 	state.AutoReadyMode = M(false, 'Auto Ready Mode')
 	state.AutoCallPet = M(false, 'Auto Call Pet')
 	state.RewardMode = M{['description']='Reward Mode', 'Theta', 'Zeta', 'Eta'}
-    state.JugMode = M{['description']='Jug Mode', 'ScissorlegXerin', 'BlackbeardRandy', 'AttentiveIbuki', 'AgedAngus',
+  state.JugMode = M{['description']='Jug Mode', 'ScissorlegXerin', 'BlackbeardRandy', 'AttentiveIbuki', 'AgedAngus',
                 'RedolentCandi','DroopyDortwin','WarlikePatrick','HeraldHenry','AlluringHoney','SwoopingZhivago','AcuexFamiliar'}
 
 	UnleashLock = true
@@ -257,12 +257,12 @@ function job_precast(spell, spellMap, eventArgs)
 
 -- Define class for Sic and Ready moves.
         elseif spell.type == 'Monster' then
-                classes.CustomClass = "WS"
-                if state.PetMode.Value == 'PetOnly' and (player.sub_job == 'NIN' or player.sub_job == 'DNC') then
-                         equip(sets.midcast.Pet.ReadyRecastNE)
-                else
-                         equip(sets.midcast.Pet.ReadyRecast)
-                end
+            classes.CustomClass = "WS"
+            if state.PetMode.Value == 'PetOnly' and (player.sub_job == 'NIN' or player.sub_job == 'DNC') then
+              equip(sets.midcast.Pet.ReadyRecastNE)
+            else
+              equip(sets.midcast.Pet.ReadyRecast)
+            end
         end
 end
 
@@ -274,8 +274,8 @@ function job_post_precast(spell, spellMap, eventArgs)
 		if not WSset.ear1 then WSset.ear1 = WSset.left_ear or '' end
 		if not WSset.ear2 then WSset.ear2 = WSset.right_ear or '' end
 		local wsacc = check_ws_acc()
-        -- Replace Moonshade Earring if we're at cap TP
-        if player.tp > 2950 and (WSset.ear1 == "Moonshade Earring" or WSset.ear2 == "Moonshade Earring") then
+    -- Replace Moonshade Earring if we're at cap TP
+    if player.tp > 2950 and (WSset.ear1 == "Moonshade Earring" or WSset.ear2 == "Moonshade Earring") then
 			if wsacc:contains('Acc') and sets.AccMaxTP then
 				if not sets.AccMaxTP.ear1 then sets.AccMaxTP.ear1 = sets.AccMaxTP.left_ear or '' end
 				if not sets.AccMaxTP.ear2 then sets.AccMaxTP.ear2 = sets.AccMaxTP.right_ear or '' end
@@ -312,42 +312,42 @@ function job_post_precast(spell, spellMap, eventArgs)
 end
 
 function job_pet_midcast(spell, spellMap, eventArgs)
-        if state.PetMode.value == 'PetOnly' then
-                if state.OffenseMode.value:contains('Acc') then
-                        equip(sets.midcast.Pet.ReadyNE.Acc)
-                elseif state.OffenseMode.value == 'FullAcc' then
-                        equip(sets.midcast.Pet.FullAcc)
-                else
-                        equip(set_combine(sets.midcast.Pet.ReadyNE, sets.midcast.Pet[state.CorrelationMode.value]))
-                end
-        else
-                if state.OffenseMode.value:contains('Acc') then
-                        equip(sets.midcast.Pet.Acc)
-                elseif state.OffenseMode.value == 'FullAcc' then
-                        equip(sets.midcast.Pet.ReadyNE.Acc)
-                else
-                        equip(set_combine(sets.midcast.Pet.WS, sets.midcast.Pet[state.CorrelationMode.value]))
-                end
-        end
+  if state.PetMode.value == 'PetOnly' then
+    if state.OffenseMode.value:contains('Acc') then
+      equip(sets.midcast.Pet.ReadyNE.Acc)
+    elseif state.OffenseMode.value == 'FullAcc' then
+      equip(sets.midcast.Pet.FullAcc)
+    else
+      equip(set_combine(sets.midcast.Pet.ReadyNE, sets.midcast.Pet[state.CorrelationMode.value]))
+    end
+  else
+    if state.OffenseMode.value:contains('Acc') then
+      equip(sets.midcast.Pet.Acc)
+    elseif state.OffenseMode.value == 'FullAcc' then
+        equip(sets.midcast.Pet.ReadyNE.Acc)
+    else
+        equip(set_combine(sets.midcast.Pet.WS, sets.midcast.Pet[state.CorrelationMode.value]))
+    end
+  end
 
-        if magic_ready_moves:contains(spell.name) then
-                if state.PetMode.value == 'PetOnly' then
-                        equip(sets.midcast.Pet.MagicReadyNE)
-                else
-                        equip(sets.midcast.Pet.MagicReady)
-                end
-        end
+  if magic_ready_moves:contains(spell.name) then
+          if state.PetMode.value == 'PetOnly' then
+                  equip(sets.midcast.Pet.MagicReadyNE)
+          else
+                  equip(sets.midcast.Pet.MagicReady)
+          end
+  end
 
-        -- If Pet TP, before bonuses, is less than a certain value then equip Nukumi Manoplas +1
-        if tp_based_ready_moves:contains(spell.name) and PetJob == 'Warrior' then
-                if pet.tp < 1900 then
-                        equip(sets.midcast.Pet.TPBonus)
-                end
-        elseif tp_based_ready_moves:contains(spell.name) and PetJob ~= 'Warrior' then
-                if pet.tp < 2400 then
-                        equip(sets.midcast.Pet.TPBonus)
-                end
-        end
+  -- If Pet TP, before bonuses, is less than a certain value then equip Nukumi Manoplas +1
+  if tp_based_ready_moves:contains(spell.name) and PetJob == 'Warrior' then
+          if pet.tp < 1900 then
+                  equip(sets.midcast.Pet.TPBonus)
+          end
+  elseif tp_based_ready_moves:contains(spell.name) and PetJob ~= 'Warrior' then
+          if pet.tp < 2400 then
+                  equip(sets.midcast.Pet.TPBonus)
+          end
+  end
 end
 
 function job_post_pet_midcast(spell, spellMap, eventArgs)
@@ -727,7 +727,7 @@ function check_pet()
 	if pet.isvalid then
 		if pet.hpp < 34 then
 			local abil_recasts = windower.ffxi.get_ability_recasts()
-			
+
 			if abil_recasts[103] == 0 and not (buffactive.amnesia or buffactive.impairment) then
 				if item_available('Pet Food '..state.RewardMode.value..'') then
 					windower.chat.input('/ja "Reward" <me>')

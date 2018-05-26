@@ -48,6 +48,7 @@ function job_precast(spell, spellMap, eventArgs)
     if spell.skill == 'Elemental Magic' and default_spell_map ~= 'ElementalEnfeeble' then
 			gear.default.obi_waist = gear.obi_nuke_waist
 			gear.default.obi_back = gear.obi_nuke_back
+    --[[
 		elseif spellMap == 'StatusRemoval' and not (spell.english == "Erase" or spell.english == "Esuna" or spell.english == "Sacrifice") then
 			local abil_recasts = windower.ffxi.get_ability_recasts()
 			if abil_recasts[32] == 0 and not silent_check_amnesia() and state.AutoCaress.value then
@@ -56,6 +57,7 @@ function job_precast(spell, spellMap, eventArgs)
 				windower.chat.input:schedule(1,'/ma "'..spell.english..'" '..spell.target.raw..'')
 				return
 			end
+    ]]--
 		end
 	elseif spell.type == 'JobAbility' then
 		local abil_recasts = windower.ffxi.get_ability_recasts()

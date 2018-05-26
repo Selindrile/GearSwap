@@ -12,20 +12,20 @@ end
 -- Setup vars that are user-independent.  state.Buff vars initialized here will automatically be tracked.
 function job_setup()
 
-    state.Buff['Aftermath: Lv.3'] = buffactive['Aftermath: Lv.3'] or false
-    state.Buff['Hundred Fists'] = buffactive['Hundred Fists'] or false
+  state.Buff['Aftermath: Lv.3'] = buffactive['Aftermath: Lv.3'] or false
+  state.Buff['Hundred Fists'] = buffactive['Hundred Fists'] or false
 	state.Buff['Impetus'] = buffactive['Impetus'] or false
-	
-	state.AutoBoost = M(true, 'Auto Boost Mode')
-	
+
+  state.AutoBoost = M(true, 'Auto Boost Mode')
+
 	--List of which WS you plan to use TP bonus WS with.
 	moonshade_ws = S{'Victory Smite'}
-	
+
 	autows = 'Victory Smite'
 	autofood = 'Soy Ramen'
-	
-    info.impetus_hit_count = 0
-    windower.raw_register_event('action', on_action_for_impetus)
+
+  info.impetus_hit_count = 0
+  windower.raw_register_event('action', on_action_for_impetus)
 	update_melee_groups()
 	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","TreasureMode",})
 end
@@ -45,7 +45,7 @@ function job_pretarget(spell, spellMap, eventArgs)
 end
 
 function job_precast(spell, spellMap, eventArgs)
-
+--[[
 	if spell.type == 'WeaponSkill' and state.AutoBoost.value then
 		local abil_recasts = windower.ffxi.get_ability_recasts()
 		if abil_recasts[16] == 0 then
@@ -55,34 +55,32 @@ function job_precast(spell, spellMap, eventArgs)
 			return
 		end
 	end
-
+]]--
 end
 
 -- Run after the general precast() is done.
 function job_post_precast(spell, spellMap, eventArgs)
-    if spell.type == 'WeaponSkill' and state.DefenseMode.current == 'None' then
-        if buffactive.Impetus and (spell.english == "Ascetic's Fury" or spell.english == "Victory Smite") then
-			equip(sets.buff.Impetus)
-        end
-        
-		if buffactive.Footwork and (spell.english == "Dragon Kick" or spell.english == "Tornado Kick") then
-            equip(sets.FootworkWS)
-        end
-		
-        -- Replace Moonshade Earring if we're at cap TP
-        if player.tp == 3000 and moonshade_ws:contains(spell.english) then
-			if check_ws_acc():contains('Acc') then
-				if sets.AccMaxTP then
-					equip(sets.AccMaxTP)
-				end
-						
-			elseif sets.MaxTP then
-					equip(sets.MaxTP)
-			end
-
-        end
-        
+  if spell.type == 'WeaponSkill' and state.DefenseMode.current == 'None' then
+    if buffactive.Impetus and (spell.english == "Ascetic's Fury" or spell.english == "Victory Smite") then
+      equip(sets.buff.Impetus)
     end
+
+    if buffactive.Footwork and (spell.english == "Dragon Kick" or spell.english == "Tornado Kick") then
+      equip(sets.FootworkWS)
+    end
+
+    -- Replace Moonshade Earring if we're at cap TP
+    if player.tp == 3000 and moonshade_ws:contains(spell.english) then
+      if check_ws_acc():contains('Acc') then
+        if sets.AccMaxTP then
+        equip(sets.AccMaxTP)
+        end
+
+      elseif sets.MaxTP then
+        equip(sets.MaxTP)
+      end
+    end
+  end
 end
 
 function job_aftercast(spell, spellMap, eventArgs)
@@ -106,19 +104,18 @@ end
 
 -- Modify the default melee set after it was constructed.
 function job_customize_melee_set(meleeSet)
-
     if state.ExtraMeleeMode.value ~= 'None' then
         meleeSet = set_combine(meleeSet, sets[state.ExtraMeleeMode.value])
     end
-	
+
     if buffactive.Impetus and state.DefenseMode.value == 'None' and state.OffenseMode.value ~= 'FullAcc' then
-		meleeSet = set_combine(meleeSet, sets.buff.Impetus)
+		    meleeSet = set_combine(meleeSet, sets.buff.Impetus)
     end
-	
+
     if buffactive.Footwork and state.DefenseMode.value == 'None' and state.OffenseMode.value ~= 'FullAcc' then
-		meleeSet = set_combine(meleeSet, sets.buff.Footwork)
+		    meleeSet = set_combine(meleeSet, sets.buff.Footwork)
     end
-	
+
     return meleeSet
 end
 
@@ -131,7 +128,6 @@ function job_customize_defense_set(defenseSet)
 end
 
 function job_customize_idle_set(idleSet)
-
     return idleSet
 end
 
@@ -215,12 +211,12 @@ function on_action_for_impetus(action)
                 end
             end
         end
-        
+
         --add_to_chat(123,'Current Impetus hit count = ' .. tostring(info.impetus_hit_count))
     else
         info.impetus_hit_count = 0
     end
-    
+
 end
 
 function job_self_command(commandArgs, eventArgs)
@@ -233,13 +229,11 @@ end
 
 
 function update_melee_groups()
-    classes.CustomMeleeGroups:clear()
-
+  classes.CustomMeleeGroups:clear()
 	if player.equipment.main and player.equipment.main == "Glanzfaust" and state.Buff['Aftermath: Lv.3'] then
 		classes.CustomMeleeGroups:append('AM')
 	end
-	
-    if state.Buff['Hundred Fists'] then
-        classes.CustomMeleeGroups:append('HF')
-    end
+  if state.Buff['Hundred Fists'] then
+      classes.CustomMeleeGroups:append('HF')
+  end
 end

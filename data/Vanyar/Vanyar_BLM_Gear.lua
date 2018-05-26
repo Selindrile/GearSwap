@@ -11,7 +11,7 @@ function user_setup()
 
 	--send_command('bind ^` input /ma Stun <t>')
 	send_command('bind !` gs c cycle MagicBurst')
-	send_command('bind ^` gs c cycle MPMode')
+	send_command('bind ^` gs c cycle RecoverMode')
 
 	--- Buff Binds
 	send_command('bind %1 input /ma "Aquaveil" <me>')
@@ -28,15 +28,16 @@ function user_setup()
 	send_command('bind %8 input /ma "Cure IV" <me>')
 
 		-- Additional local binds
-	send_command('bind ^` gs c cycle ElementalMode')
-	send_command('bind !\\\\ input /ja "Manawell" <me>')
-	send_command('bind !` input /ma "Aspir III" <t>')
 	send_command('bind @` gs c cycle MagicBurstMode')
-	send_command('bind @f10 gs c cycle RecoverMode')
+	send_command('bind ^` gs c cycle RecoverMode')
+	send_command('bind !` input /ma "Aspir III" <t>')
+	send_command('bind ` input /ma "Stun" <t>')
+
+	send_command('bind @f10 gs c cycle ElementalMode')
+	send_command('bind !\\\\ input /ja "Manawell" <me>')
 	send_command('bind @f9 gs c cycle DeathMode')
 	send_command('bind @^` input /ja "Parsimony" <me>')
 	send_command('bind !pause gs c toggle AutoSubMode') --Automatically uses sublimation and Myrkr.
-	send_command('bind ^backspace input /ma "Stun" <t>')
 	send_command('bind !backspace input /ja "Enmity Douse" <t>')
 	send_command('bind @backspace input /ja "Alacrity" <me>')
 	send_command('bind != input /ja "Light Arts" <me>')
@@ -217,7 +218,7 @@ function init_gear_sets()
 		head="Pixie Hairpin +1",
 		neck="Sanctity Necklace",
 		ear1="Gifted Earring",ear2="Etiolation Earring",
-		body="Amalric Doublet",
+		body="Amalric Doublet +1",
 		hands="Telchine Gloves",
 		ring1="Mephitas's Ring +1",ring2="Mephitas's Ring",
 		back="Taranus's Cape",
@@ -333,14 +334,12 @@ function init_gear_sets()
   sets.midcast.Aspir = sets.midcast.Drain
 
 	sets.midcast.Aspir.Death = {
-		main=gear.grioavolr_nuke_staff,
-		sub="Niobid Strap",
 		ammo="Pemphredo Tathlum",
     head="Pixie Hairpin +1",
 		neck="Erra Pendant",
 		ear1="Barkaro. Earring",ear2="Regal Earring",
     body=gear.merlinic_nuke_body,
-		hands="Amalric Gages",
+		hands="Amalric Gages +1",
 		ring1="Evanescence Ring",ring2="Archon Ring",
     back="Taranus's Cape",
 		waist="Fucho-no-obi",
@@ -385,8 +384,6 @@ function init_gear_sets()
   sets.midcast.BardSong = {}
 
 	sets.midcast.Impact = {
-		main="Oranyan",
-		sub="Enki Strap",
 		ammo="Pemphredo Tathlum",
 		head=empty,
 		neck="Erra Pendant",
@@ -440,7 +437,8 @@ function init_gear_sets()
 	sets.midcast['Elemental Magic'].OccAcumen = set_combine(sets.midcast['Elemental Magic'],{
 		ammo="Seraphic Ampulla",
 		head="Welkin Crown",
-		body="Spaekona's Coat +3",
+		--body="Spaekona's Coat +3",
+		body=gear.Merlinic_OA_body,
 		hands=gear.Merlinic_OA_hands,
 		legs="Perdition Slops",
 		feet=gear.Merlinic_OA_feet,
@@ -452,6 +450,12 @@ function init_gear_sets()
 		right_ring="Petrov Ring",
 		back=gear.Taranus_STP,
 	})
+
+
+	sets.midcast.Impact.OccAcumen = set_combine(sets.midcast['Elemental Magic'].OccAcumen,{
+		head=empty,
+		body="Twilight Cloak",
+	})
   -- Sets to return to when not performing an action.
 
   -- Resting sets
@@ -461,8 +465,6 @@ function init_gear_sets()
 
   -- Normal refresh idle set
   sets.idle = {
-		--main={name="Lathi",priority=0},
-		--sub={name="Enki Strap",priority=15},
 		ammo="Staunch Tathlum +1",
 		head="Befouled crown",
 		neck="Loricate Torque +1",

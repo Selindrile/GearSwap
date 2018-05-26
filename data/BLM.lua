@@ -124,6 +124,8 @@ function job_post_midcast(spell, spellMap, eventArgs)
 					end
           ]]--
 				end
+      elseif spell.english == 'Impact' and state.CastingMode.value == 'OccAcumen' then
+        equip(sets.midcast.Impact.OccAcumen)
 			end
 
 			if spell.element and sets.element[spell.element] then

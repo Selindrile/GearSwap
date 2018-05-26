@@ -29,12 +29,12 @@ function user_setup()
   send_command('bind %7 input /ma "Reraise IV" <me>')
 
   --- Magic Binds
-  send_command('bind ^r input /ma "Repose" <t>')
+  --send_command('bind %r input /ma "Repose" <t>')
   send_command('bind ^a input /ma "Addle" <t>')
   send_command('bind ^s input /ma "Silence" <t>')
   send_command('bind ^d input /ma "Dia II" <t>;input /p Dia II')
   send_command('bind ^q input /ma "Paralyze" <t>')
-  send_command('bind !` gs c cycle HighHP')
+  --send_command('bind !` gs c cycle HighHP')
 
 		-- Additional local binds
 	send_command('bind ^` input /ma "Arise" <t>')
@@ -357,16 +357,17 @@ function init_gear_sets()
 	--Melee Curesets are used whenever your OffenseMode is set to anything but None.
 	sets.midcast.MeleeCure = {
     ammo="Pemphredo Tathlum",
-		head="Gende. Caubeen +1",
+		head="Kaykaus Mitra +1",
     neck="Incanter's Torque",
     ear1="Glorious Earring",ear2="Nourish. Earring +1",
-		body="Kaykaus Bliaut",
-    hands="Kaykaus Cuffs",
-    ring1="Janniston Ring",ring2="Lebeche Ring",
+		body="Kaykaus Bliaut +1",
+    hands="Kaykaus Cuffs +1",
+    ring1="Janniston Ring",
+    ring2="Lebeche Ring",
 		back="Alaunus's Cape",
     waist="Luminary Sash",
     legs="Ebers Pant. +1",
-    feet="Kaykaus Boots"
+    feet="Kaykaus Boots +1"
   }
 
 	sets.midcast.MeleeCureSolace = set_combine(sets.midcast.MeleeCure, {body="Ebers Bliaud +1"})
@@ -475,8 +476,8 @@ function init_gear_sets()
     ear1="Regal Earring",ear2="Digni. Earring",
 		body="Twilight Cloak",
     hands=gear.chironic_enfeeble_hands,
-    ring1="Stikini Ring",
-    ring2="Stikini Ring",
+    ring1="Stikini Ring +1",
+    ring2="Stikini Ring +1",
 		back="Toro Cape",
     waist="Acuity Belt +1",
     legs="Chironic Hose",
@@ -496,7 +497,7 @@ function init_gear_sets()
     ear1="Regal Earring",ear2="Digni. Earring",
 		body="Inyanga Jubbah +2",
     hands="Fanatic Gloves",
-    ring1="Stikini Ring",ring2="Stikini Ring",
+    ring1="Stikini Ring +1",ring2="Stikini Ring +1",
 		back="Aurist's Cape +1",
     waist="Luminary Sash",
     legs="Chironic Hose",
@@ -545,7 +546,7 @@ function init_gear_sets()
 	sets.midcast.IntEnfeebles.Resistant = set_combine(sets.midcast['Enfeebling Magic'].Resistant, {waist="Acuity Belt +1"})
 
 	sets.midcast.MndEnfeebles = set_combine(sets.midcast['Enfeebling Magic'], {back="Alaunus's Cape"})
-	sets.midcast.MndEnfeebles.Resistant = set_combine(sets.midcast['Enfeebling Magic'].Resistant, {back="Alaunus's Cape",ring1="Stikini Ring"})
+	sets.midcast.MndEnfeebles.Resistant = set_combine(sets.midcast['Enfeebling Magic'].Resistant, {back="Alaunus's Cape",ring1="Stikini Ring +1"})
 
   -- Sets to return to when not performing an action.
 
@@ -677,6 +678,7 @@ function init_gear_sets()
     ring2="Supershear Ring",
     back="Moonlight Cape",
   })
+  sets.HighHP = sets.HPCure
 	--sets.HPDown = {}
 end
 
