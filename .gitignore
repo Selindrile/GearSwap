@@ -27,3 +27,7 @@ libs/rev1/*
 data/export/*
 sounds/*
 libs/closetCleaner.lua
+scripts/init.txt
+parse_augments.lua
+data/Farok/Farok-Globals (2).lua
+data/Farok/Farok Wishlist.txt
