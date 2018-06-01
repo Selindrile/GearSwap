@@ -46,10 +46,16 @@ function init_job_states(job_bools,job_modes)
 	else
 		x,y = 0, settings["ui_y_res"]-17 -- -285, -18
 	end
+
+	local font = 'Arial'
+
+	if custom_font then
+		font = custom_font
+	end
 	
     stateBox = texts.new()
     stateBox:pos(x,y)
-    stateBox:font('Arial')--Arial
+    stateBox:font(font)--Arial
     stateBox:size(12)
     stateBox:bold(true)
     stateBox:bg_alpha(0)--128
@@ -79,6 +85,9 @@ function update_job_states()
         n='\\cs(192,192,192)', -- White for labels and default modals
         s='\\cs(96,96,96)' -- Gray for inactive booleans
     }
+    if state.DisplayColors then
+		clr = state.DisplayColors
+	end
 
     local info = {}
     local orig = {}

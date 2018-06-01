@@ -16,6 +16,14 @@ state.DisplayMode = M(true, 'Display Mode') --Set this to false if you don't wan
 --Uncomment the settings below and change the numbers if you want to move the display to a custom location.
 --displayx = 3
 --displayy = 1062
+--If you want to use a custom font or colors, uncomment the settings below
+--custom_font = 'Times New Roman'
+--state.DisplayColors = {
+    -- h='\\cs(255, 0, 0)', -- Red for active booleans and non-default modals
+    -- w='\\cs(255,255,255)', -- White for labels and default modals
+    -- n='\\cs(192,192,192)', -- White for labels and default modals
+    -- s='\\cs(96,96,96)' -- Gray for inactive booleans
+--}
 
 --Options for automation.
 state.ReEquip = M(true, 'ReEquip Mode') --Set this to false if you don't want it to your current Weapon sets (sets.weapons by default) when you aren't wearing any weapons.
