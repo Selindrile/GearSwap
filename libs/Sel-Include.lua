@@ -1922,7 +1922,7 @@ function status_change(newStatus, oldStatus)
     local eventArgs = {handled = false}
     mote_vars.set_breadcrumbs:clear()
 
-	if not (newStatus == 0 or newStatus == 1) then
+	if not (newStatus == 'Idle' or newStatus == 'Engaged') then
 		if state.RngHelper.value then
 			send_command('gs rh clear')
 		end
@@ -1949,7 +1949,7 @@ function status_change(newStatus, oldStatus)
 		end
 	end
 	
-    if newStatus == 1 then
+    if newStatus == 'Engaged' then
 		update_combat_form()
 	end
 	

@@ -24,7 +24,7 @@ function job_setup()
 	-- Whether to use Compensator under a certain threshhold even when weapons are locked.
 	state.CompensatorMode = M{'Never','500','1000','Always'}
 	-- Whether to automatically generate bullets.
-	state.AutoBulletMode = M(true,'Auto Bullet Mode')	
+	state.AutoAmmoMode = M(true,'Auto Ammo Mode')
 	-- Whether to use Luzaf's Ring
 	state.LuzafRing = M(true, "Luzaf's Ring")
     -- Whether a warning has been given for low ammo
@@ -286,7 +286,7 @@ function do_bullet_checks(spell, spellMap, eventArgs)
         end
     end
   
-	local available_bullets = count_available_bullets(bullet_name)
+	local available_bullets = count_available_ammo(bullet_name)
 	
   -- If no ammo is available, give appropriate warning and cancel.
     if not (available_bullets > 0) then
@@ -326,98 +326,6 @@ function do_bullet_checks(spell, spellMap, eventArgs)
 end
 
 function job_tick()
-	if check_bullets() then return true end
+	if check_ammo() then return true end
 	return false
-end
-
-function check_bullets()
-	if state.AutoBulletMode.value and player.equipment.range and not world.in_mog_house then
-			if player.equipment.range == 'Fomalhaut' and get_item_next_use(player.equipment.range).usable then
-				if count_total_bullets('Chrono Bullet') < ammostock then
-					windower.chat.input('/item "Fomalhaut" <me>')
-					add_to_chat(217,"You're low on Chrono Bullets, using Fomalhaut.")
-					tickdelay = (framerate * 2)
-					return true
-				end
-			elseif player.equipment.range == 'Death Penalty' and get_item_next_use(player.equipment.range).usable then
-				if count_total_bullets('Living Bullet') < ammostock then
-					windower.chat.input('/item "Death Penalty" <me>')
-					add_to_chat(217,"You're low on Living Bullets, using Death Penalty.")
-					tickdelay = (framerate * 2)
-					return true
-				end
-			elseif player.equipment.range == 'Armageddon' and get_item_next_use(player.equipment.range).usable then
-				if count_total_bullets('Devastating Bullet') < ammostock then
-					windower.chat.input('/item "Armageddon" <me>')
-					add_to_chat(217,"You're low on Devastating Bullets, using Armageddon.")
-					tickdelay = (framerate * 2)
-					return true
-				end
-			end
-	end
-	return false
-end
-
-function count_available_bullets(bullet_name)
-	local bullet_count = 0
-	
-	if player.inventory[bullet_name] then
-		bullet_count = bullet_count + player.inventory[bullet_name].count
-	end
-	
-	if player.wardrobe[bullet_name] then
-		bullet_count = bullet_count + player.wardrobe[bullet_name].count
-	end
-
-	if player.wardrobe2[bullet_name] then
-		bullet_count = bullet_count + player.wardrobe2[bullet_name].count
-	end
-	
-	if player.wardrobe3[bullet_name] then
-		bullet_count = bullet_count + player.wardrobe3[bullet_name].count
-	end
-	
-	if player.wardrobe4[bullet_name] then
-		bullet_count = bullet_count + player.wardrobe4[bullet_name].count
-	end
-	
-	return bullet_count
-end
-
-function count_total_bullets(bullet_name)
-	local bullet_count = 0
-	
-	if player.inventory[bullet_name] then
-		bullet_count = bullet_count + player.inventory[bullet_name].count
-	end
-	
-	if player.wardrobe[bullet_name] then
-		bullet_count = bullet_count + player.wardrobe[bullet_name].count
-	end
-	
-	if player.wardrobe3[bullet_name] then
-		bullet_count = bullet_count + player.wardrobe3[bullet_name].count
-	end
-	
-	if player.wardrobe4[bullet_name] then
-		bullet_count = bullet_count + player.wardrobe4[bullet_name].count
-	end
-	
-	if player.wardrobe4[bullet_name] then
-		bullet_count = bullet_count + player.wardrobe4[bullet_name].count
-	end
-	
-	if player.satchel[bullet_name] then
-		bullet_count = bullet_count + player.satchel[bullet_name].count
-	end
-	
-	if player.sack[bullet_name] then
-		bullet_count = bullet_count + player.sack[bullet_name].count
-	end
-	
-	if player.case[bullet_name] then
-		bullet_count = bullet_count + player.case[bullet_name].count
-	end
-	
-	return bullet_count
 end

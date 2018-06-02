@@ -191,101 +191,14 @@ function check_ammo(spell, action, spellMap, eventArgs)
 				add_to_chat(122,"Unable to determine default ammo for current weapon.  Leaving empty.")
 			end
 		else
-			if ammo_left() < 15 then
-				add_to_chat(122,"Ammo '"..player.inventory[player.equipment.ammo].shortname:ucfirst().."' running low: ("..ammo_left()..") remaining.")
+			if count_available_ammo(player.equipment.ammo) < 15 then
+				add_to_chat(122,"Ammo '"..player.equipment.ammo.."' running low: ("..count_available_ammo(player.equipment.ammo)..") remaining.")
 			end
 		end
 	end
 end
 
 function job_tick()
-	if check_ammo_makers() then return true end
+	if check_ammo() then return true end
 	return false
-end
-
-function check_ammo_makers()
-	if state.AutoAmmoMode.value and player.equipment.range and not world.in_mog_house then
-			if player.equipment.range == 'Fomalhaut' and get_item_next_use(player.equipment.range).usable then
-				if count_total_ammo('Chrono Bullet') < ammostock then
-					windower.chat.input('/item "Fomalhaut" <me>')
-					add_to_chat(217,"You're low on Chrono Bullets, using Fomalhaut.")
-					tickdelay = (framerate * 2)
-					return true
-				end
-			elseif player.equipment.range == 'Fail-Not' and get_item_next_use(player.equipment.range).usable then
-				if count_total_ammo('Chrono Arrow') < ammostock then
-					windower.chat.input('/item "Fail-Not" <me>')
-					add_to_chat(217,"You're low on Chrono Arrows, using Fail-Not.")
-					tickdelay = (framerate * 2)
-					return true
-				end
-			elseif player.equipment.range == 'Gandiva' and get_item_next_use(player.equipment.range).usable then
-				if count_total_ammo("Artemis's Arrow") < ammostock then
-					windower.chat.input('/item "Gandiva" <me>')
-					add_to_chat(217,"You're low on Artemis's Arrows, using Gandiva.")
-					tickdelay = (framerate * 2)
-					return true
-				end
-			elseif player.equipment.range == 'Yoichinoyumi' and get_item_next_use(player.equipment.range).usable then
-				if count_total_ammo("Yoichi's Arrow") < ammostock then
-					windower.chat.input('/item "Yoichinoyumi" <me>')
-					add_to_chat(217,"You're low on Yoichi's Arrows, using Yoichinoyumi.")
-					tickdelay = (framerate * 2)
-					return true
-				end
-			elseif player.equipment.range == 'Annihilator' and get_item_next_use(player.equipment.range).usable then
-				if count_total_ammo("Eradicating Bullet") < ammostock then
-					windower.chat.input('/item "Annihilator" <me>')
-					add_to_chat(217,"You're low on Eradicating Bullets, using Annihilator.")
-					tickdelay = (framerate * 2)
-					return true
-				end
-			elseif player.equipment.range == 'Armageddon' and get_item_next_use(player.equipment.range).usable then
-				if count_total_ammo("Devastating Bullet") < ammostock then
-					windower.chat.input('/item "Armageddon" <me>')
-					add_to_chat(217,"You're low on Devastating Bullets, using Armageddon.")
-					tickdelay = (framerate * 2)
-					return true
-				end
-			end
-	end
-	return false
-end
-
-function count_total_ammo(bullet_name)
-	local bullet_count = 0
-	
-	if player.inventory[bullet_name] then
-		bullet_count = bullet_count + player.inventory[bullet_name].count
-	end
-	
-	if player.wardrobe[bullet_name] then
-		bullet_count = bullet_count + player.wardrobe[bullet_name].count
-	end
-	
-	if player.wardrobe3[bullet_name] then
-		bullet_count = bullet_count + player.wardrobe3[bullet_name].count
-	end
-	
-	if player.wardrobe4[bullet_name] then
-		bullet_count = bullet_count + player.wardrobe4[bullet_name].count
-	end
-	
-	if player.wardrobe4[bullet_name] then
-		bullet_count = bullet_count + player.wardrobe4[bullet_name].count
-	end
-	
-	if player.satchel[bullet_name] then
-		bullet_count = bullet_count + player.satchel[bullet_name].count
-	end
-	
-	if player.sack[bullet_name] then
-		bullet_count = bullet_count + player.sack[bullet_name].count
-	end
-	
-	if player.case[bullet_name] then
-		bullet_count = bullet_count + player.case[bullet_name].count
-	end
-	
-	return bullet_count
 end

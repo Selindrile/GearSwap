@@ -1893,6 +1893,45 @@ function face_target()
 	end
 end
 
+function check_ammo()
+	if state.AutoAmmoMode.value and player.equipment.range and not player.in_combat and not world.in_mog_house then
+		if rema_ranged_weapons:contains(player.equipment.range) and get_item_next_use(player.equipment.range).usable then
+			if count_total_ammo(rema_ranged_weapons_ammo[player.equipment.range]) < ammostock then
+				windower.chat.input('/item "'..player.equipment.range..'" <me>')
+				add_to_chat(217,"You're low on "..rema_ranged_weapons_ammo[player.equipment.range]..", using "..player.equipment.range..".")
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function count_available_ammo(ammo_name)
+	local ammo_count = 0
+	
+    for _,n in pairs({"inventory","wardrobe","wardrobe2","wardrobe3","wardrobe4",}) do
+		if player[n][ammo_name] then
+			ammo_count = ammo_count + player[n][ammo_name].count
+		end
+    end
+
+	add_to_chat(123,''..ammo_name..':'..ammo_count..'')
+	return ammo_count
+end
+
+function count_total_ammo(ammo_name)
+	local ammo_count = 0
+	
+    for _,n in pairs({"inventory","wardrobe","wardrobe2","wardrobe3","wardrobe4","satchel","sack","case"}) do
+		if player[n][ammo_name] then
+			ammo_count = ammo_count + player[n][ammo_name].count
+		end
+    end
+
+	return ammo_count
+end
+
 function check_shadows()
 	if not state.AutoShadowMode.value or moving or areas.Cities:contains(world.area) then return false end
 	local spell_recasts = windower.ffxi.get_spell_recasts()
