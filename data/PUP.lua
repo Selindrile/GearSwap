@@ -318,23 +318,32 @@ end
 
 function check_maneuver()
 	if state.AutoBuffMode.value and pet.isvalid and pet.status == 'Engaged' and windower.ffxi.get_ability_recasts()[210] == 0 then
-		if not buffactive[defaultManeuvers[state.PetMode.value][1]] then
-			windower.chat.input('/pet "'..defaultManeuvers[state.PetMode.value][1]..'" <me>')
-			tickdelay = (framerate * .5)
-			return true
-		elseif not buffactive[defaultManeuvers[state.PetMode.value][2]] then
-			windower.chat.input('/pet "'..defaultManeuvers[state.PetMode.value][2]..'" <me>')
-			tickdelay = (framerate * .5)
-			return true
-		elseif not buffactive[defaultManeuvers[state.PetMode.value][3]] then
-			windower.chat.input('/pet "'..defaultManeuvers[state.PetMode.value][3]..'" <me>')
-			tickdelay = (framerate * .5)
-			return true
+		for i,maneuver in ipairs(defaultManeuvers[state.PetMode.value]) do
+			if should_use_maneuver(maneuver) then
+				windower.chat.input('/pet "'..maneuver..'" <me>')
+				tickdelay = (framerate * .5)
+				return true
+			end
 		end
 	end
 
 	return false
 end
+
+function should_use_maneuver(maneuver)
+	if autoManeuvers then
+		if not autoManeuvers[state.PetMode.Value][maneuver] then
+			return false
+		elseif autoManeuvers[state.PetMode.Value][maneuver] > 0 and not buffactive[maneuver] then
+			return true
+		else
+			return buffactive[maneuver] < autoManeuvers[state.PetMode.Value][maneuver]
+		end
+	else
+		return not buffactive[maneuver]
+	end
+end
+
 
 function job_aftercast(spell, spellMap, eventArgs)
 	if pet_midaction() or spell.english == 'Activate' or spell.english == 'Deus Ex Automata' then
