@@ -36,24 +36,24 @@ function init_job_states(job_bools,job_modes)
     if stateBox then stateBox:destroy() end
 
     local settings = windower.get_windower_settings()
-	local x,y
-	
-	if settings["ui_x_res"] == 1920 and settings["ui_y_res"] == 1080 then
-		x,y = settings["ui_x_res"]-1917, settings["ui_y_res"]-18 -- -285, -18
-	else
-		x,y = 0, settings["ui_y_res"]-17 -- -285, -18
-	end
-	
-	if displayx then x = displayx end
-	if displayy then y = displayy end
+    	local x,y
 
-	local font = displayfont or 'Arial'
-	local size = displaysize or 12
-	local bold = displaybold or true
-	local bg = displaybg or 0
-	local strokewidth = displaystroke or 2
-	local stroketransparancy = displaytransparancy or 192
-	
+    	if settings["ui_x_res"] == 1920 and settings["ui_y_res"] == 1080 then
+    		x,y = settings["ui_x_res"]-1917, settings["ui_y_res"]-18 -- -285, -18
+    	else
+    		x,y = 0, settings["ui_y_res"]-17 -- -285, -18
+    	end
+
+    	if displayx then x = displayx end
+    	if displayy then y = displayy end
+
+    	local font = displayfont or 'Arial'
+    	local size = displaysize or 12
+    	local bold = displaybold or true
+    	local bg = displaybg or 0
+    	local strokewidth = displaystroke or 2
+    	local stroketransparancy = displaytransparancy or 192
+
     stateBox = texts.new()
     stateBox:pos(x,y)
     stateBox:font(font)--Arial
@@ -76,19 +76,19 @@ function update_job_states()
 
 	if not state.DisplayMode.value then
 		if stateBox then stateBox:hide() end
-		return		
+		return
 	end
 
     -- Define colors for text in the display
     local clr = {
         h='\\cs(255,192,0)', -- Yellow for active booleans and non-default modals
-		w='\\cs(255,255,255)', -- White for labels and default modals
+		    w='\\cs(255,255,255)', -- White for labels and default modals
         n='\\cs(192,192,192)', -- White for labels and default modals
         s='\\cs(96,96,96)' -- Gray for inactive booleans
     }
     if state.DisplayColors then
-		clr = state.DisplayColors
-	end
+		    clr = state.DisplayColors
+    end
 
     local info = {}
     local orig = {}
@@ -307,7 +307,7 @@ function update_job_states()
 			stateBox:append(string.format("%s%s: ${%s}    ", clr.w, labels[n], n))
 		end
     end
-	
+
 	if state.ExtraDefenseMode and state.ExtraDefenseMode.value ~= 'None' and state.DefenseMode.value == 'None' then
 		stateBox:append(string.format("%sExtra Defense: %s%s    ", clr.w, clr.h, state.ExtraDefenseMode.value))
 	end
