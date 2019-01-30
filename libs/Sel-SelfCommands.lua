@@ -27,7 +27,7 @@ function self_command(commandArgs)
     if not eventArgs.handled and job_self_command then
 		job_self_command(commandArgs, eventArgs)
     end
-	
+
     -- Allow jobs to override this code
     if not eventArgs.handled and user_self_command then
         user_self_command(commandArgs, eventArgs)
@@ -58,25 +58,25 @@ function handle_set(cmdParams)
         add_to_chat(123,'Sel-Libs: Set parameter failure: field not specified.')
         return
     end
-    
+
 	local toggleset
 	if cmdParams[1]:lower() == 'toggle' then
 		toggleset = true
 		table.remove(cmdParams, 1)
 	end
-	
+
     local state_var = get_state(cmdParams[1])
-    
+
     if state_var then
         local oldVal = state_var.value
         state_var:set(cmdParams[2])
         local newVal = state_var.value
-		
+
 		if toggleset and newVal == oldVal and newVal ~= 'Single' then
 			handle_reset(cmdParams)
 			return
 		end
-		
+
         local descrip = state_var.description or cmdParams[1]
         if state_change then
             state_change(descrip, newVal, oldVal)
@@ -87,7 +87,7 @@ function handle_set(cmdParams)
             msg = msg .. ' (' .. state[newVal .. 'DefenseMode'].current .. ')'
         end
         msg = msg .. '.'
-        
+
         add_to_chat(122, msg)
         handle_update({'auto'})
     else
@@ -105,18 +105,18 @@ function handle_reset(cmdParams)
         if _global.debug_mode then add_to_chat(123,'handle_reset: parameter failure: reset type not specified') end
         return
     end
-    
+
     local state_var = get_state(cmdParams[1])
 
     local oldVal
     local newVal
     local descrip
-    
+
     if state_var then
         oldVal = state_var.value
         state_var:reset()
         newVal = state_var.value
-        
+
         local descrip = state_var.description or cmdParams[1]
         if state_change then
             state_change(descrip, newVal, oldVal)
@@ -130,7 +130,7 @@ function handle_reset(cmdParams)
                 oldVal = v.value
                 v:reset()
                 newVal = v.value
-                
+
                 descrip = state_var.description
                 if descrip and state_change then
                     state_change(descrip, newVal, oldVal)
@@ -163,9 +163,9 @@ function handle_cycle(cmdParams)
         add_to_chat(123,'Sel-Libs: Cycle parameter failure: field not specified.')
         return
     end
-    
+
     local state_var = get_state(cmdParams[1])
-    
+
     if state_var then
         local oldVal = state_var.value
         if cmdParams[2] and S{'reverse', 'backwards', 'r'}:contains(cmdParams[2]:lower()) then
@@ -174,7 +174,7 @@ function handle_cycle(cmdParams)
             state_var:cycle()
         end
         local newVal = state_var.value
-        
+
         local descrip = state_var.description or cmdParams[1]
         if state_change then
             state_change(descrip, newVal, oldVal)
@@ -203,14 +203,14 @@ function handle_toggle(cmdParams)
         add_to_chat(123,'Sel-Libs: Toggle parameter failure: field not specified.')
         return
     end
-    
+
     local state_var = get_state(cmdParams[1])
-    
+
     if state_var then
         local oldVal = state_var.value
         state_var:toggle()
         local newVal = state_var.value
-        
+
         local descrip = state_var.description or cmdParams[1]
         if state_change then
             state_change(descrip, newVal, oldVal)
@@ -231,14 +231,14 @@ function handle_unset(cmdParams)
         add_to_chat(123,'Sel-Libs: Unset parameter failure: field not specified.')
         return
     end
-    
+
     local state_var = get_state(cmdParams[1])
-    
+
     if state_var then
         local oldVal = state_var.value
         state_var:unset()
         local newVal = state_var.value
-        
+
         local descrip = state_var.description or cmdParams[1]
         if state_change then
             state_change(descrip, newVal, oldVal)
@@ -270,7 +270,10 @@ function handle_update(cmdParams)
 	if state.AutoSambaMode.value ~= 'Off' and not (player.main_job == 'DNC' or player.sub_job == 'DNC') then
 		state.AutoSambaMode:set("Off")
 	end
-	
+  if state.AutoDanceMode.value ~= 'Off' and not player.main_job == 'DNC' then
+		state.AutoDanceMode:set("Off")
+	end
+
     if not eventArgs.handled then
         if handle_equipping_gear then
             handle_equipping_gear(player.status)
@@ -280,7 +283,7 @@ function handle_update(cmdParams)
     if cmdParams[1] == 'user' then
         display_current_state()
     end
-	
+
 	update_job_states()
 	update_combat_form()
 end
@@ -353,7 +356,7 @@ function handle_weapons(cmdParams)
 			equip_weaponset(state.Weapons.value)
 		end
 	end
-	
+
 	if state.DisplayMode.value then update_job_states()	end
 end
 
@@ -377,13 +380,13 @@ end
 
 function handle_showset(cmdParams)
     enable('main','sub','range','ammo','head','neck','lear','rear','body','hands','lring','rring','back','waist','legs','feet')
-	
+
 	equip_weaponset(state.Weapons.value)
 
 	if cmdParams[1] ~= nil then
 		local key_list = parse_set_to_keys(cmdParams)
 		local set = get_set_from_keys(key_list)
-	
+
 		equip(set)
 		disable('main','sub','range','ammo','head','neck','lear','rear','body','hands','lring','rring','back','waist','legs','feet')
 	else
@@ -556,7 +559,7 @@ function handle_autofood(cmdParams)
 end
 
 function handle_displayrune()
-	
+
 	local RuneResist = ''
 	local RuneDamage = ''
 
@@ -590,7 +593,7 @@ function handle_displayrune()
 end
 
 function handle_displayelement()
-	
+
 	if state.ElementalMode.value == 'Fire' then
 		add_to_chat(8,'<Fire> (Strong vs Ice, Weak vs Water)')
 	elseif state.ElementalMode.value == 'Wind' then
@@ -723,7 +726,7 @@ function handle_smartcure()
 		end
 		return
 	end
-	
+
 	if missingHP < 170 then
 		if spell_recasts[1] < spell_latency then
 			windower.chat.input('/ma "Cure" '..cureTarget..'')
@@ -819,23 +822,23 @@ function display_current_state()
 
     if not eventArgs.handled then
         local msg = 'Melee'
-        
+
         if state.CombatForm.has_value then
             msg = msg .. ' (' .. state.CombatForm.value .. ')'
         end
-        
+
         msg = msg .. ': '
-        
+
         msg = msg .. state.OffenseMode.value
         if state.HybridMode.value ~= 'Normal' then
             msg = msg .. '/' .. state.HybridMode.value
         end
         msg = msg .. ', WS: ' .. state.WeaponskillMode.value
-        
+
         if state.DefenseMode.value ~= 'None' then
             msg = msg .. ', Defense: ' .. state.DefenseMode.value .. ' (' .. state[state.DefenseMode.value .. 'DefenseMode'].value .. ')'
         end
-        
+
         if state.Kiting.value == true then
             msg = msg .. ', Kiting'
         end
@@ -859,23 +862,23 @@ end
 -- Generic version of this for casters
 function display_current_caster_state()
     local msg = ''
-    
+
     if state.OffenseMode.value ~= 'None' then
         msg = msg .. 'Melee'
 
         if state.CombatForm.has_value then
             msg = msg .. ' (' .. state.CombatForm.value .. ')'
         end
-        
+
         msg = msg .. ', '
     end
-    
+
     msg = msg .. 'Casting ['..state.CastingMode.value..'], Idle ['..state.IdleMode.value..']'
-    
+
     if state.DefenseMode.value ~= 'None' then
         msg = msg .. ', ' .. 'Defense: ' .. state.DefenseMode.value .. ' (' .. state[state.DefenseMode.value .. 'DefenseMode'].value .. ')'
     end
-    
+
     if state.Kiting.value == true then
         msg = msg .. ', Kiting'
     end

@@ -136,6 +136,7 @@ function update_job_states()
 		CompensatorMode = "Compensator",
 		AutoRuneMode = "Auto Rune: "..state.RuneElement.value.."",
 		AutoSambaMode = "Auto Samba: "..state.AutoSambaMode.value.."",
+    AutoDanceMode = "Auto Dance: "..state.AutoSambaMode.value.."",
 		PhysicalDefenseMode = "Physical Defense",
 		MagicalDefenseMode = "Magical Defense",
 		ResistDefenseMode = "Resist Defense",
@@ -249,6 +250,10 @@ function update_job_states()
 		elseif n == 'AutoSambaMode' then
 			if state.AutoSambaMode.value ~= 'Off' then
 				stateBox:append(string.format("%sAuto Samba: %s%s    ", clr.w, clr.h, state.AutoSambaMode.value))
+			end
+    elseif n == 'AutoDanceMode' then
+			if state.AutoDanceMode.value ~= 'Off' then
+				stateBox:append(string.format("%sAuto Dance: %s%s    ", clr.w, clr.h, state.AutoDanceMode.value))
 			end
 		elseif n == 'IdleMode' then
 			if state.IdleMode.value ~= 'Normal' and state.DefenseMode.value == 'None' then
