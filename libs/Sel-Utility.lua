@@ -1318,7 +1318,7 @@ function check_samba()
 end
 
 function check_dance()
-    if state.AutoDanceMode.value ~= "Off" and not buffactive[state.AutoDanceMode.value] and ( (windower.ffxi.get_ability_recasts()[219] and windower.ffxi.get_ability_recasts()[219] < latency ) or (windower.ffxi.get_ability_recasts()[224] and windower.ffxi.get_ability_recasts()[224] < latency ) ) and state.AutoDanceMode.value ~= 'Off' then
+    if state.AutoDanceMode.value ~= "Off" and not buffactive[state.AutoDanceMode.value] and ( (windower.ffxi.get_ability_recasts()[219] and windower.ffxi.get_ability_recasts()[219] < latency ) or (windower.ffxi.get_ability_recasts()[224] and windower.ffxi.get_ability_recasts()[224] < latency ) ) and state.AutoDanceMode.value ~= 'Off' and not areas.Cities:contains(world.area) then
         windower.chat.input('/ja "'..state.AutoDanceMode.value..'" <me>')
         tickdelay = (framerate * 1.8)
         return true
