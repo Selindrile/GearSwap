@@ -31,7 +31,7 @@ function job_setup()
 	state.ElementalMode = M{['description'] = 'Elemental Mode','Fire','Water','Lightning','Earth','Wind','Ice','Light','Dark',}
 	
 	update_melee_groups()
-	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoFoodMode","AutoNukeMode","AutoStunMode","AutoDefenseMode","AutoBuffMode","ElementalWheel",},{"Weapons","OffenseMode","WeaponskillMode","Stance","IdleMode","Passive","RuneElement","ElementalMode","CastingMode","TreasureMode",})
+	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoNukeMode","AutoStunMode","AutoDefenseMode","AutoBuffMode","ElementalWheel",},{"AutoSambaMode","Weapons","OffenseMode","WeaponskillMode","Stance","IdleMode","Passive","RuneElement","ElementalMode","CastingMode","TreasureMode",})
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -99,10 +99,10 @@ function job_post_midcast(spell, spellMap, eventArgs)
         if state.MagicBurstMode.value ~= 'Off' then equip(sets.MagicBurst) end
 		if spell.element == world.weather_element or spell.element == world.day_element then
 			if state.CastingMode.value == 'Normal' or state.CastingMode.value == 'Fodder' then
-				if item_available('Twilight Cape') and not state.Capacity.value then
-					sets.TwilightCape = {back="Twilight Cape"}
-					equip(sets.TwilightCape)
-				end
+				-- if item_available('Twilight Cape') and not state.Capacity.value then
+					-- sets.TwilightCape = {back="Twilight Cape"}
+					-- equip(sets.TwilightCape)
+				-- end
 				if spell.element == world.day_element then
 					if item_available('Zodiac Ring') then
 						sets.ZodiacRing = {ring2="Zodiac Ring"}
@@ -171,29 +171,34 @@ function job_customize_idle_set(idleSet)
         idleSet = set_combine(idleSet, sets.buff.Migawari)
     end
 
-	if player.status == 'Idle' and moving and state.DefenseMode.value == 'None' and (state.IdleMode.value == 'Normal' or state.IdleMode.value == 'Sphere') then
-		if classes.DuskToDawn and sets.DuskKiting then
-		idleSet = set_combine(idleSet, sets.DuskKiting)
-		end
-	end
-	
     return idleSet
 end
 
+function job_customize_kiting_set(kitingSet)
+	if player.status == 'Idle' and moving and state.DefenseMode.value == 'None' and (state.IdleMode.value == 'Normal' or state.IdleMode.value == 'Sphere') then
+		if classes.DuskToDawn and sets.DuskKiting then
+		kitingSet = set_combine(idleSet, sets.DuskKiting)
+		end
+	end
+	
+	return kitingSet
+end
 
 -- Modify the default melee set after it was constructed.
 function job_customize_melee_set(meleeSet)
-	if state.ExtraMeleeMode.value ~= 'None' then
-        meleeSet = set_combine(meleeSet, sets[state.ExtraMeleeMode.value])
+
+	if state.Buff.Yonin then 
+		if state.DefenseMode.value == 'None' or state.DefenseMode.value == 'Evasion' then
+			meleeSet = set_combine(meleeSet, sets.buff.Yonin)
+		end
+	elseif state.Buff.Innin then
+		if (state.OffenseMode.value == 'Normal' or state.OffenseMode.value == 'Fodder') and state.DefenseMode.value == 'None' then
+			meleeSet = set_combine(meleeSet, sets.buff.Innin)
+		end
     end
+	
 	if state.Buff.Migawari then
         meleeSet = set_combine(meleeSet, sets.buff.Migawari)
-    end
-	if state.Buff.Yonin and (state.DefenseMode.value == 'None' or state.DefenseMode.value == 'Evasion') then
-		meleeSet = set_combine(meleeSet, sets.buff.Yonin)
-    end
-	if state.Buff.Innin and (state.OffenseMode.value == 'Normal' or state.OffenseMode.value == 'Fodder') and state.DefenseMode.value == 'None' then
-		meleeSet = set_combine(meleeSet, sets.buff.Innin)
     end
 
     return meleeSet
@@ -262,6 +267,7 @@ end
 function job_tick()
 	if check_stance() then return true end
 	if check_buff() then return true end
+	if check_buffup() then return true end
 	return false
 end
 
@@ -280,7 +286,7 @@ function handle_elemental(cmdParams)
 	if command == 'nuke' then
 		local tiers = {'San','Ni','Ichi'}
 		for k in ipairs(tiers) do
-			if spell_recasts[get_spell_table_by_name(elements.ninnuke[state.ElementalMode.value]..': '..tiers[k]..'').id] == 0 then
+			if spell_recasts[get_spell_table_by_name(elements.ninnuke[state.ElementalMode.value]..': '..tiers[k]..'').id] < spell_latency then
 				windower.chat.input('/ma "'..elements.ninnuke[state.ElementalMode.value]..': '..tiers[k]..'" <t>')
 				return
 			end
@@ -308,11 +314,11 @@ function check_stance()
 		
 		local abil_recasts = windower.ffxi.get_ability_recasts()
 		
-		if state.Stance.value == 'Innin' and abil_recasts[147] == 0 then
+		if state.Stance.value == 'Innin' and abil_recasts[147] < latency then
 			windower.chat.input('/ja "Innin" <me>')
 			tickdelay = framerate
 			return true
-		elseif state.Stance.value == 'Yonin' and abil_recasts[146] == 0 then
+		elseif state.Stance.value == 'Yonin' and abil_recasts[146] < latency then
 			windower.chat.input('/ja "Yonin" <me>')
 			tickdelay = framerate
 			return true
@@ -325,22 +331,75 @@ function check_stance()
 end
 
 function check_buff()
-	if state.AutoBuffMode.value and player.in_combat then
+	if state.AutoBuffMode.value and not areas.Cities:contains(world.area) then
 		local spell_recasts = windower.ffxi.get_spell_recasts()
-		local abil_recasts = windower.ffxi.get_ability_recasts()
+		for i in pairs(buff_spell_lists['Auto']) do
+			if not buffactive[buff_spell_lists['Auto'][i].Buff] and spell_recasts[buff_spell_lists['Auto'][i].SpellID] < latency and silent_can_use(buff_spell_lists['Auto'][i].SpellID) then
+				windower.chat.input('/ma "'..buff_spell_lists['Auto'][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
+		
+		if player.in_combat then
+			local abil_recasts = windower.ffxi.get_ability_recasts()
 
-		if player.sub_job == 'WAR' and not buffactive.Berserk and not is_defensive() and abil_recasts[1] == 0 then
-			windower.chat.input('/ja "Berserk" <me>')
-			tickdelay = (framerate * 1.8)
-			return true
-		elseif player.sub_job == 'WAR' and not buffactive.Aggressor and not is_defensive() and abil_recasts[4] == 0 then
-			windower.chat.input('/ja "Aggressor" <me>')
-			tickdelay = (framerate * 1.8)
-			return true
-		else
-			return false
+			if player.sub_job == 'WAR' and not buffactive.Berserk and not is_defensive() and abil_recasts[1] < latency then
+				windower.chat.input('/ja "Berserk" <me>')
+				tickdelay = (framerate * 1.8)
+				return true
+			elseif player.sub_job == 'WAR' and not buffactive.Aggressor and not is_defensive() and abil_recasts[4] < latency then
+				windower.chat.input('/ja "Aggressor" <me>')
+				tickdelay = (framerate * 1.8)
+				return true
+			else
+				return false
+			end
 		end
 	end
 		
 	return false
 end
+
+function check_buffup()
+	if buffup ~= '' then
+		local needsbuff = false
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) then
+				needsbuff = true
+				break
+			end
+		end
+	
+		if not needsbuff then
+			add_to_chat(217, 'All '..buffup..' buffs are up!')
+			buffup = ''
+			return false
+		end
+		
+		local spell_recasts = windower.ffxi.get_spell_recasts()
+		
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) and spell_recasts[buff_spell_lists[buffup][i].SpellID] < latency then
+				windower.chat.input('/ma "'..buff_spell_lists[buffup][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
+		
+		return false
+	else
+		return false
+	end
+end
+
+buff_spell_lists = {
+	Auto = {	
+		{Name='Migawari: Ichi',Buff='Migawari',SpellID=510},
+	},
+	
+	Default = {
+		{Name='Myoshu: Ichi',Buff='Subtle Blow Plus',SpellID=507},
+		{Name='Kakka: Ichi',Buff='Store TP',SpellID=509},
+	},
+}

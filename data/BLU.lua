@@ -26,6 +26,7 @@ function job_setup()
 	moonshade_ws = S{'Chant du Cygne', 'Savage Blade','Requiescat'}
 	
 	state.LearningMode = M(false, 'Learning Mode')
+	state.AutoUnbridled = M(false, 'Auto Unbridled Learning Mode')
 	autows = 'Chant Du Cygne'
 	autofood = 'Soy Ramen'
 	
@@ -182,7 +183,7 @@ function job_setup()
     }
 
 	update_melee_groups()
-	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoFoodMode","AutoNukeMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","LearningMode","CastingMode","TreasureMode"})
+	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoNukeMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"AutoSambaMode","Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","LearningMode","CastingMode","TreasureMode"})
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -230,15 +231,19 @@ function job_pretarget(spell, spellMap, eventArgs)
 end
 
 function job_filter_precast(spell, spellMap, eventArgs)
-
-	if unbridled_spells:contains(spell.english) and not (state.Buff['Unbridled Learning'] or state.Buff['Unbridled Wisdom']) then
-		eventArgs.cancel = true
-		cancel_spell()
-		add_to_chat(123,'Abort: Unbridled Learning not active.')
+	if spell.skill == 'Blue Magic' and unbridled_spells:contains(spell.english) and not (state.Buff['Unbridled Learning'] or state.Buff['Unbridled Wisdom']) then
+		if (state.AutoUnbridled.value or buffup ~= '' or state.AutoBuffMode.value) and (windower.ffxi.get_ability_recasts()[81] < latency and (windower.ffxi.get_spell_recasts()[spell.recast_id]/60) < spell_latency) then
+			eventArgs.cancel = true
+			windower.chat.input('/ja "Unbridled Learning" <me>')
+			windower.chat.input:schedule(1,'/ma "'..spell.english..'" '..spell.target.raw..'')
+			return
+		else
+			eventArgs.cancel = true
+			add_to_chat(123,'Abort: Unbridled Learning not active.')
+		end
 	end
-
 end
-
+	
 function job_precast(spell, spellMap, eventArgs)
 	if spell.action_type == 'Magic' then
 		if spellMap == 'Cure' or spellMap == 'Curaga' or (spell.skill == 'Blue Magic' and spellMap == 'Healing') then
@@ -280,7 +285,7 @@ end
 -- eventArgs is the same one used in job_midcast, in case information needs to be persisted.
 function job_post_midcast(spell, spellMap, eventArgs)
     -- Add enhancement gear for Chain Affinity, etc.
-    if spell.skill == 'Blue Magic' then
+    if not eventArgs.handled and spell.skill == 'Blue Magic' then
         for buff,active in pairs(state.Buff) do
             if active and sets.buff[buff] then
                 equip(sets.buff[buff])
@@ -311,10 +316,10 @@ function job_post_midcast(spell, spellMap, eventArgs)
 			end
 			if spell.element == world.weather_element or spell.element == world.day_element then
 				if state.CastingMode.value == 'Fodder' then
-					if item_available('Twilight Cape') and not state.Capacity.value then
-						sets.TwilightCape = {back="Twilight Cape"}
-						equip(sets.TwilightCape)
-					end
+					-- if item_available('Twilight Cape') and not state.Capacity.value then
+						-- sets.TwilightCape = {back="Twilight Cape"}
+						-- equip(sets.TwilightCape)
+					-- end
 					if spell.element == world.day_element and not (world.day_element == 'Dark' or world.day_element == 'Light') then
 						if item_available('Zodiac Ring') then
 							sets.ZodiacRing = {ring2="Zodiac Ring"}
@@ -379,10 +384,6 @@ end
 
 -- Modify the default melee set after it was constructed.
 function job_customize_melee_set(meleeSet)
-    if state.ExtraMeleeMode.value ~= 'None' then
-        meleeSet = set_combine(meleeSet, sets[state.ExtraMeleeMode.value])
-    end
-
 	if state.LearningMode.value == true then 
 		meleeSet = set_combine(meleeSet, sets.Learning)
 	end
@@ -420,19 +421,29 @@ function job_self_command(commandArgs, eventArgs)
 	end
 end
 
+function unbridled_ready()
+	if state.Buff['Unbridled Learning'] or state.Buff['Unbridled Wisdom'] or windower.ffxi.get_ability_recasts()[81] < latency then
+		return true
+	else
+		return false
+	end
+end
+
 function job_tick()
-	if player.sub_job == 'SCH' and check_arts() then return true end
+	if check_arts() then return true end
+	if check_buff() then return true end
+	if check_buffup() then return true end
 	return false
 end
 
 function check_arts()
-	if state.AutoArts.value and not moving and not areas.Cities:contains(world.area) and not arts_active() and player.in_combat then
+	if player.sub_job == 'SCH' and not arts_active() and (buffup ~= '' or (state.AutoArts.value and not areas.Cities:contains(world.area) and (player.in_combat or state.AutoBuffMode.value))) then
 	
 		local abil_recasts = windower.ffxi.get_ability_recasts()
 
-		if abil_recasts[228] == 0 then
+		if abil_recasts[228] < latency then
 			send_command('@input /ja "Light Arts" <me>')
-			tickdelay = (framerate * .5)
+			tickdelay = (framerate * 1)
 			return true
 		end
 
@@ -454,3 +465,86 @@ function update_melee_groups()
 		end
 	end	
 end
+
+function check_buff()
+	if state.AutoBuffMode.value and not areas.Cities:contains(world.area) then
+		local spell_recasts = windower.ffxi.get_spell_recasts()
+		for i in pairs(buff_spell_lists['Auto']) do
+			if not buffactive[buff_spell_lists['Auto'][i].Buff] and spell_recasts[buff_spell_lists['Auto'][i].SpellID] < latency and silent_can_use(buff_spell_lists['Auto'][i].SpellID) and (not unbridled_spells:contains(buff_spell_lists['Auto'][i].Name) or unbridled_ready()) then
+				windower.chat.input('/ma "'..buff_spell_lists['Auto'][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
+	else
+		return false
+	end
+end
+
+function check_buffup()
+	if buffup ~= '' then
+		local needsbuff = false
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) and (not unbridled_spells:contains(buff_spell_lists[buffup][i].Name) or unbridled_ready()) then
+				needsbuff = true
+				break
+			end
+		end
+	
+		if not needsbuff then
+			add_to_chat(217, 'All '..buffup..' buffs are up!')
+			buffup = ''
+			return false
+		end
+		
+		local spell_recasts = windower.ffxi.get_spell_recasts()
+		
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) and spell_recasts[buff_spell_lists[buffup][i].SpellID] < latency and (not unbridled_spells:contains(buff_spell_lists[buffup][i].Name) or unbridled_ready()) then
+				windower.chat.input('/ma "'..buff_spell_lists[buffup][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
+		
+		return false
+	else
+		return false
+	end
+end
+
+buff_spell_lists = {
+	Auto = {	
+		{Name='Erratic Flutter',Buff='Haste',SpellID=710},
+		{Name='Battery Charge',Buff='Refresh',SpellID=662},
+		{Name='Refresh',Buff='Refresh',SpellID=109},
+		{Name='Nat. Meditation',Buff='Attack Boost',SpellID=700},
+		{Name='Mighty Guard',Buff='Mighty Guard',SpellID=750},
+	},
+	
+	Default = {
+		{Name='Erratic Flutter',Buff='Haste',SpellID=710},
+		{Name='Battery Charge',Buff='Refresh',SpellID=662},
+		{Name='Refresh',Buff='Refresh',SpellID=109},
+		{Name='Phalanx',Buff='Phalanx',SpellID=106},
+		{Name='Barrier Tusk',Buff='Phalanx',SpellID=685},
+		{Name='Stoneskin',Buff='Stoneskin',SpellID=54},
+		{Name='Occultation',Buff='Blink',SpellID=679},
+		{Name='Blink',Buff='Blink',SpellID=53},
+		{Name='Mighty Guard',Buff='Mighty Guard',SpellID=750},
+		{Name='Nat. Meditation',Buff='Attack Boost',SpellID=700},
+	},
+	
+	Cleave = {
+		{Name='Erratic Flutter',Buff='Haste',SpellID=710},
+		{Name='Battery Charge',Buff='Refresh',SpellID=662},
+		{Name='Refresh',Buff='Refresh',SpellID=109},
+		{Name='Phalanx',Buff='Phalanx',SpellID=106},
+		{Name='Barrier Tusk',Buff='Phalanx',SpellID=685},
+		{Name='Stoneskin',Buff='Stoneskin',SpellID=54},
+		{Name='Occultation',Buff='Blink',SpellID=679},
+		{Name='Blink',Buff='Blink',SpellID=53},
+		{Name='Carcharian Verve',Buff='Aquaveil',SpellID=745},
+		{Name='Memento Mori',Buff='Magic Atk. Boost',SpellID=538},
+	},
+}

@@ -27,7 +27,7 @@ function job_setup()
     info.impetus_hit_count = 0
     windower.raw_register_event('action', on_action_for_impetus)
 	update_melee_groups()
-	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","TreasureMode",})
+	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"AutoSambaMode","Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","TreasureMode",})
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ function job_precast(spell, spellMap, eventArgs)
 
 	if spell.type == 'WeaponSkill' and state.AutoBoost.value then
 		local abil_recasts = windower.ffxi.get_ability_recasts()
-		if abil_recasts[16] == 0 then
+		if abil_recasts[16] < latency then
 			eventArgs.cancel = true
 			windower.chat.input('/ja "Boost" <me>')
 			windower.chat.input:schedule(1,'/ws "'..spell.english..'" '..spell.target.raw..'')
@@ -106,11 +106,6 @@ end
 
 -- Modify the default melee set after it was constructed.
 function job_customize_melee_set(meleeSet)
-
-    if state.ExtraMeleeMode.value ~= 'None' then
-        meleeSet = set_combine(meleeSet, sets[state.ExtraMeleeMode.value])
-    end
-	
     if buffactive.Impetus and state.DefenseMode.value == 'None' and state.OffenseMode.value ~= 'FullAcc' then
 		meleeSet = set_combine(meleeSet, sets.buff.Impetus)
     end
@@ -123,10 +118,6 @@ function job_customize_melee_set(meleeSet)
 end
 
 function job_customize_defense_set(defenseSet)
-    if state.ExtraMeleeMode.value ~= 'None' then
-        defenseSet = set_combine(defenseSet, sets[state.ExtraMeleeMode.value])
-    end
-
     return defenseSet
 end
 

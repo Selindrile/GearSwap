@@ -157,12 +157,12 @@ function init_gear_sets()
 	sets.midcast['Enfeebling Magic'] = {main="Oranyan",sub="Enki Strap",ammo="Regal Gem",
 		head="Befouled Crown",neck="Erra Pendant",ear1="Regal Earring",ear2="Digni. Earring",
 		body="Lethargy Sayon +1",hands="Regal Cuffs",ring1="Kishar Ring",ring2="Stikini Ring",
-		back="Sucellos's Cape",waist="Luminary Sash",legs="Psycloth Lappas",feet="Vitiation Boots +2"}
+		back="Sucellos's Cape",waist="Luminary Sash",legs="Psycloth Lappas",feet="Vitiation Boots +3"}
 		
 	sets.midcast['Enfeebling Magic'].Resistant = {main="Oranyan",sub="Enki Strap",ammo="Regal Gem",
 		head="Befouled Crown",neck="Erra Pendant",ear1="Regal Earring",ear2="Digni. Earring",
 		body="Atrophy Tabard +3",hands=gear.chironic_enfeeble_hands,ring1="Stikini Ring",ring2="Stikini Ring",
-		back="Sucellos's Cape",waist="Luminary Sash",legs="Psycloth Lappas",feet="Vitiation Boots +2"}
+		back="Sucellos's Cape",waist="Luminary Sash",legs="Psycloth Lappas",feet="Vitiation Boots +3"}
 		
     sets.midcast.ElementalEnfeeble = set_combine(sets.midcast['Enfeebling Magic'], {head="Amalric Coif +1",waist="Acuity Belt +1"})
     sets.midcast.ElementalEnfeeble.Resistant = set_combine(sets.midcast['Enfeebling Magic'].Resistant, {head="Amalric Coif +1",waist="Acuity Belt +1"})
@@ -216,8 +216,8 @@ function init_gear_sets()
         back="Swith Cape +1",waist="Witful Belt",legs="Psycloth Lappas",feet="Regal Pumps +1"}
 		
 	sets.midcast['Elemental Magic'].HighTierNuke = set_combine(sets.midcast['Elemental Magic'], {sub="Niobid Strap",ammo="Pemphredo Tathlum",ear1="Regal Earring"})
-	sets.midcast['Elemental Magic'].Resistant.HighTierNuke = set_combine(sets.midcast['Elemental Magic'].Resistant, {ear1="Regal Earring"})
-	sets.midcast['Elemental Magic'].Fodder.HighTierNuke = set_combine(sets.midcast['Elemental Magic'].Fodder, {sub="Alber Strap",ammo="Pemphredo Tathlum",ear1="Regal Earring"})
+	sets.midcast['Elemental Magic'].HighTierNuke.Resistant = set_combine(sets.midcast['Elemental Magic'].Resistant, {ear1="Regal Earring"})
+	sets.midcast['Elemental Magic'].HighTierNuke.Fodder = set_combine(sets.midcast['Elemental Magic'].Fodder, {sub="Alber Strap",ammo="Pemphredo Tathlum",ear1="Regal Earring"})
 		
 	sets.midcast.Impact = {main="Oranyan",sub="Enki Strap",ammo="Regal Gem",
 		head=empty,neck="Erra Pendant",ear1="Regal Earring",ear2="Digni. Earring",
@@ -269,7 +269,7 @@ function init_gear_sets()
 	sets.idle = {main="Bolelabunga",sub="Genmei Shield",ammo="Homiliary",
 		head="Viti. Chapeau +1",neck="Loricate Torque +1",ear1="Etiolation Earring",ear2="Ethereal Earring",
 		body="Jhakri Robe +2",hands=gear.merlinic_refresh_hands,ring1="Defending Ring",ring2="Dark Ring",
-		back="Umbra Cape",waist="Flume Belt",legs="Lengo Pants",feet=gear.chironic_refresh_feet}
+		back="Umbra Cape",waist="Flume Belt",legs="Lengo Pants",feet=gear.merlinic_refresh_feet}
 		
 	sets.idle.PDT = {main="Terra's Staff",sub="Oneiros Grip",ammo="Staunch Tathlum",
 		head="Viti. Chapeau +1",neck="Loricate Torque +1",ear1="Etiolation Earring",ear2="Ethereal Earring",
@@ -366,65 +366,5 @@ function select_default_macro_book()
 		set_macro_page(2, 8)
 	else
 		set_macro_page(3, 8)
-	end
-end
-
-function user_job_self_command(commandArgs, eventArgs)
-	if commandArgs[1]:lower() == 'buffup' then
-		
-		if check_arts() then return end
-		
-		if buffactive.Composure and buffactive.Refresh and buffactive.Haste and buffactive.Regen and buffactive.Aquaveil and buffactive.Phalanx and buffactive.Stoneskin and buffactive.Blink and buffactive['INT Boost'] and buffactive.Shell and buffactive.Protect and buffactive['Shock Spikes'] and buffactive['Enthunder II'] and buffactive['Multi Strikes'] and buffactive.Barfire and buffactive.Barparalyze then
-			buffup = false
-			add_to_chat(217, 'All buffs are currently up!')
-			return
-		elseif not (player.status == 'Idle' or player.status == 'Engaged') then
-			buffup = false
-			return
-		end
-		
-		buffup = true
-		local spell_recasts = windower.ffxi.get_spell_recasts()
-
-		if not buffactive.Composure then
-			local abil_recasts = windower.ffxi.get_ability_recasts()
-			if abil_recasts[50] == 0 then
-				windower.chat.input('/ja "Composure" <me>')
-			else
-				buffup = false
-				add_to_chat(123,'Abort: Composure not ready.')
-			end
-			return
-		elseif not buffactive.Refresh and spell_recasts[894] == 0 then
-			windower.chat.input('/ma "Refresh III" <me>')
-		elseif not buffactive.Haste and spell_recasts[511] == 0 then
-			windower.chat.input('/ma "Haste II" <me>')
-		elseif not buffactive.Regen and spell_recasts[110] == 0 then
-			windower.chat.input('/ma "Regen II" <me>')
-		elseif not buffactive.Aquaveil and spell_recasts[55] == 0 then
-			windower.chat.input('/ma "Aquaveil" <me>')
-		elseif not buffactive.Phalanx and spell_recasts[106] == 0 then
-			windower.chat.input('/ma "Phalanx" <me>')
-		elseif not buffactive.Stoneskin and spell_recasts[54] == 0 then
-			windower.chat.input('/ma "Stoneskin" <me>')
-		elseif not buffactive.Blink and spell_recasts[53] == 0 then
-			windower.chat.input('/ma "Blink" <me>')
-		elseif not buffactive['INT Boost'] and spell_recasts[490] == 0 then
-			windower.chat.input('/ma "Gain-INT" <me>')
-		elseif not buffactive.Shell and spell_recasts[52] == 0 then
-			windower.chat.input('/ma "Shell V" <me>')
-		elseif not buffactive.Protect and spell_recasts[47] == 0 then
-			windower.chat.input('/ma "Protect V" <me>')
-		elseif not buffactive['Shock Spikes'] and spell_recasts[251] == 0 then
-			windower.chat.input('/ma "Shock Spikes" <me>')
-		elseif not buffactive['Enthunder II'] and spell_recasts[316] == 0 then
-			windower.chat.input('/ma "Enthunder II" <me>')
-		elseif not buffactive['Multi Strikes'] and spell_recasts[895] == 0 then
-			windower.chat.input('/ma "Temper II" <me>')
-		elseif not buffactive.Barfire and spell_recasts[60] == 0 then
-			windower.chat.input('/ma "Barfire" <me>')
-		elseif not buffactive.Barparalyze and spell_recasts[74] == 0 then
-			windower.chat.input('/ma "Barparalyze" <me>')
-		end
 	end
 end

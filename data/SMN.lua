@@ -114,7 +114,7 @@ function job_setup()
 	autows = 'Spirit Taker'
 	autofood = 'Akamochi'
 	
-	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoNukeMode","PactSpamMode","AutoWSMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode","AutoBuffMode",},{"Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","ElementalMode","CastingMode","TreasureMode",})
+	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoNukeMode","PactSpamMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode","AutoBuffMode",},{"Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","ElementalMode","CastingMode","TreasureMode",})
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -152,8 +152,9 @@ function job_filter_precast(spell, spellMap, eventArgs)
 		elseif player.sub_job == 'SCH' and buffactive['Sublimation: Complete'] then
 			add_to_chat(122,'Not enough MP to Pact while using Conduit, using Sublimation!')
 			windower.chat.input('/ja Sublimation <me>')	
-		elseif player.sub_job == 'RDM' and abil_recasts[49] == 0 and player.mp > 0 and player.hp > 400 and state.AutoConvert.value then
+		elseif player.sub_job == 'RDM' and abil_recasts[49] < latency and player.mp > 0 and player.hp > 400 and state.AutoConvert.value then
 			add_to_chat(122,'Not enough MP to Pact while using Conduit, Converting!')
+			eventArgs.cancel = true
 			windower.chat.input('/ja Convert <me>')
 		end
 	end
@@ -184,10 +185,6 @@ function job_post_midcast(spell, spellMap, eventArgs)
         if state.MagicBurstMode.value ~= 'Off' then equip(sets.MagicBurst) end
 		if spell.element == world.weather_element or spell.element == world.day_element then
 			if state.CastingMode.value == 'Fodder' then
-				if item_available('Twilight Cape') and not state.Capacity.value then
-					sets.TwilightCape = {back="Twilight Cape"}
-					equip(sets.TwilightCape)
-				end
 				if spell.element == world.day_element then
 					if item_available('Zodiac Ring') then
 						sets.ZodiacRing = {ring2="Zodiac Ring"}
@@ -275,7 +272,7 @@ end
 function job_pet_aftercast(spell, spellMap, eventArgs)
 	if state.PactSpamMode.value == true and spell.type == 'BloodPactRage'then
 		abil_recasts = windower.ffxi.get_ability_recasts()
-		if abil_recasts[173] == 0 then
+		if abil_recasts[173] < latency then
 			windower.chat.input('/pet "'..spell.name..'" <t>')
 		end
 	end
@@ -376,9 +373,9 @@ function job_customize_idle_set(idleSet)
             idleSet = set_combine(idleSet, sets.idle.Avatar.Favor)
         end
         if pet.status == 'Engaged' then
-            idleSet = set_combine(idleSet, sets.idle.Avatar.Melee)
-			if sets.idle.Avatar.Melee[pet.name] then
-				idleSet = set_combine(idleSet, sets.idle.Avatar.Melee[pet.name])
+            idleSet = set_combine(idleSet, sets.idle.Avatar.Engaged)
+			if sets.idle.Avatar.Engaged[pet.name] then
+				idleSet = set_combine(idleSet, sets.idle.Avatar.Engaged[pet.name])
 			end
         end
     end
@@ -708,6 +705,7 @@ end
 function job_tick()
 	if check_favor() then return true end
 	if check_buff() then return true end
+	if check_buffup() then return true end
 	return false
 end
 
@@ -715,7 +713,7 @@ function check_favor()
 	if state.AutoFavor.value and pet.isvalid and not buffactive["Avatar's Favor"] and not (buffactive.amnesia or buffactive.impairment) then
 		local abil_recasts = windower.ffxi.get_ability_recasts()
 		
-		if abil_recasts[176] == 0 then
+		if abil_recasts[176] < latency then
 			windower.chat.input('/pet "Avatar\'s Favor" <me>')
 			tickdelay = (framerate * 1.8)
 			return true
@@ -725,17 +723,14 @@ function check_favor()
 end
 
 function check_buff()
-	if state.AutoBuffMode.value and not moving then
-		if not pet.isvalid then
-			windower.chat.input('/ma "Titan" <me>')
-			tickdelay = (framerate * 2.1)
-			return true
-		elseif not buffactive['Earthen Armor'] then
-			windower.chat.input('/pet "Earthen Armor" <me>')
-			tickdelay = (framerate * 2.1)
-			return true 
-		else
-			return false
+	if state.AutoBuffMode.value and not areas.Cities:contains(world.area) then
+		local spell_recasts = windower.ffxi.get_spell_recasts()
+		for i in pairs(buff_spell_lists['Auto']) do
+			if not buffactive[buff_spell_lists['Auto'][i].Buff] and spell_recasts[buff_spell_lists['Auto'][i].SpellID] < latency and silent_can_use(buff_spell_lists['Auto'][i].SpellID) then
+				windower.chat.input('/ma "'..buff_spell_lists['Auto'][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
 		end
 	else
 		return false
@@ -757,7 +752,7 @@ function handle_elemental(cmdParams)
 	
 		local tiers = {' II',''}
 		for k in ipairs(tiers) do
-			if spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'').id] == 0 and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'')) < player.mp then
+			if spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'').id] < spell_latency and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'')) < player.mp then
 				windower.chat.input('/ma "'..elements.nuke[state.ElementalMode.value]..''..tiers[k]..'" <t>')
 				return
 			end
@@ -797,7 +792,7 @@ function handle_elemental(cmdParams)
 			windower.chat.input('/ma "Phalanx" <me>')
 		else
 			local spell_recasts = windower.ffxi.get_spell_recasts()
-			if (player.target.type == 'SELF' or not player.target.in_party) and buffactive[elements.storm_of[state.ElementalMode.value]] and not buffactive['Klimaform'] and spell_recasts[287] == 0 then
+			if (player.target.type == 'SELF' or not player.target.in_party) and buffactive[elements.storm_of[state.ElementalMode.value]] and not buffactive['Klimaform'] and spell_recasts[287] < spell_latency then
 				windower.chat.input('/ma "Klimaform" <me>')
 			else
 				windower.chat.input('/ma "'..elements.storm_of[state.ElementalMode.value]..'"')
@@ -808,3 +803,55 @@ function handle_elemental(cmdParams)
         add_to_chat(123,'Unrecognized elemental command.')
     end
 end
+
+function check_buffup()
+	if buffup ~= '' then
+		local needsbuff = false
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) then
+				needsbuff = true
+				break
+			end
+		end
+	
+		if not needsbuff then
+			add_to_chat(217, 'All '..buffup..' buffs are up!')
+			buffup = ''
+			return false
+		end
+		
+		local spell_recasts = windower.ffxi.get_spell_recasts()
+		
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) and spell_recasts[buff_spell_lists[buffup][i].SpellID] < latency then
+				windower.chat.input('/ma "'..buff_spell_lists[buffup][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
+		
+		return false
+	else
+		return false
+	end
+end
+
+buff_spell_lists = {
+	Auto = {
+		{Name='Reraise',Buff='Reraise',SpellID=113},
+		{Name='Haste',Buff='Haste',SpellID=57},
+		{Name='Refresh',Buff='Refresh',SpellID=109},
+		{Name='Stoneskin',Buff='Stoneskin',SpellID=54},
+	},
+	
+	Default = {
+		{Name='Reraise',Buff='Reraise',SpellID=113},
+		{Name='Haste',Buff='Haste',SpellID=57},
+		{Name='Refresh',Buff='Refresh',SpellID=109},
+		{Name='Aquaveil',Buff='Aquaveil',SpellID=55},
+		{Name='Stoneskin',Buff='Stoneskin',SpellID=54},
+		{Name='Blink',Buff='Blink',SpellID=53},
+		{Name='Regen',Buff='Regen',SpellID=108},
+		{Name='Phalanx',Buff='Phalanx',SpellID=106},
+	},
+}

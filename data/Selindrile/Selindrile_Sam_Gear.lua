@@ -18,8 +18,8 @@ function user_setup()
 	send_command('bind !backspace input /ja "Third Eye" <me>')
 	send_command('bind @` gs c cycle SkillchainMode')
 	send_command('bind !@^` gs c cycle Stance')
-	send_command('bind !r gs c weapons ProcWeapon;gs c set WeaponskillMode Proc;gs c update')
-	send_command('bind ^r gs c weapons Default;gs c set WeaponskillMode Normal;gs c update')
+	send_command('bind !r gs c set skipprocweapons false;gs c weapons ProcWeapon;gs c set WeaponskillMode Proc;gs c update')
+	send_command('bind ^r !r gs c set skipprocweapons true;gs c weapons Default;gs c set WeaponskillMode Normal;gs c update')
 	send_command('bind ^q gs c weapons Bow;gs c update')
 
     select_default_macro_book()
@@ -46,7 +46,7 @@ function init_gear_sets()
     sets.precast.JA['Violent Flourish'] = {ammo="Pemphredo Tathlum",
         head="Flam. Zucchetto +2",neck="Sanctity Necklace",ear1="Digni. Earring",ear2="Moonshade Earring",
         body="Flamma Korazin +2",hands="Flam. Manopolas +2",ring1="Ramuh Ring +1",ring2="Ramuh Ring +1",
-        back=gear.ws_jse_back,waist="Eschan Stone",legs="Flamma Dirs +1",feet="Flam. Gambieras +2"}
+        back=gear.ws_jse_back,waist="Eschan Stone",legs="Flamma Dirs +2",feet="Flam. Gambieras +2"}
 
     -- Waltz set (chr and vit)
     sets.precast.Waltz = {
@@ -67,11 +67,11 @@ function init_gear_sets()
     -- Default set for any weaponskill that isn't any more specifically defined
     sets.precast.WS = {ammo="Knobkierrie",
         head=gear.valorous_wsd_head,neck="Fotia Gorget",ear1="Lugra Earring +1",ear2="Moonshade Earring",
-        body=gear.valorous_wsd_body,hands=gear.valorous_wsd_hands,ring1="Niqmaddu Ring",ring2="Regal Ring",
+        body="Sakonji Domaru +2",hands=gear.valorous_wsd_hands,ring1="Niqmaddu Ring",ring2="Regal Ring",
         back=gear.ws_jse_back,waist="Fotia Belt",legs="Wakido Haidate +3",feet=gear.valorous_wsd_feet}
-    sets.precast.WS.SomeAcc = set_combine(sets.precast.WS, {})
-	sets.precast.WS.Acc = set_combine(sets.precast.WS, {head="Wakido Kabuto +3",ear1="Lugra Earring +1",body=gear.valorous_wsd_body,})
-    sets.precast.WS.FullAcc = set_combine(sets.precast.WS, {head="Wakido Kabuto +3",neck="Moonbeam Nodowa",ear1="Zennaroi Earring",ear2="Telos Earring",body=gear.valorous_wsd_body,hands="Wakido Kote +3",ring1="Ramuh Ring +1",})
+    sets.precast.WS.SomeAcc = set_combine(sets.precast.WS, {feet="Wakido Sune. +3"})
+	sets.precast.WS.Acc = set_combine(sets.precast.WS, {head="Wakido Kabuto +3",body="Sakonji Domaru +2",feet="Wakido Sune. +3"})
+    sets.precast.WS.FullAcc = set_combine(sets.precast.WS, {head="Wakido Kabuto +3",neck="Moonbeam Nodowa",ear1="Zennaroi Earring",ear2="Telos Earring",body="Sakonji Domaru +2",hands="Wakido Kote +3",ring1="Ramuh Ring +1",feet="Wakido Sune. +3"})
     sets.precast.WS.Fodder = set_combine(sets.precast.WS, {})
 	
 	sets.precast.WS.Proc = {ammo="Hasty Pinion +1",
@@ -119,12 +119,12 @@ function init_gear_sets()
     sets.precast.WS['Tachi: Ageha'] = {ammo="Pemphredo Tathlum",
         head="Flam. Zucchetto +2",neck="Sanctity Necklace",ear1="Digni. Earring",ear2="Moonshade Earring",
         body="Flamma Korazin +2",hands="Flam. Manopolas +2",ring1="Ramuh Ring +1",ring2="Ramuh Ring +1",
-        back=gear.ws_jse_back,waist="Eschan Stone",legs="Flamma Dirs +1",feet="Flam. Gambieras +2"}
+        back=gear.ws_jse_back,waist="Eschan Stone",legs="Flamma Dirs +2",feet="Flam. Gambieras +2"}
 		
     sets.precast.WS['Tachi: Hobaku'] = {ammo="Pemphredo Tathlum",
         head="Flam. Zucchetto +2",neck="Sanctity Necklace",ear1="Digni. Earring",ear2="Moonshade Earring",
         body="Flamma Korazin +2",hands="Flam. Manopolas +2",ring1="Ramuh Ring +1",ring2="Ramuh Ring +1",
-        back=gear.ws_jse_back,waist="Eschan Stone",legs="Flamma Dirs +1",feet="Flam. Gambieras +2"}
+        back=gear.ws_jse_back,waist="Eschan Stone",legs="Flamma Dirs +2",feet="Flam. Gambieras +2"}
 		
     sets.precast.WS['Tachi: Jinpu'] = set_combine(sets.precast.WS, {head=gear.valorous_magical_wsd_head,ear1="Friomisi Earring",body="Found. Breastplate",hands="Founder's Gauntlets",feet="Founder's Greaves"})
 
@@ -189,14 +189,14 @@ function init_gear_sets()
     sets.idle = {ammo="Staunch Tathlum",
         head=gear.valorous_wsd_head,neck="Loricate Torque +1",ear1="Etiolation Earring",ear2="Sanare Earring",
         body="Hiza. Haramaki +2",hands="Sakonji Kote +1",ring1="Defending Ring",ring2="Dark Ring",
-        back="Moonlight Cape",waist="Flume Belt",legs="Flamma Dirs +1",feet="Danzo Sune-ate"}
+        back="Moonlight Cape",waist="Flume Belt",legs="Flamma Dirs +2",feet="Danzo Sune-ate"}
 		
     sets.idle.Reraise = set_combine(sets.idle, sets.Reraise)
 
     sets.idle.Weak = {ammo="Staunch Tathlum",
         head="Twilight Helm",neck="Loricate Torque +1",ear1="Etiolation Earring",ear2="Sanare Earring",
         body="Twilight Mail",hands="Sakonji Kote +1",ring1="Defending Ring",ring2="Dark Ring",
-        back="Moonlight Cape",waist="Flume Belt",legs="Flamma Dirs +1",feet="Danzo Sune-ate"}
+        back="Moonlight Cape",waist="Flume Belt",legs="Flamma Dirs +2",feet="Danzo Sune-ate"}
 		
     sets.idle.Weak.Reraise = set_combine(sets.idle.Weak, sets.Reraise)
 	
@@ -237,7 +237,7 @@ function init_gear_sets()
         body="Kasuga Domaru +1",hands=gear.valorous_acc_hands,ring1="Niqmaddu Ring",ring2="Petrov Ring",
         back=gear.stp_jse_back,waist="Ioskeha Belt",legs="Wakido Haidate +3",feet="Flam. Gambieras +2"}
     sets.engaged.SomeAcc = {ammo="Ginsen",
-        head="Flam. Zucchetto +2",neck="Moonbeam Nodowa",ear1="Cessance Earring",ear2="Brutal Earring",
+        head="Flam. Zucchetto +2",neck="Moonbeam Nodowa",ear1="Cessance Earring",ear2="Telos Earring",
         body="Ken. Samue",hands="Wakido Kote +3",ring1="Niqmaddu Ring",ring2="Flamma Ring",
         back=gear.stp_jse_back,waist="Ioskeha Belt",legs="Wakido Haidate +3",feet="Flam. Gambieras +2"}
     sets.engaged.Acc = {ammo="Ginsen",
@@ -247,11 +247,11 @@ function init_gear_sets()
     sets.engaged.FullAcc = {ammo="Ginsen",
         head="Wakido Kabuto +3",neck="Moonbeam Nodowa",ear1="Zennaroi Earring",ear2="Telos Earring",
         body="Ken. Samue",hands="Wakido Kote +3",ring1="Ramuh Ring +1",ring2="Regal Ring",
-        back=gear.stp_jse_back,waist="Olseni Belt",legs="Wakido Haidate +3",feet="Flam. Gambieras +2"}
+        back=gear.stp_jse_back,waist="Olseni Belt",legs="Wakido Haidate +3",feet="Wakido Sune. +3"}
     sets.engaged.Fodder = {ammo="Ginsen",
-        head="Flam. Zucchetto +2",neck="Moonbeam Nodowa",ear1="Cessance Earring",ear2="Brutal Earring",
+        head="Flam. Zucchetto +2",neck="Moonbeam Nodowa",ear1="Dedition Earring",ear2="Brutal Earring",
         body="Kasuga Domaru +1",hands=gear.valorous_acc_hands,ring1="Niqmaddu Ring",ring2="Petrov Ring",
-        back=gear.stp_jse_back,waist="Ioskeha Belt",legs="Wakido Haidate +3",feet="Flam. Gambieras +2"}
+        back=gear.stp_jse_back,waist="Ioskeha Belt",legs="Ryuo Hakama",feet="Flam. Gambieras +2"}
     sets.engaged.PDT = {ammo="Staunch Tathlum",
         head="Loess Barbuta +1",neck="Loricate Torque +1",ear1="Etiolation Earring",ear2="Sanare Earring",
         body="Tartarus Platemail",hands="Wakido Kote +3",ring1="Defending Ring",ring2="Dark Ring",
@@ -361,10 +361,11 @@ function init_gear_sets()
 	sets.weapons.Bow = {main="Norifusa +1",sub="Utu Grip",range="Cibitshavore",ammo="Eminent Arrow"}
 	
 	-- Buff sets
-	sets.Cure_Received = {hands="Buremte Gloves",waist="Gishdubar Sash",legs="Flamma Dirs +1"}
+	sets.Cure_Received = {hands="Buremte Gloves",waist="Gishdubar Sash",legs="Flamma Dirs +2"}
 	sets.buff.Doom = set_combine(sets.buff.Doom, {})
 	sets.buff.Sleep = {neck="Vim Torque +1"}
 	sets.buff.Hasso = {hands="Wakido Kote +3"}
+	sets.buff['Third Eye'] = {} --legs="Sakonji Haidate +3"
     sets.buff.Sekkanoki = {hands="Kasuga Kote +1"}
     sets.buff.Sengikori = {feet="Kas. Sune-Ate +1"}
     sets.buff['Meikyo Shisui'] = {feet="Sak. Sune-Ate +1"}
@@ -394,23 +395,23 @@ function check_trust()
 			if party.p5 == nil then
 				local spell_recasts = windower.ffxi.get_spell_recasts()
 			
-				if spell_recasts[980] == 0 and not have_trust("Yoran-Oran") then
+				if spell_recasts[980] < spell_latency and not have_trust("Yoran-Oran") then
 					windower.send_command('input /ma "Yoran-Oran (UC)" <me>')
 					tickdelay = (framerate * 3)
 					return true
-				elseif spell_recasts[952] == 0 and not have_trust("Koru-Moru") then
+				elseif spell_recasts[952] < spell_latency and not have_trust("Koru-Moru") then
 					windower.send_command('input /ma "Koru-Moru" <me>')
 					tickdelay = (framerate * 3)
 					return true
-				elseif spell_recasts[967] == 0 and not have_trust("Qultada") then
+				elseif spell_recasts[967] < spell_latency and not have_trust("Qultada") then
 					windower.send_command('input /ma "Qultada" <me>')
 					tickdelay = (framerate * 3)
 					return true
-				elseif spell_recasts[914] == 0 and not have_trust("Ulmia") then
+				elseif spell_recasts[914] < spell_latency and not have_trust("Ulmia") then
 					windower.send_command('input /ma "Ulmia" <me>')
 					tickdelay = (framerate * 3)
 					return true
-				elseif spell_recasts[979] == 0 and not have_trust("Selh'teus") then
+				elseif spell_recasts[979] < spell_latency and not have_trust("Selh'teus") then
 					windower.send_command('input /ma "Selh\'teus" <me>')
 					tickdelay = (framerate * 3)
 					return true

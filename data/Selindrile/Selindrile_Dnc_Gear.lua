@@ -7,20 +7,25 @@ function user_setup()
     state.PhysicalDefenseMode:options('PDT')
 	state.MagicalDefenseMode:options('MDT')
 	state.ResistDefenseMode:options('MEVA')
-	state.Weapons:options('Aeneas','MagicWeapons')
+	state.Weapons:options('Aeneas','LowBuff')
     state.ExtraMeleeMode = M{['description']='Extra Melee Mode','None','Suppa','DWEarrings','DWMax'}
 
+	
 	gear.stp_jse_back = {name="Senuna's Mantle",augments={'DEX+20','Accuracy+20 Attack+20','"Store TP"+10',}}
 	gear.wsd_jse_back = {name="Senuna's Mantle",augments={'DEX+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}}
 	
     -- Additional local binds
+    send_command('bind @` gs c step')
+	send_command('bind ^!@` gs c toggle usealtstep')
+	send_command('bind ^@` gs c cycle mainstep')
+	send_command('bind !@` gs c cycle altstep')
     send_command('bind ^` input /ja "Saber Dance" <me>')
     send_command('bind !` input /ja "Fan Dance" <me>')
 	send_command('bind ^\\\\ input /ja "Chocobo Jig II" <me>')
 	send_command('bind !\\\\ input /ja "Spectral Jig" <me>')
 	send_command('bind !backspace input /ja "Reverse Flourish" <me>')
 	send_command('bind ^backspace input /ja "No Foot Rise" <me>')
-	send_command('bind @` gs c cycle SkillchainMode')
+	send_command('bind %~` gs c cycle SkillchainMode')
 
     select_default_macro_book()
 end
@@ -41,7 +46,7 @@ function init_gear_sets()
 	
 	-- Weapons sets
 	sets.weapons.Aeneas = {main="Aeneas",sub="Taming Sari"}
-	sets.weapons.MagicWeapons = {main="Malevolence",sub="Malevolence"}
+	sets.weapons.LowBuff = {main="Aeneas",sub="Blurred Knife +1"}
 	
     -- Precast Sets
     

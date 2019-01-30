@@ -36,7 +36,7 @@ function init_gear_sets()
         body="Telchine Chasuble",hands="Baayami Cuffs",ring1="Evoker's Ring",ring2="Stikini Ring",
         back="Conveyance Cape",waist="Kobo Obi",legs="Telchine Braconi",feet="Beck. Pigaches +1"}
 
-    sets.precast.JA['Mana Cede'] = {hands="Beckoner's Bracers"}
+    sets.precast.JA['Mana Cede'] = {hands="Beck. Bracers +1"}
 
     -- Pact delay reduction gear
     sets.precast.BloodPactWard = {main="Espiritus",sub="Vox Grip",ammo="Sancus Sachet +1",
@@ -106,14 +106,14 @@ function init_gear_sets()
 		back="Toro Cape",waist="Sekhmet Corset",legs="Merlinic Shalwar",feet=gear.merlinic_nuke_feet}
 		
     sets.midcast['Elemental Magic'].OccultAcumen = {main="Khatvanga",sub="Bloodrain Strap",ammo="Seraphic Ampulla",
-        head="Welkin Crown",neck="Combatant's Torque",ear1="Dedition Earring",ear2="Telos Earring",
+        head=gear.merlinic_nuke_head,neck="Combatant's Torque",ear1="Dedition Earring",ear2="Telos Earring",
         body=gear.merlinic_occult_body,hands=gear.merlinic_occult_hands,ring1="Rajas Ring",ring2="Petrov Ring",
-        back=gear.stp_jse_back,waist="Oneiros Rope",legs="Perdition Slops",feet=gear.merlinic_occult_feet}
+        back="Toro Cape",waist="Oneiros Rope",legs="Perdition Slops",feet=gear.merlinic_occult_feet}
 		
 	sets.midcast.Impact = {main="Oranyan",sub="Enki Strap",ammo="Pemphredo Tathlum",
 		head=empty,neck="Erra Pendant",ear1="Enchntr. Earring +1",ear2="Gwati Earring",
 		body="Twilight Cloak",hands="Regal Cuffs",ring1="Stikini Ring",ring2="Stikini Ring",
-		back=gear.nuke_jse_back,waist="Acuity Belt +1",legs="Merlinic Shalwar",feet=gear.merlinic_aspir_feet}
+		back="Toro Cape",waist="Acuity Belt +1",legs="Merlinic Shalwar",feet=gear.merlinic_aspir_feet}
 		
 	sets.midcast.Impact.OccultAcumen = set_combine(sets.midcast['Elemental Magic'].OccultAcumen, {head=empty,body="Twilight Cloak"})
 
@@ -186,14 +186,14 @@ function init_gear_sets()
     
     sets.midcast.Pet.PhysicalBloodPactRage = {main="Gridarvor",sub="Elan Strap +1",ammo="Sancus Sachet +1",
         head="Helios Band",neck="Shulmanu Collar",ear1="Gelos Earring",ear2="Lugalbanda Earring",
-        body="Con. Doublet +3",hands=gear.merlinic_physpact_hands,ring1="Varar Ring",ring2="Varar Ring",
+        body="Con. Doublet +3",hands=gear.merlinic_physpact_hands,ring1="Varar Ring +1",ring2="Varar Ring +1",
         back=gear.phys_jse_back,waist="Incarnation Sash",legs="Apogee Slacks +1",feet="Apogee Pumps +1"}
 		
     sets.midcast.Pet.PhysicalBloodPactRage.Acc = {feet="Convo. Pigaches +3"}
 
     sets.midcast.Pet.MagicalBloodPactRage = {main=gear.grioavolr_pet_staff,sub="Elan Strap +1",ammo="Sancus Sachet +1",
         head="Apogee Crown +1",neck="Adad Amulet",ear1="Gelos Earring",ear2="Lugalbanda Earring",
-        body="Con. Doublet +3",hands=gear.merlinic_magpact_hands,ring1="Varar Ring",ring2="Varar Ring",
+        body="Con. Doublet +3",hands=gear.merlinic_magpact_hands,ring1="Varar Ring +1",ring2="Varar Ring +1",
         back=gear.magic_jse_back,waist="Regal Belt",legs="Enticer's Pants",feet="Apogee Pumps +1"}
 
     sets.midcast.Pet.MagicalBloodPactRage.Acc = {feet="Convo. Pigaches +3"}
@@ -208,7 +208,7 @@ function init_gear_sets()
     
 	sets.midcast.Pet['Flaming Crush'] = {main=gear.grioavolr_pet_staff,sub="Elan Strap +1",ammo="Sancus Sachet +1",
         head="Apogee Crown +1",neck="Adad Amulet",ear1="Gelos Earring",ear2="Lugalbanda Earring",
-        body="Con. Doublet +3",hands=gear.merlinic_magpact_hands,ring1="Varar Ring",ring2="Varar Ring",
+        body="Con. Doublet +3",hands=gear.merlinic_magpact_hands,ring1="Varar Ring +1",ring2="Varar Ring +1",
         back=gear.phys_jse_back,waist="Regal Belt",legs="Apogee Slacks +1",feet="Apogee Pumps +1"}
 	sets.midcast.Pet['Flaming Crush'].Acc = {feet="Convo. Pigaches +3"}
 	
@@ -290,10 +290,10 @@ function init_gear_sets()
 		
 	--Favor always up and head is best in slot idle so no specific items here at the moment.
     sets.idle.Avatar.Favor = {}
-    sets.idle.Avatar.Melee = {}
+    sets.idle.Avatar.Engaged = {}
 	
-	sets.idle.Avatar.Melee.Carbuncle = {}
-	sets.idle.Avatar.Melee['Cait Sith'] = {}
+	sets.idle.Avatar.Engaged.Carbuncle = {}
+	sets.idle.Avatar.Engaged['Cait Sith'] = {}
         
     sets.perp = {}
     -- Caller's Bracer's halve the perp cost after other costs are accounted for.

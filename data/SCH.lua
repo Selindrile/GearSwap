@@ -49,7 +49,7 @@ function job_setup()
 	autows = 'Realmrazer'
 	autofood = 'Pear Crepe'
 	
-	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoNukeMode","AutoWSMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","RecoverMode","ElementalMode","CastingMode","TreasureMode",})
+	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoNukeMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","RecoverMode","ElementalMode","CastingMode","TreasureMode",})
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -115,14 +115,20 @@ function job_post_midcast(spell, spellMap, eventArgs)
 	elseif default_spell_map == 'ElementalEnfeeble' and (state.Buff['Dark Arts']  or state.Buff['Addendum: Black']) and sets.buff['Dark Arts'] then
 		equip(sets.buff['Dark Arts'])
     elseif spell.skill == 'Elemental Magic' and spell.english ~= 'Impact' then
-        if state.MagicBurstMode.value ~= 'Off' then equip(sets.MagicBurst) end
-		if (state.CastingMode.value == 'Normal' or state.CastingMode.value == 'Fodder') then
+		if state.MagicBurstMode.value ~= 'Off' then
+			if state.CastingMode.value:contains('Resistant') and sets.ResistantMagicBurst then
+				equip(sets.ResistantMagicBurst)
+			else
+				equip(sets.MagicBurst)
+			end
+		end
+		if not state.CastingMode.value:contains('Resistant') then
 			if spell.element == world.weather_element or spell.element == world.day_element then
-				if item_available('Twilight Cape') and not state.Capacity.value then
-					sets.TwilightCape = {back="Twilight Cape"}
-					equip(sets.TwilightCape)
-				end
-				if spell.element == world.day_element then
+				-- if item_available('Twilight Cape') and not LowTierNukes:contains(spell.english) and not state.Capacity.value then
+					-- sets.TwilightCape = {back="Twilight Cape"}
+					-- equip(sets.TwilightCape)
+				-- end
+				if spell.element == world.day_element and state.CastingMode.value == 'Fodder' then
 					if item_available('Zodiac Ring') then
 						sets.ZodiacRing = {ring2="Zodiac Ring"}
 						equip(sets.ZodiacRing)
@@ -145,9 +151,13 @@ function job_post_midcast(spell, spellMap, eventArgs)
         end
 		
 		if state.RecoverMode.value ~= 'Never' and (state.RecoverMode.value == 'Always' or tonumber(state.RecoverMode.value:sub(1, -2)) > player.mpp) then
-			if state.MagicBurstMode.value ~= 'Off' and sets.RecoverBurst then
-				equip(sets.RecoverBurst)
-			else
+			if state.MagicBurstMode.value ~= 'Off' then
+				if state.CastingMode.value:contains('Resistant') and sets.ResistantRecoverBurst then
+					equip(sets.ResistantRecoverBurst)
+				elseif sets.RecoverBurst then
+					equip(sets.RecoverBurst)
+				end
+			elseif sets.RecoverMP then
 				equip(sets.RecoverMP)
 			end
 		end
@@ -323,23 +333,23 @@ function handle_elemental(cmdParams)
 		local spell_recasts = windower.ffxi.get_spell_recasts()
 		
 		if state.ElementalMode.value == 'Light' then
-			if spell_recasts[29] == 0 and actual_cost(get_spell_table_by_name('Banish II')) < player.mp then
+			if spell_recasts[29] < spell_latency and actual_cost(get_spell_table_by_name('Banish II')) < player.mp then
 				windower.chat.input('/ma "Banish II" <t>')
-			elseif spell_recasts[28] == 0 and actual_cost(get_spell_table_by_name('Banish')) < player.mp then
+			elseif spell_recasts[28] < spell_latency and actual_cost(get_spell_table_by_name('Banish')) < player.mp then
 				windower.chat.input('/ma "Banish" <t>')
 			else
 				add_to_chat(123,'Abort: Banishes on cooldown or not enough MP.')
 			end
 
 		else
-			if state.Buff['Addendum: Black'] and spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..' V').id] == 0 and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..' V')) < player.mp then
+			if state.Buff['Addendum: Black'] and spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..' V').id] < spell_latency and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..' V')) < player.mp then
 				windower.chat.input('/ma "'..elements.nuke[state.ElementalMode.value]..' V" <t>')
-			elseif state.Buff['Addendum: Black'] and spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..' IV').id] == 0 and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..' IV')) < player.mp then
+			elseif state.Buff['Addendum: Black'] and spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..' IV').id] < spell_latency and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..' IV')) < player.mp then
 				windower.chat.input('/ma "'..elements.nuke[state.ElementalMode.value]..' IV" <t>')
 			else
 				local tiers = {' III',' II',''}
 				for k in ipairs(tiers) do
-					if spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'').id] == 0 and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'')) < player.mp then
+					if spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'').id] < spell_latency and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'')) < player.mp then
 						windower.chat.input('/ma "'..elements.nuke[state.ElementalMode.value]..''..tiers[k]..'" <t>')
 						return
 					end
@@ -356,7 +366,7 @@ function handle_elemental(cmdParams)
 	
 		local tiers = {' II',''}
 		for k in ipairs(tiers) do
-			if spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'').id] == 0 and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'')) < player.mp then
+			if spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'').id] < spell_latency and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'')) < player.mp then
 				windower.chat.input('/ma "'..elements.nuke[state.ElementalMode.value]..''..tiers[k]..'" <t>')
 				return
 			end
@@ -398,7 +408,7 @@ function handle_elemental(cmdParams)
 	elseif command == 'weather' then
 		local spell_recasts = windower.ffxi.get_spell_recasts()
 		
-		if (player.target.type == 'SELF' or not player.target.in_party) and buffactive[elements.storm_of[state.ElementalMode.value]] and not buffactive['Klimaform'] and spell_recasts[287] == 0 then
+		if (player.target.type == 'SELF' or not player.target.in_party) and buffactive[elements.storm_of[state.ElementalMode.value]] and not buffactive['Klimaform'] and spell_recasts[287] < spell_latency then
 			windower.chat.input('/ma "Klimaform" <me>')
 		elseif player.job_points[(res.jobs[player.main_job_id].ens):lower()].jp_spent > 99 then
 			windower.chat.input('/ma "'..elements.storm_of[state.ElementalMode.value]..' II"')
@@ -428,43 +438,43 @@ function handle_elemental(cmdParams)
 			elseif state.ElementalMode.value == 'Wind' then
 				windower.chat.input('/p '..auto_translate('Detonation')..' -<t>- MB: '..auto_translate('wind')..' <scall21> OPEN!')
 				windower.chat.input:schedule(1,'/ma "Stone" <t>')
-				windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(6,'/p '..auto_translate('Detonation')..' -<t>- MB: '..auto_translate('wind')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(6,'/ma "Aero" <t>')
 			elseif state.ElementalMode.value == 'Lightning' then
 				windower.chat.input('/p '..auto_translate('Impaction')..' -<t>- MB: '..auto_translate('Thunder')..' <scall21> OPEN!')
 				windower.chat.input:schedule(1,'/ma "Water" <t>')
-				windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(6,'/p '..auto_translate('Impaction')..' -<t>- MB: '..auto_translate('Thunder')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(6,'/ma "Thunder" <t>')
 			elseif state.ElementalMode.value == 'Light' then
 				windower.chat.input('/p '..auto_translate('Transfixion')..' -<t>- MB: '..auto_translate('Light')..' <scall21> OPEN!')
 				windower.chat.input:schedule(1,'/ma "Noctohelix" <t>')
-				windower.chat.input:schedule(6,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(6,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(7,'/p '..auto_translate('Transfixion')..' -<t>- MB: '..auto_translate('Light')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(7,'/ma "Luminohelix" <t>')
 			elseif state.ElementalMode.value == 'Earth' then
 				windower.chat.input('/p '..auto_translate('Scission')..' -<t>- MB: '..auto_translate('earth')..' <scall21> OPEN!')
 				windower.chat.input:schedule(1,'/ma "Fire" <t>')
-				windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(6,'/p '..auto_translate('Scission')..' -<t>- MB: '..auto_translate('earth')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(6,'/ma "Stone" <t>')
 			elseif state.ElementalMode.value == 'Ice' then
 				windower.chat.input('/p '..auto_translate('Induration')..' -<t>- MB: '..auto_translate('ice')..' <scall21> OPEN!')
 				windower.chat.input:schedule(1,'/ma "Water" <t>')
-				windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(6,'/p '..auto_translate('Induration')..' -<t>- MB: '..auto_translate('ice')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(6,'/ma "Blizzard" <t>')
 			elseif state.ElementalMode.value == 'Water' then
 				windower.chat.input('/p '..auto_translate('Reverberation')..' -<t>- MB: '..auto_translate('Water')..' <scall21> OPEN!')
 				windower.chat.input:schedule(1,'/ma "Stone" <t>')
-				windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(6,'/p '..auto_translate('Reverberation')..' -<t>- MB: '..auto_translate('Water')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(6,'/ma "Water" <t>')
 			elseif state.ElementalMode.value == 'Dark' then
 				windower.chat.input('/p '..auto_translate('Compression')..' -<t>- MB: '..auto_translate('Darkness')..' <scall21> OPEN!')
 				windower.chat.input:schedule(1,'/ma "Blizzard" <t>')
-				windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(6,'/p '..auto_translate('Compression')..' -<t>- MB: '..auto_translate('Darkness')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(6,'/ma "Noctohelix" <t>')
 			else
@@ -490,25 +500,25 @@ function handle_elemental(cmdParams)
 			if state.ElementalMode.value == 'Fire' or state.ElementalMode.value == 'Light' then
 				windower.chat.input('/p '..auto_translate('Fusion')..' -<t>- MB: '..auto_translate('Fire')..' '..auto_translate('Light')..' <scall21> OPEN!')
 				windower.chat.input:schedule(1,'/ma "Fire" <t>')
-				windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(6,'/p '..auto_translate('Fusion')..' -<t>- MB: '..auto_translate('Fire')..' '..auto_translate('Light')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(6,'/ma "Thunder" <t>')
 			elseif state.ElementalMode.value == 'Wind' or state.ElementalMode.value == 'Lightning' then
 				windower.chat.input('/p '..auto_translate('Fragmentation')..' -<t>- MB: '..auto_translate('wind')..' '..auto_translate('Thunder')..' <scall21> OPEN!')
 				windower.chat.input:schedule(1,'/ma "Blizzard" <t>')
-				windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(6,'/p '..auto_translate('Fragmentation')..' -<t>- MB: '..auto_translate('wind')..' '..auto_translate('Thunder')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(6,'/ma "Water" <t>')
 			elseif state.ElementalMode.value == 'Earth' or state.ElementalMode.value == 'Dark' then
 				windower.chat.input('/p '..auto_translate('Gravitation')..' -<t>- MB: '..auto_translate('earth')..' '..auto_translate('Darkness')..' <scall21> OPEN!')
 				windower.chat.input:schedule(1,'/ma "Aero" <t>')
-				windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(6,'/p '..auto_translate('Gravitation')..' -<t>- MB: '..auto_translate('earth')..' '..auto_translate('Darkness')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(6,'/ma "Noctohelix" <t>')
 			elseif state.ElementalMode.value == 'Ice' or state.ElementalMode.value == 'Water' then
 				windower.chat.input('/p '..auto_translate('Distortion')..' -<t>- MB: '..auto_translate('ice')..' '..auto_translate('Water')..' <scall21> OPEN!')
 				windower.chat.input:schedule(1,'/ma "Luminohelix" <t>')
-				windower.chat.input:schedule(7,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(7,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(8,'/p '..auto_translate('Distortion')..' -<t>- MB: '..auto_translate('ice')..' '..auto_translate('Water')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(8,'/ma "Stone" <t>')
 			else
@@ -556,7 +566,7 @@ function handle_elemental(cmdParams)
 			windower.chat.input('/p Starting 4-Step '..auto_translate('Skillchain')..' -<t>-')
 			if not buffactive['Immanence'] then windower.chat.input('/ja "Immanence" <me>') end
 			windower.chat.input:schedule(1,'/ma "Aero" <t>')
-			windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+			windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 			windower.chat.input:schedule(6,'/ma "Stone" <t>')
 			windower.chat.input:schedule(10,'/ja "Immanence" <me>')
 			windower.chat.input:schedule(11,'/ma "Water" <t>')
@@ -607,64 +617,64 @@ function handle_elemental(cmdParams)
 		elseif state.ElementalMode.value == 'Fire' then
 			windower.chat.input('/p '..auto_translate('Liquefaction')..' -<t>- MB: '..auto_translate('Fire')..' <scall21> OPEN!')
 			windower.chat.input('/ws "Rock Crusher" <t>')
-			windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+			windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 			windower.chat.input:schedule(6,'/p '..auto_translate('Liquefaction')..' -<t>- MB: '..auto_translate('Fire')..' <scall21> CLOSE!')
 			windower.chat.input:schedule(6,'/ma "Fire" <t>')
 		elseif state.ElementalMode.value == 'Wind' then
 			windower.chat.input('/p '..auto_translate('Detonation')..' -<t>- MB: '..auto_translate('wind')..' <scall21> OPEN!')
 			windower.chat.input('/ws "Rock Crusher" <t>')
-			windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+			windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 			windower.chat.input:schedule(6,'/p '..auto_translate('Detonation')..' -<t>- MB: '..auto_translate('wind')..' <scall21> CLOSE!')
 			windower.chat.input:schedule(6,'/ma "Aero" <t>')
 		elseif state.ElementalMode.value == 'Lightning' then
 			windower.chat.input('/p '..auto_translate('Impaction')..' -<t>- MB: '..auto_translate('Thunder')..' <scall21> OPEN!')
 			windower.chat.input('/ws "Starburst" <t>')
-			windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+			windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 			windower.chat.input:schedule(6,'/p '..auto_translate('Impaction')..' -<t>- MB: '..auto_translate('Thunder')..' <scall21> CLOSE!')
 			windower.chat.input:schedule(6,'/ma "Thunder" <t>')
 		elseif state.ElementalMode.value == 'Light' then
 			windower.chat.input('/p '..auto_translate('Transfixion')..' -<t>- MB: '..auto_translate('Light')..' <scall21> OPEN!')
 			windower.chat.input('/ws "Starburst" <t>')
-			windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+			windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 			windower.chat.input:schedule(6,'/p '..auto_translate('Transfixion')..' -<t>- MB: '..auto_translate('Light')..' <scall21> CLOSE!')
 			windower.chat.input:schedule(6,'/ma "Luminohelix" <t>')
 		elseif state.ElementalMode.value == 'Earth' then
 			if player.sub_job == 'WHM' then
 				windower.chat.input('/p '..auto_translate('Scission')..' -<t>- MB: '..auto_translate('earth')..' <scall21> OPEN!')
 				windower.chat.input('/ws "Earth Crusher" <t>')
-				windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(6,'/p '..auto_translate('Scission')..' -<t>- MB: '..auto_translate('earth')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(6,'/ma "Stone" <t>')
 			else
 				windower.chat.input('/p '..auto_translate('Scission')..' -<t>- MB: '..auto_translate('earth')..' <scall21> OPEN!')
 				windower.chat.input('/ws "Shell Crusher" <t>')
-				windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(6,'/p '..auto_translate('Scission')..' -<t>- MB: '..auto_translate('earth')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(6,'/ma "Stone" <t>')
 			end
 		elseif state.ElementalMode.value == 'Ice' then
 			windower.chat.input('/p '..auto_translate('Induration')..' -<t>- MB: '..auto_translate('ice')..' <scall21> OPEN!')
 			windower.chat.input('/ws "Starburst" <t>')
-			windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+			windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 			windower.chat.input:schedule(6,'/p '..auto_translate('Induration')..' -<t>- MB: '..auto_translate('ice')..' <scall21> CLOSE!')
 			windower.chat.input:schedule(6,'/ma "Blizzard" <t>')
 		elseif state.ElementalMode.value == 'Water' then
 			windower.chat.input('/p '..auto_translate('Reverberation')..' -<t>- MB: '..auto_translate('Water')..' <scall21> OPEN!')
 			windower.chat.input('/ws "Omniscience" <t>')
-			windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+			windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 			windower.chat.input:schedule(6,'/p '..auto_translate('Reverberation')..' -<t>- MB: '..auto_translate('Water')..' <scall21> CLOSE!')
 			windower.chat.input:schedule(6,'/ma "Water" <t>')
 		elseif state.ElementalMode.value == 'Dark' then
 			if player.sub_job == 'WHM' then
 				windower.chat.input('/p '..auto_translate('Gravitation')..' -<t>- MB: '..auto_translate('earth')..' '..auto_translate('Darkness')..' <scall21> OPEN!')
 				windower.chat.input('/ws "Earth Crusher" <t>')
-				windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(6,'/p '..auto_translate('Gravitation')..' -<t>- MB: '..auto_translate('earth')..' '..auto_translate('Darkness')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(6,'/ma "Noctohelix" <t>')
 			else
 				windower.chat.input('/p '..auto_translate('Compression')..' -<t>- MB: '..auto_translate('Darkness')..' <scall21> OPEN!')
 				windower.chat.input('/ws "Omniscience" <t>')
-				windower.chat.input:schedule(5,'/ma "Immanence" <me>')
+				windower.chat.input:schedule(5,'/ja "Immanence" <me>')
 				windower.chat.input:schedule(6,'/p '..auto_translate('Compression')..' -<t>- MB: '..auto_translate('Darkness')..' <scall21> CLOSE!')
 				windower.chat.input:schedule(6,'/ma "Noctohelix" <t>')
 			end
@@ -798,15 +808,17 @@ end
 -- and the level of the sch.
 function job_tick()
 	if check_arts() then return true end
+	if check_buff() then return true end
+	if check_buffup() then return true end
 	return false
 end
 
 function check_arts()
-	if state.AutoArts.value and not moving and not areas.Cities:contains(world.area) and not arts_active() and player.in_combat then
+	if not arts_active() and (buffup ~= '' or (state.AutoArts.value and not areas.Cities:contains(world.area) and (player.in_combat or state.AutoBuffMode.value))) then
 	
 		local abil_recasts = windower.ffxi.get_ability_recasts()
 
-		if abil_recasts[232] == 0 then
+		if abil_recasts[232] < latency then
 			windower.chat.input('/ja "Dark Arts" <me>')
 			tickdelay = (framerate * .5)
 			return true
@@ -816,3 +828,72 @@ function check_arts()
 	
 	return false
 end
+
+function check_buff()
+	if state.AutoBuffMode.value and not areas.Cities:contains(world.area) then
+		local spell_recasts = windower.ffxi.get_spell_recasts()
+		for i in pairs(buff_spell_lists['Auto']) do
+			if not buffactive[buff_spell_lists['Auto'][i].Buff] and spell_recasts[buff_spell_lists['Auto'][i].SpellID] < latency and silent_can_use(buff_spell_lists['Auto'][i].SpellID) then
+				windower.chat.input('/ma "'..buff_spell_lists['Auto'][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
+	else
+		return false
+	end
+end
+
+function check_buffup()
+	if buffup ~= '' then
+		local needsbuff = false
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) then
+				needsbuff = true
+				break
+			end
+		end
+	
+		if not needsbuff then
+			add_to_chat(217, 'All '..buffup..' buffs are up!')
+			buffup = ''
+			return false
+		end
+		
+		local spell_recasts = windower.ffxi.get_spell_recasts()
+		
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) and spell_recasts[buff_spell_lists[buffup][i].SpellID] < latency then
+				windower.chat.input('/ma "'..buff_spell_lists[buffup][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
+		
+		return false
+	else
+		return false
+	end
+end
+
+buff_spell_lists = {
+	Auto = {
+		{Name='Reraise',Buff='Reraise',SpellID=113},
+		{Name='Haste',Buff='Haste',SpellID=57},
+		{Name='Refresh',Buff='Refresh',SpellID=109},
+		{Name='Stoneskin',Buff='Stoneskin',SpellID=54},
+		{Name='Klimaform',Buff='Klimaform',SpellID=287},
+	},
+	
+	Default = {
+		{Name='Reraise',Buff='Reraise',SpellID=113},
+		{Name='Haste',Buff='Haste',SpellID=57},
+		{Name='Refresh',Buff='Refresh',SpellID=109},
+		{Name='Aquaveil',Buff='Aquaveil',SpellID=55},
+		{Name='Stoneskin',Buff='Stoneskin',SpellID=54},
+		{Name='Klimaform',Buff='Klimaform',SpellID=287},
+		{Name='Blink',Buff='Blink',SpellID=53},
+		{Name='Regen',Buff='Regen',SpellID=108},
+		{Name='Phalanx',Buff='Phalanx',SpellID=106},
+	},
+}

@@ -7,17 +7,54 @@ function user_setup()
 	state.IdleMode:options('Normal','PDT','Refresh')
 	state.Weapons:options('None','Godhands','PetWeapons')
 
-    -- Default maneuvers 1, 2, 3 and 4 for each pet mode.
-    defaultManeuvers = {
-        ['Melee'] = {'Fire Maneuver','Thunder Maneuver','Wind Maneuver','Light Maneuver'},
-        ['Ranged'] = {'Wind Maneuver','Fire Maneuver','Light Maneuver','Thunder Maneuver'},
-        ['Tank'] = {'Earth Maneuver','Light Maneuver','Dark Maneuver','Fire Maneuver',},
-		['LightTank'] = {'Earth Maneuver','Fire Maneuver','Light Maneuver','Dark Maneuver'},
-        ['Magic'] = {'Ice Maneuver','Light Maneuver','Dark Maneuver','Earth Maneuver'},
-        ['Heal'] = {'Light Maneuver','Dark Maneuver','Water Maneuver','Earth Maneuver'},
-        ['Nuke'] = {'Ice Maneuver','Dark Maneuver', 'Light Maneuver','Earth Maneuver'}
-    }
+    -- Default/Automatic maneuvers for each pet mode.  Define at least 3.
+	defaultManeuvers = {
+		Melee = {
+			{Name='Fire Maneuver', 	  Amount=1},
+			{Name='Thunder Maneuver', Amount=1},
+			{Name='Wind Maneuver', 	  Amount=1},
+			{Name='Light Maneuver',	  Amount=0},
+		},
+		Ranged = {
+			{Name='Wind Maneuver', 	  Amount=1},
+			{Name='Fire Maneuver',	  Amount=1},
+			{Name='Light Maneuver',	  Amount=1},
+			{Name='Thunder Maneuver', Amount=0},
+		},
+		Tank = {
+			{Name='Earth Maneuver',	  Amount=1},
+			{Name='Fire Maneuver',	  Amount=1},
+			{Name='Light Maneuver',	  Amount=1},
+			{Name='Dark Maneuver',	  Amount=0},
+		},
+		LightTank = {
+			{Name='Earth Maneuver',	  Amount=1},
+			{Name='Fire Maneuver',	  Amount=1},
+			{Name='Light Maneuver',	  Amount=1},
+			{Name='Dark Maneuver',	  Amount=0},
+		},
+		Magic = {
+			{Name='Light Maneuver',	  Amount=1},
+			{Name='Ice Maneuver',	  Amount=1},
+			{Name='Dark Maneuver',	  Amount=1},
+			{Name='Earth Maneuver',	  Amount=0},
+		},
+		Heal = {
+			{Name='Light Maneuver',	  Amount=2},
+			{Name='Dark Maneuver',	  Amount=1},
+			{Name='Water Maneuver',	  Amount=0},
+			{Name='Earth Maneuver',	  Amount=0},
+		},
+		Nuke = {
+			{Name='Ice Maneuver',	  Amount=2},
+			{Name='Dark Maneuver',	  Amount=1},
+			{Name='Water Maneuver',	  Amount=0},
+			{Name='Earth Maneuver',	  Amount=0},
+		},
+	}
 
+	deactivatehpp = 85
+	
     select_default_macro_book()
 	
 	send_command('bind @` gs c cycle SkillchainMode')
@@ -44,7 +81,7 @@ function init_gear_sets()
     sets.precast.JA['Repair'] = {ammo="Automat. Oil +3"} --feet="Foire Babouches"
 	sets.precast.JA['Maintenance'] = {ammo="Automat. Oil +3"}
 
-    sets.precast.JA.Maneuver = {back="Visucius's Mantle"} --neck="Buffoon's Collar",hands="Foire Dastanas",body="Cirque Farsetto +2",
+    sets.precast.JA.Maneuver = {main="Midnights",back="Visucius's Mantle"} --neck="Buffoon's Collar",hands="Foire Dastanas",body="Cirque Farsetto +2",
 
     -- Waltz set (chr and vit)
     sets.precast.Waltz = {
@@ -149,9 +186,9 @@ function init_gear_sets()
 		
     -- Midcast sets for pet actions
     sets.midcast.Pet.Cure = {}
-	sets.midcast.Pet['Enfeebling Magic'] = {neck="Adad Amulet",ear1="Enmerkar Earring",ear2="Handler's Earring +1",body="Taeon Tabard",hands="Regimen Mittens",ring1="Varar Ring",ring2="Varar Ring",waist="Incarnation Sash",legs="Tali'ah Sera. +2"}
-    sets.midcast.Pet['Elemental Magic'] = {neck="Adad Amulet",ear1="Enmerkar Earring",ear2="Handler's Earring +1",body="Taeon Tabard",hands="Regimen Mittens",ring1="Varar Ring",ring2="Varar Ring",waist="Incarnation Sash",legs="Tali'ah Sera. +2"}
-	sets.midcast.Pet.PetWSGear = {neck="Shulmanu Collar",ear1="Enmerkar Earring",ear2="Handler's Earring +1",body="Taeon Tabard",hands="Regimen Mittens",ring1="Varar Ring",ring2="Varar Ring",back="Dispersal Mantle",waist="Incarnation Sash",legs="Tali'ah Sera. +2"}
+	sets.midcast.Pet['Enfeebling Magic'] = {neck="Adad Amulet",ear1="Enmerkar Earring",ear2="Handler's Earring +1",body="Taeon Tabard",hands="Regimen Mittens",ring1="Varar Ring +1",ring2="Varar Ring +1",waist="Incarnation Sash",legs="Tali'ah Sera. +2"}
+    sets.midcast.Pet['Elemental Magic'] = {neck="Adad Amulet",ear1="Enmerkar Earring",ear2="Handler's Earring +1",body="Taeon Tabard",hands="Regimen Mittens",ring1="Varar Ring +1",ring2="Varar Ring +1",waist="Incarnation Sash",legs="Tali'ah Sera. +2"}
+	sets.midcast.Pet.PetWSGear = {neck="Shulmanu Collar",ear1="Enmerkar Earring",ear2="Handler's Earring +1",body="Taeon Tabard",hands="Regimen Mittens",ring1="Varar Ring +1",ring2="Varar Ring +1",back="Dispersal Mantle",waist="Incarnation Sash",legs="Tali'ah Sera. +2"}
 	
     sets.midcast.Pet.PetWSGear.Ranged = set_combine(sets.midcast.Pet.PetWSGear, {})
 	sets.midcast.Pet.PetWSGear.Melee = set_combine(sets.midcast.Pet.PetWSGear, {})
@@ -192,8 +229,8 @@ function init_gear_sets()
     -- Idle sets to wear while pet is engaged
     sets.idle.Pet.Engaged = {
         head="Anwig Salade",neck="Shulmanu Collar",ear1="Enmerkar Earring",ear2="Domesticator's Earring",
-        body="Taeon Tabard",hands="Regimen Mittens",ring1="Varar Ring",ring2="Varar Ring",
-        back="Visucius's Mantle",waist="Klouskap Sash",legs="Tali'ah Sera. +2",feet="Tali'ah Crackows +1"}
+        body="Taeon Tabard",hands="Regimen Mittens",ring1="Varar Ring +1",ring2="Varar Ring +1",
+        back="Visucius's Mantle",waist="Klouskap Sash",legs="Tali'ah Sera. +2",feet="Tali'ah Crackows +2"}
 
     sets.idle.Pet.Engaged.Ranged = set_combine(sets.idle.Pet.Engaged, {})
 	sets.idle.Pet.Engaged.Melee = set_combine(sets.idle.Pet.Engaged, {})

@@ -3,7 +3,7 @@ function user_setup()
 	state.OffenseMode:options('Normal','SomeAcc','Acc','HighAcc','FullAcc')
 	state.HybridMode:options('Normal','DTLite','Tank')
 	state.WeaponskillMode:options('Match','Normal','SomeAcc','Acc','HighAcc','FullAcc')
-	state.CastingMode:options('Normal', 'Resistant')
+	state.CastingMode:options('Normal','SIRD','Resistant')
 	state.PhysicalDefenseMode:options('PDT', 'PDT_HP')
 	state.MagicalDefenseMode:options('MDT','MDT_HP','BDT','BDT_HP')
 	state.ResistDefenseMode:options('MEVA','MEVA_HP','Death','Charm','DTCharm')
@@ -24,7 +24,6 @@ function user_setup()
 	send_command('bind ^delete input /ja "Provoke" <stnpc>')
 	send_command('bind !delete input /ma "Cure IV" <stal>')
 	send_command('bind @delete input /ma "Flash" <stnpc>')
-    send_command('bind !f11 gs c cycle ExtraDefenseMode')
 	send_command('bind ^\\\\ input /ma "Protect IV" <t>')
 	send_command('bind @\\\\ input /ma "Shell V" <t>')
 	send_command('bind !\\\\ input /ma "Crusade" <me>')
@@ -32,6 +31,7 @@ function user_setup()
 	send_command('bind @backspace input /ja "Gambit" <t>')
 	send_command('bind !backspace input /ja "Rayke" <t>')
 	send_command('bind @f8 gs c toggle AutoTankMode')
+	send_command('bind @f10 gs c toggle TankAutoDefense')
 	send_command('bind ^@!` gs c cycle SkillchainMode')
 	send_command('bind !r gs c weapons Lionheart;gs c update')
 	
@@ -43,7 +43,12 @@ function init_gear_sets()
     sets.Enmity = {ammo="Staunch Tathlum",
 	     head="Fu. Bandeau +1",neck="Unmoving Collar +1",ear1="Friomisi Earring",ear2="Trux Earring",
 	     body="Emet Harness +1",hands="Kurys Gloves",ring1="Petrov Ring",ring2="Vengeful Ring",
-		 back=gear.enmity_jse_back,waist="Goading Belt",legs="Eri. Leg Guards +1",feet="Erilaz Greaves +1"}
+		 back=gear.enmity_jse_back,waist="Goading Belt",legs="Eri. Leg Guards +1",feet="Ahosi Leggings"}
+		 
+    sets.Enmity.SIRD = {ammo="Staunch Tathlum",
+		head="Meghanada Visor +2",neck="Loricate Torque +1",ear1="Genmei Earring",ear2="Trux Earring",
+		body="Emet Harness +1",hands=gear.herculean_dt_hands,ring1="Defending Ring",ring2="Moonbeam Ring",
+		back=gear.enmity_jse_back,waist="Rumination Sash",legs="Carmine Cuisses +1",feet="Erilaz Greaves +1"}
 
     sets.Enmity.DT = {ammo="Staunch Tathlum",
         head="Fu. Bandeau +1",neck="Loricate Torque +1",ear1="Odnowa Earring +1",ear2="Odnowa Earring",
@@ -199,7 +204,7 @@ function init_gear_sets()
         back="Moonlight Cape",waist="Flume Belt",legs="Eri. Leg Guards +1",feet="Erilaz Greaves +1"}
 
     sets.midcast['Enhancing Magic'] = set_combine(sets.midcast.FastRecast,{head="Erilaz Galea +1",neck="Incanter's Torque",ear1="Andoaa Earring",hands="Runeist's Mitons +3",back="Merciful Cape",waist="Olympus Sash",legs="Futhark Trousers +1"})
-    sets.midcast['Phalanx'] = set_combine(sets.midcast['Enhancing Magic'],{head="Futhark Bandeau +1",feet=gear.herculean_nuke_feet})
+    sets.midcast['Phalanx'] = set_combine(sets.midcast['Enhancing Magic'],{head="Futhark Bandeau +1",legs="Carmine Cuisses +1",feet=gear.herculean_nuke_feet})
     sets.midcast['Regen'] = set_combine(sets.midcast['Enhancing Magic'],{head="Rune. Bandeau +3"}) 
 	sets.midcast['Refresh'] = set_combine(sets.midcast['Enhancing Magic'],{head="Erilaz Galea +1"}) 
     sets.midcast.Stoneskin = set_combine(sets.midcast['Enhancing Magic'], {ear2="Earthcry Earring",waist="Siegel Sash"})
@@ -207,6 +212,8 @@ function init_gear_sets()
 	sets.midcast.Foil = set_combine(sets.Enmity, {})
     sets.midcast.Stun = set_combine(sets.Enmity, {})
 	sets.midcast['Blue Magic'] = set_combine(sets.Enmity, {})
+	sets.midcast['Blue Magic'].SIRD = set_combine(sets.Enmity.SIRD, {})
+	sets.midcast.Cocoon = set_combine(sets.Enmity.SIRD, {})
 
     sets.midcast.Cure = {ammo="Staunch Tathlum",
         head="Carmine Mask +1",neck="Phalaina Locket",ear1="Mendi. Earring",ear2="Roundel Earring",
@@ -241,12 +248,15 @@ function init_gear_sets()
         back="Shadow Mantle",waist="Flume Belt",legs="Eri. Leg Guards +1",feet="Erilaz Greaves +1"}
 		
 	sets.idle.KiteTank = {ammo="Staunch Tathlum",
-        head="Fu. Bandeau +1",neck="Loricate Torque +1",ear1="Genmei Earring",ear2="Ethereal Earring",
+        head="Fu. Bandeau +1",neck="Vim Torque +1",ear1="Genmei Earring",ear2="Ethereal Earring",
         body="Futhark Coat +1",hands=gear.herculean_dt_hands,ring1="Defending Ring",ring2="Moonbeam Ring",
         back="Moonlight Cape",waist="Flume Belt",legs="Carmine Cuisses +1",feet="Hippo. Socks +1"}
-	
-	sets.idle.Weak = {}
-		   
+
+	sets.idle.Weak = {ammo='Homiliary',
+		head="Rawhide Mask",neck="Loricate Torque +1",ear1="Genmei Earring",ear2="Ethereal Earring",
+		body="Runeist's Coat +3",hands=gear.herculean_refresh_hands,ring1="Defending Ring",ring2="Dark Ring",
+		back="Moonlight Cape",waist="Flume Belt",legs="Rawhide Trousers",feet=gear.herculean_refresh_feet}
+
 	sets.Kiting = {legs="Carmine Cuisses +1"}
 	
 	sets.latent_refresh = {waist="Fucho-no-obi"}
@@ -380,6 +390,7 @@ function init_gear_sets()
 	sets.buff.Doom = set_combine(sets.buff.Doom, {})
 	sets.buff.Sleep = {head="Frenzy Sallet"}
 	sets.buff.Battuta = {}
+	sets.buff.Embolden = {back="Evasionist's Cape"}
 	
 end
 
@@ -415,23 +426,23 @@ function check_trust()
 			if party.p5 == nil then
 				local spell_recasts = windower.ffxi.get_spell_recasts()
 			
-				if spell_recasts[980] == 0 and not have_trust("Yoran-Oran") then
+				if spell_recasts[980] < spell_latency and not have_trust("Yoran-Oran") then
 					windower.send_command('input /ma "Yoran-Oran (UC)" <me>')
 					tickdelay = (framerate * 3)
 					return true
-				elseif spell_recasts[952] == 0 and not have_trust("Koru-Moru") then
+				elseif spell_recasts[952] < spell_latency and not have_trust("Koru-Moru") then
 					windower.send_command('input /ma "Koru-Moru" <me>')
 					tickdelay = (framerate * 3)
 					return true
-				elseif spell_recasts[979] == 0 and not have_trust("Selh'teus") then
+				elseif spell_recasts[979] < spell_latency and not have_trust("Selh'teus") then
 					windower.send_command('input /ma "Selh\'teus" <me>')
 					tickdelay = (framerate * 3)
 					return true
-				elseif spell_recasts[967] == 0 and not have_trust("Qultada") then
+				elseif spell_recasts[967] < spell_latency and not have_trust("Qultada") then
 					windower.send_command('input /ma "Qultada" <me>')
 					tickdelay = (framerate * 3)
 					return true
-				elseif spell_recasts[914] == 0 and not have_trust("Ulmia") then
+				elseif spell_recasts[914] < spell_latency and not have_trust("Ulmia") then
 					windower.send_command('input /ma "Ulmia" <me>')
 					tickdelay = (framerate * 3)
 					return true

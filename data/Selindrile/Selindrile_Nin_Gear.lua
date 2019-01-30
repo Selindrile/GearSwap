@@ -19,10 +19,9 @@ function user_setup()
 	send_command('bind ^` input /ja "Innin" <me>')
     send_command('bind !` input /ja "Yonin" <me>')
 	send_command('bind @` gs c cycle SkillchainMode')
-	send_command('bind !f11 gs c cycle ExtraMeleeMode')
 	
-	utsusemi_cancel_delay = .4
-	utsusemi_ni_cancel_delay = .1
+	utsusemi_cancel_delay = .3
+	utsusemi_ni_cancel_delay = .06
 	
     select_default_macro_book()
 end
@@ -312,7 +311,7 @@ function init_gear_sets()
 	sets.weapons.LowBuff = {main="Heishi Shorinken",sub="Blurred Knife +1"}
 	sets.weapons.ProcDagger = {main="Chicken Knife II",sub=empty}
 	sets.weapons.ProcSword = {main="Ark Sword",sub=empty}
-	sets.weapons.ProcGreatSword = {main="Irradiance Blade",sub=empty}
+	sets.weapons.ProcGreatSword = {main="Lament",sub=empty}
 	sets.weapons.ProcScythe = {main="Ark Scythe",sub=empty}
 	sets.weapons.ProcPolearm = {main="Pitchfork +1",sub=empty}
 	sets.weapons.ProcGreatKatana = {main="Hardwood Katana",sub=empty}

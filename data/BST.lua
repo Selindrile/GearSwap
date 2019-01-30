@@ -183,7 +183,7 @@ function job_setup()
 
 	update_pet_groups()
 	update_melee_groups()
-	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoReadyMode","AutoBuffMode",},{"Weapons","OffenseMode","WeaponskillMode","PetMode","IdleMode","Passive","RuneElement","JugMode","RewardMode","TreasureMode",})
+	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoReadyMode","AutoBuffMode",},{"AutoSambaMode","Weapons","OffenseMode","WeaponskillMode","PetMode","IdleMode","Passive","RuneElement","JugMode","RewardMode","TreasureMode",})
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -398,11 +398,6 @@ end
 
 -- Modify the default melee set after it was constructed.
 function job_customize_melee_set(meleeSet)
-
-    if state.ExtraMeleeMode.value ~= 'None' then
-        meleeSet = set_combine(meleeSet, sets[state.ExtraMeleeMode.value])
-    end
-
     return meleeSet
 end
 
@@ -531,7 +526,7 @@ function check_pet()
 		if pet.hpp < 34 then
 			local abil_recasts = windower.ffxi.get_ability_recasts()
 			
-			if abil_recasts[103] == 0 and not (buffactive.amnesia or buffactive.impairment) then
+			if abil_recasts[103] < latency and not (buffactive.amnesia or buffactive.impairment) then
 				if item_available('Pet Food '..state.RewardMode.value..'') then
 					windower.chat.input('/ja "Reward" <me>')
 					tickdelay = (framerate * .5)
@@ -543,11 +538,11 @@ function check_pet()
 		end
 	elseif state.AutoCallPet.value and not areas.Cities:contains(world.area) then
 		local abil_recasts = windower.ffxi.get_ability_recasts()
-		if abil_recasts[94] == 0 then
+		if abil_recasts[94] < latency then
 			send_command('@input /ja "Bestial Loyalty" <me>')
 			tickdelay = (framerate * .5)
 			return true
-		elseif abil_recasts[104] == 0 then
+		elseif abil_recasts[104] < latency then
 			send_command('@input /ja "Call Beast" <me>')
 			tickdelay = (framerate * .5)
 			return true
@@ -594,7 +589,7 @@ function get_current_ready_count()
 	-- The *# is your current recharge timer.
     local fullRechargeTime = 3*ReadyChargeTimer
 
-    local currentCharges = math.floor(maxCharges - maxCharges * readyRecast / fullRechargeTime)
+    local currentCharges = math.floor((maxCharges - maxCharges * readyRecast / fullRechargeTime) + latency)
 
     return currentCharges
 end

@@ -20,8 +20,6 @@ function user_setup()
     -- Additional local binds
     send_command('bind ^` input /ja "Flee" <me>')
     send_command('bind !` input /ra <t>')
-    send_command('bind !- gs c cycle targetmode')
-	send_command('bind !f11 gs c cycle ExtraMeleeMode')
 	send_command('bind @` gs c cycle SkillchainMode')
 	send_command('bind @f10 gs c toggle AmbushMode')
 	send_command('bind ^backspace gs c weapons Throwing;gs c update')
@@ -60,7 +58,7 @@ function init_gear_sets()
 	sets.weapons.Aeneas = {main="Aeneas",sub="Taming Sari"}
 	sets.weapons.LowBuff = {main="Aeneas",sub="Blurred Knife +1"}
 	sets.weapons.MagicWeapons = {main="Malevolence",sub="Malevolence"}
-	sets.weapons.Throwing = {range="Raider's Bmrng."}
+	sets.weapons.Throwing = {main="Aeneas",sub="Taming Sari",range="Comet Tail",ammo=empty}
 	
     -- Actions we want to use to tag TH.
     sets.precast.Step = {ammo="Falcon Eye",
@@ -117,7 +115,7 @@ function init_gear_sets()
 
 
     -- Ranged snapshot gear
-    sets.precast.RA = {}
+    sets.precast.RA = {range="Comet Tail"}
 
 
     -- Weaponskill sets

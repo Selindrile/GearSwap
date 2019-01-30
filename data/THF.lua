@@ -37,7 +37,7 @@ function job_setup()
 	autofood = 'Soy Ramen'
 	
 	update_melee_groups()
-	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","TreasureMode",})
+	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"AutoSambaMode","Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","TreasureMode",})
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ function job_post_precast(spell, spellMap, eventArgs)
 		end
 	end
 	
-	if spell.english == 'Aeolian Edge' or spell.english == 'Cyclone' and state.TreasureMode.value ~= 'None' then
+	if (spell.english == 'Aeolian Edge' or spell.english == 'Cyclone') and state.TreasureMode.value ~= 'None' then
         equip(sets.TreasureHunter)
     elseif spell.english == 'Sneak Attack' or spell.english == 'Trick Attack' or spell.type == 'WeaponSkill' then
         if state.TreasureMode.value == 'SATA' or state.TreasureMode.value == 'Fulltime' then
@@ -146,9 +146,6 @@ end
 
 -- Called any time we attempt to handle automatic gear equips (ie: engaged or idle gear).
 function job_handle_equipping_gear(playerStatus, eventArgs)
-    -- Check that ranged slot is locked, if necessary
-    check_range_lock()
-
     -- Check for SATA when equipping gear.  If either is active, equip
     -- that gear specifically, and block equipping default gear.
     check_buff('Sneak Attack', eventArgs)
@@ -157,7 +154,7 @@ end
 
 
 function job_customize_idle_set(idleSet)
-    if player.hpp < 80 then
+    if (state.IdleMode.value == 'Normal' or state.IdleMode.value == 'Sphere') and state.DefenseMode.value == 'None' and not (player.in_combat or being_attacked) and player.hpp < 80 then
         idleSet = set_combine(idleSet, sets.ExtraRegen)
     end
 
@@ -166,16 +163,13 @@ end
 
 -- Modify the default melee set after it was constructed.
 function job_customize_melee_set(meleeSet)
-    if state.TreasureMode.value == 'Fulltime' then
-        meleeSet = set_combine(meleeSet, sets.TreasureHunter)
-    end
 
-    if state.ExtraMeleeMode.value ~= 'None' then
-        meleeSet = set_combine(meleeSet, sets[state.ExtraMeleeMode.value])
-    end
-	
     if state.AmbushMode.value == true then
         meleeSet = set_combine(meleeSet, sets.Ambush)
+    end
+	
+    if state.TreasureMode.value == 'Fulltime' then
+        meleeSet = set_combine(meleeSet, sets.TreasureHunter)
     end
 
     return meleeSet
@@ -248,15 +242,6 @@ function check_buff(buff_name, eventArgs)
             equip(sets.TreasureHunter)
         end
         eventArgs.handled = true
-    end
-end
-
--- Function to lock the ranged slot if we have a ranged weapon equipped.
-function check_range_lock()
-    if player.equipment.range ~= 'empty' then
-        disable('range', 'ammo')
-    else
-        enable('range', 'ammo')
     end
 end
 

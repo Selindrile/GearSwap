@@ -1,5 +1,6 @@
-DISCLAIMER: PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME, however feel free to shoot me a way to contact you outside of game,
-	through	the game, and I'm happy to help.
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME, however feel free to send me a way to contact you outside of game,
+	through	the game, and I'm happy to help, my preferred way of being contact is Discord, my Stream discord is here:
+	https://discord.gg/ug6xtvQ
 
 Setting up my Gearswaps and Github updating.
 
@@ -25,7 +26,10 @@ Setting up my Gearswaps and Github updating.
 7.) If you don't have my style Character luas already, then Inside your Gearswap\Data\
 	folder, first copy, then rename the "Selindrile" folder once for each of your
 	characters' names, you can click Rename.bat and for the first sequence enter:
-	Selindrile, then enter your character's name for new sequence.
+	Selindrile, then enter your character's name for new sequence. (If it doesn't work
+	you will have to rename these files namually, then delete Rename.bat in all folders
+	except the Selindrile folder.
+	
 
 8.) To update my gearswaps in the future open up Github Desktop and click the third button (Fetch Origin, then
     push the same button again.
@@ -42,4 +46,7 @@ Setting up my Gearswaps and Github updating.
 11.) Optional: For full functionality my gearswap and init files do depend on a few other addons that can
     be found in your launcher, I'll list them here: Addons: Shortcuts, Cancel, Itemizer. Plugins: Timers, Run
 
-12.) Read the Cheat Sheet in your Data Folder.
+12.) Semi Optional: For item usage commands to function, you'll likely need to set your time offset (Unless you happen to be in Central 	US time) instructions are found in charactername-globals.
+
+12.) Read the Cheat Sheet in your Data Folder, feel free to contact me if there's anything you don't understand but again
+	PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME

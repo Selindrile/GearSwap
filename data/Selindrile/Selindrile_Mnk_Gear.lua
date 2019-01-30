@@ -17,7 +17,6 @@ function user_setup()
 	send_command('bind ^` input /ja "Boost" <me>')
 	send_command('bind !` input /ja "Perfect Counter" <me>')
 	send_command('bind ^backspace input /ja "Mantra" <me>')
-    send_command('bind !f11 gs c cycle ExtraMeleeMode')
 	send_command('bind @` gs c cycle SkillchainMode')
 	
 	select_default_macro_book()
@@ -298,7 +297,7 @@ function init_gear_sets()
 	sets.weapons.ProcStaff = {main="Terra's Staff"}
 	sets.weapons.ProcClub = {main="Mafic Cudgel"}
 	sets.weapons.ProcSword = {main="Ark Sword",sub=empty}
-	sets.weapons.ProcGreatSword = {main="Irradiance Blade",sub=empty}
+	sets.weapons.ProcGreatSword = {main="Lament",sub=empty}
 	sets.weapons.ProcScythe = {main="Ark Scythe",sub=empty}
 	sets.weapons.ProcPolearm = {main="Pitchfork +1",sub=empty}
 	sets.weapons.ProcGreatKatana = {main="Hardwood Katana",sub=empty}

@@ -120,15 +120,13 @@ function init_gear_sets()
         body="Meg. Cuirie +2",hands="Carmine Fin. Ga. +1",ring1="Regal Ring",ring2="Dingir Ring",
         back=gear.tp_ranger_jse_back,waist="Yemaya Belt",legs="Adhemar Kecks",feet="Meg. Jam. +2"}
 	
-	sets.midcast.RA.Camo = set_combine(sets.midcast.RA, {body="Orion Jerkin +1"})
-		
     sets.midcast.RA.Acc = {
         head="Meghanada Visor +2",neck="Iskur Gorget",ear1="Enervating Earring",ear2="Telos Earring",
         body="Meg. Cuirie +2",hands="Meg. Gloves +2",ring1="Regal Ring",ring2="Dingir Ring",
         back=gear.tp_ranger_jse_back,waist="Yemaya Belt",legs="Meg. Chausses +2",feet="Meg. Jam. +2"}
 		
 	--These sets will overlay based on accuracy level, regardless of other options.
-	sets.buff.Camouflage = {}
+	sets.buff.Camouflage = {body="Orion Jerkin +1"}
 	sets.buff.Camouflage.Acc = {}
 	sets.buff['Double Shot'] = {back=gear.tp_ranger_jse_back}
 	sets.buff['Double Shot'].Acc = {}

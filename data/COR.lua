@@ -22,7 +22,7 @@ end
 function job_setup()
 
 	-- Whether to use Compensator under a certain threshhold even when weapons are locked.
-	state.CompensatorMode = M{'Never','500','1000','Always'}
+	state.CompensatorMode = M{'Never','300','1000','Always'}
 	-- Whether to automatically generate bullets.
 	state.AutoAmmoMode = M(true,'Auto Ammo Mode')
 	-- Whether to use Luzaf's Ring
@@ -36,11 +36,11 @@ function job_setup()
 	autows = 'Leaden Salute'
 	rangedautows = 'Last Stand'
 	autofood = 'Sublime Sushi'
-	ammostock = 200
+	ammostock = 198
 
     define_roll_values()
 	
-	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoFoodMode","RngHelper","AutoStunMode","AutoDefenseMode","LuzafRing","AutoBuffMode",},{"Weapons","OffenseMode","RangedMode","WeaponskillMode","ElementalMode","IdleMode","Passive","RuneElement","CompensatorMode","TreasureMode",})
+	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoShadowMode","AutoFoodMode","RngHelper","AutoStunMode","AutoDefenseMode","LuzafRing","AutoBuffMode",},{"AutoSambaMode","Weapons","OffenseMode","RangedMode","WeaponskillMode","ElementalMode","IdleMode","Passive","RuneElement","CompensatorMode","TreasureMode",})
 end
 
 
@@ -123,14 +123,15 @@ end
 function job_aftercast(spell, spellMap, eventArgs)
     if spell.type == 'CorsairRoll' and not spell.interrupted then
 		if state.CompensatorMode.value ~= 'Never' then
-			if player.equipment.range and player.equipment.range == 'Compensator' and sets.weapons[state.Weapons.value] and sets.weapons[state.Weapons.value].range and sets.weapons[state.Weapons.value].range ~= 'Compensator' then
+			if ((player.equipment.range and player.equipment.range == 'Compensator') or (player.equipment.ranged and player.equipment.ranged == 'Compensator')) and sets.weapons[state.Weapons.value] and sets.weapons[state.Weapons.value].range and sets.weapons[state.Weapons.value].range ~= 'Compensator' then
 				enable('range')
 				equip({range=sets.weapons[state.Weapons.value].range})
 				disable('range')
-			elseif player.equipment.ranged and player.equipment.ranged == 'Compensator' and sets.weapons[state.Weapons.value] and sets.weapons[state.Weapons.value].ranged and sets.weapons[state.Weapons.value].ranged ~= 'Compensator' then
-				enable('ranged')
-				equip({range=sets.weapons[state.Weapons.value].ranged})
-				disable('ranged')
+			end
+			if (player.equipment.main and player.equipment.main == 'Rostam') and sets.weapons[state.Weapons.value] and sets.weapons[state.Weapons.value].main and sets.weapons[state.Weapons.value].main ~= 'Rostam' then
+				enable('main')
+				equip({main=sets.weapons[state.Weapons.value].main})
+				disable('main')
 			end
 		end
         display_roll_info(spell)
@@ -153,7 +154,8 @@ end
 
 function job_buff_change(buff, gain)
 	if player.equipment.Ranged and buff:contains('Aftermath') then
-		if (player.equipment.Ranged == 'Death Penalty' and buffactive['Aftermath: Lv.3']) then
+		classes.CustomRangedGroups:clear()
+		if (player.equipment.Ranged == 'Death Penalty' and buffactive['Aftermath: Lv.3']) or (player.equipment.Ranged == 'Armageddon' and (buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'])) then
 			classes.CustomRangedGroups:append('AM')
 		end
 	end
@@ -161,10 +163,6 @@ end
 
 -- Modify the default melee set after it was constructed.
 function job_customize_melee_set(meleeSet)
-    if state.ExtraMeleeMode and state.ExtraMeleeMode.value ~= 'None' then
-        meleeSet = set_combine(meleeSet, sets[state.ExtraMeleeMode.value])
-    end
-
     return meleeSet
 end
 
@@ -185,11 +183,11 @@ function job_post_precast(spell, spellMap, eventArgs)
 					equip(sets.MaxTP)
 			end
 		end
-	elseif spell.type == 'CorsairShot' then
+	elseif spell.type == 'CorsairShot' and not (spell.english == 'Light Shot' or spell.english == 'Dark Shot') then
 		if state.WeaponskillMode.value == "Proc" and sets.precast.CorsairShot.Proc then
 			equip(sets.precast.CorsairShot.Proc)
-		elseif state.CastingMode.value == 'Resistant' then
-			classes.CustomClass = 'Acc'
+		elseif state.CastingMode.value == 'Fodder' and sets.precast.CorsairShot.Damage then
+			equip(sets.precast.CorsairShot.Damage)
 		end
 	elseif spell.action_type == 'Ranged Attack' and sets.precast.RA and buffactive.Flurry then
 		if sets.precast.RA.Flurry and lastflurry == 1 then
@@ -201,9 +199,15 @@ function job_post_precast(spell, spellMap, eventArgs)
 		if state.LuzafRing.value and item_available("Luzaf's Ring") then
 			equip(sets.precast.LuzafRing)
 		end
-		if spell.type == 'CorsairRoll' and item_available("Compensator") and state.CompensatorMode.value ~= 'Never' and (state.CompensatorMode.value == 'Always' or tonumber(state.CompensatorMode.value) > player.tp) then
-			enable('range')
-			equip({range="Compensator"})
+		if spell.type == 'CorsairRoll' and state.CompensatorMode.value ~= 'Never' and (state.CompensatorMode.value == 'Always' or tonumber(state.CompensatorMode.value) > player.tp) then
+			if item_available("Compensator") then
+				enable('range')
+				equip({range="Compensator"})
+			end
+			if item_available("Rostam") then
+				enable('main')
+				equip({main="Rostam"})
+			end
 		end
     elseif spell.english == 'Fold' and buffactive['Bust'] == 2 and sets.precast.FoldDoubleBust then
 		equip(sets.precast.FoldDoubleBust)
@@ -241,10 +245,12 @@ function define_roll_values()
         ["Courser's Roll"]   = {lucky=3, unlucky=9, bonus="Snapshot"},
         ["Blitzer's Roll"]   = {lucky=4, unlucky=9, bonus="Attack Delay"},
         ["Tactician's Roll"] = {lucky=5, unlucky=8, bonus="Regain"},
-        ["Allies's Roll"]    = {lucky=3, unlucky=10, bonus="Skillchain Damage"},
+        ["Allies' Roll"]    = {lucky=3, unlucky=10, bonus="Skillchain Damage"},
         ["Miser's Roll"]     = {lucky=5, unlucky=7, bonus="Save TP"},
         ["Companion's Roll"] = {lucky=2, unlucky=10, bonus="Pet Regain and Regen"},
         ["Avenger's Roll"]   = {lucky=4, unlucky=8, bonus="Counter Rate"},
+		["Naturalist's Roll"]   = {lucky=3, unlucky=7, bonus="Enhancing Duration"},
+		["Runeist's Roll"]   = {lucky=4, unlucky=8, bonus="Magic Evasion"},
     }
 end
 

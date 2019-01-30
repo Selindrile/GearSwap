@@ -21,17 +21,20 @@ function job_setup()
 
 	autows = 'Realmrazer'
 	autofood = 'Miso Ramen'
-	indispell = 'Torpor'
-	geospell = 'Frailty'
+	autoindi = 'Torpor'
+	autoentrust = 'Fury'
+	autoentrustee = '<p1>'
+	autogeo = 'Frailty'
 	last_indi = ''
 	last_geo = ''
 	
-	state.ShowDistance = M(true, 'Show Geomancy Buff/Debuff distance.')
+	state.ShowDistance = M(true, 'Show Geomancy Buff/Debuff distance')
+	state.AutoEntrust = M(false, 'AutoEntrust Mode')
 	
     indi_timer = ''
     indi_duration = 180
 
-	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoNukeMode","AutoWSMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode"},{"Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","RecoverMode","ElementalMode","CastingMode","TreasureMode",})
+	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoNukeMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode"},{"Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","RecoverMode","ElementalMode","CastingMode","TreasureMode",})
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -48,7 +51,7 @@ function job_filter_precast(spell, spellMap, eventArgs)
 
 	if spell.english:startswith('Geo-') and pet.isvalid then
 		eventArgs.cancel = true
-		windower.chat.input('/ja "Full-Circle" <me>')
+		windower.chat.input('/ja "Full Circle" <me>')
 		windower.chat.input:schedule(2,'/ma "'..spell.english..'" '..spell.target.raw..'')
 	end
 
@@ -62,8 +65,22 @@ function job_pretarget(spell, spellMap, eventArgs)
 					add_to_chat(204, 'Entrust active - You can\'t entrust yourself.')
 					eventArgs.cancel = true
 				end
-			elseif spell.target.raw == '<t>' then
-				change_target('<me>')
+			elseif spell.target.type ~= 'SELF' then
+				if state.AutoEntrust.value and ((spell.target.type == 'PLAYER' and not spell.target.charmed) or (spell.target.type == 'NPC')) and spell.target.in_party then
+					local spell_recasts = windower.ffxi.get_spell_recasts()
+					local abil_recasts = windower.ffxi.get_ability_recasts()
+					eventArgs.cancel = true
+					
+					if spell_recasts[spell.recast_id] > 1.5 then
+						add_to_chat(123,'Abort: ['..spell.english..'] waiting on recast. ('..seconds_to_clock(spell_recasts[spell.recast_id]/60)..')')
+					elseif abil_recasts[93] > 0 then
+						add_to_chat(123,'Abort: [Entrust] waiting on recast. ('..seconds_to_clock(abil_recasts[93])..')')
+					else
+						send_command('@input /ja "Entrust" <me>; wait 1.1; input /ma "'..spell.name..'" '..spell.target.name)
+					end
+				elseif spell.target.raw == '<t>' then
+					change_target('<me>')
+				end
 			end
 		elseif spell.name:startswith('Geo') then
 			if set.contains(spell.targets, 'Enemy') then
@@ -98,6 +115,9 @@ function job_precast(spell, spellMap, eventArgs)
         if state.CastingMode.value == 'Proc' then
             classes.CustomClass = 'Proc'
         end
+	elseif buffactive.Bolster and (spell.english == 'Blaze of Glory' or spell.english == 'Ecliptic Attrition') then
+		eventArgs.cancel = true
+		add_to_chat(123,'Abort: Bolster maxes the strength of bubbles.')
     end
 end
 
@@ -108,13 +128,19 @@ end
 function job_post_midcast(spell, spellMap, eventArgs)
 
 	if spell.skill == 'Elemental Magic' and default_spell_map ~= 'ElementalEnfeeble' and spell.english ~= 'Impact' then
-        if state.MagicBurstMode.value ~= 'Off' then equip(sets.MagicBurst) end
+		if state.MagicBurstMode.value ~= 'Off' then
+			if state.CastingMode.value:contains('Resistant') and sets.ResistantMagicBurst then
+				equip(sets.ResistantMagicBurst)
+			else
+				equip(sets.MagicBurst)
+			end
+		end
 		if spell.element == world.weather_element or spell.element == world.day_element then
 			if state.CastingMode.value == 'Fodder' then
-				if item_available('Twilight Cape') and not state.Capacity.value then
-					sets.TwilightCape = {back="Twilight Cape"}
-					equip(sets.TwilightCape)
-				end
+				-- if item_available('Twilight Cape') and not LowTierNukes:contains(spell.english) and not state.Capacity.value then
+					-- sets.TwilightCape = {back="Twilight Cape"}
+					-- equip(sets.TwilightCape)
+				-- end
 				if spell.element == world.day_element then
 					if item_available('Zodiac Ring') then
 						sets.ZodiacRing = {ring2="Zodiac Ring"}
@@ -129,9 +155,13 @@ function job_post_midcast(spell, spellMap, eventArgs)
 		end
 
 		if state.RecoverMode.value ~= 'Never' and (state.RecoverMode.value == 'Always' or tonumber(state.RecoverMode.value:sub(1, -2)) > player.mpp) then
-			if state.MagicBurstMode.value ~= 'Off' and sets.RecoverBurst then
-				equip(sets.RecoverBurst)
-			else
+			if state.MagicBurstMode.value ~= 'Off' then
+				if state.CastingMode.value:contains('Resistant') and sets.ResistantRecoverBurst then
+					equip(sets.ResistantRecoverBurst)
+				elseif sets.RecoverBurst then
+					equip(sets.RecoverBurst)
+				end
+			elseif sets.RecoverMP then
 				equip(sets.RecoverMP)
 			end
 		end
@@ -142,6 +172,12 @@ function job_post_midcast(spell, spellMap, eventArgs)
                 equip(sets.buff[buff])
             end
         end
+		
+		if state.Buff.Entrust and spell.english:startswith('Indi-') then
+			if sets.midcast.Geomancy.main == 'Idris' and item_available('Solstice') then
+				equip({main="Solstice"})
+			end
+		end
     end
 
 end
@@ -261,12 +297,20 @@ end
 
 function job_self_command(commandArgs, eventArgs)
 		if commandArgs[1] == 'autoindi' and commandArgs[2] then
-			indispell = commandArgs[2]:ucfirst()
-			add_to_chat(122,'Your Auto Indi- spell is set to '..indispell..'.')
+			autoindi = commandArgs[2]:ucfirst()
+			add_to_chat(122,'Your Auto Indi- spell is set to '..autoindi..'.')
 			if state.DisplayMode.value then update_job_states()	end
 		elseif commandArgs[1] == 'autogeo' and commandArgs[2] then
-			geospell = commandArgs[2]:ucfirst()
-			add_to_chat(122,'Your Auto Geo- spell is set to '..geospell..'.')
+			autogeo = commandArgs[2]:ucfirst()
+			add_to_chat(122,'Your Auto Geo- spell is set to '..autogeo..'.')
+			if state.DisplayMode.value then update_job_states()	end
+		elseif commandArgs[1] == 'autoentrust' and commandArgs[2] then
+			autoentrust = commandArgs[2]:ucfirst()
+			add_to_chat(122,'Your Auto Entrust Indi- spell is set to '..autoentrust..'.')
+			if state.DisplayMode.value then update_job_states()	end
+		elseif commandArgs[1] == 'autoentrustee' and commandArgs[2] then
+			autoentrustee = commandArgs[2]:ucfirst()
+			add_to_chat(122,'Your Auto Entrustee target is set to '..autoentrustee..'.')
 			if state.DisplayMode.value then update_job_states()	end
 		elseif commandArgs[1]:lower() == 'elemental' then
 			handle_elemental(commandArgs)
@@ -290,21 +334,21 @@ function handle_elemental(cmdParams)
 		local spell_recasts = windower.ffxi.get_spell_recasts()
 		
 		if state.ElementalMode.value == 'Light' then
-			if spell_recasts[29] == 0 and actual_cost(get_spell_table_by_name('Banish II')) < player.mp then
+			if spell_recasts[29] < spell_latency and actual_cost(get_spell_table_by_name('Banish II')) < player.mp then
 				windower.chat.input('/ma "Banish II" <t>')
-			elseif spell_recasts[28] == 0 and actual_cost(get_spell_table_by_name('Banish')) < player.mp then
+			elseif spell_recasts[28] < spell_latency and actual_cost(get_spell_table_by_name('Banish')) < player.mp then
 				windower.chat.input('/ma "Banish" <t>')
 			else
 				add_to_chat(123,'Abort: Banishes on cooldown or not enough MP.')
 			end
 
 		else
-			if player.job_points[(res.jobs[player.main_job_id].ens):lower()].jp_spent > 99 and spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..' V').id] == 0 and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..' V')) < player.mp then
+			if player.job_points[(res.jobs[player.main_job_id].ens):lower()].jp_spent > 99 and spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..' V').id] < spell_latency and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..' V')) < player.mp then
 				windower.chat.input('/ma "'..elements.nuke[state.ElementalMode.value]..' V" <t>')
 			else
 				local tiers = {' IV',' III',' II',''}
 				for k in ipairs(tiers) do
-					if spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'').id] == 0 and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'')) < player.mp then
+					if spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'').id] < spell_latency and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'')) < player.mp then
 						windower.chat.input('/ma "'..elements.nuke[state.ElementalMode.value]..''..tiers[k]..'" <t>')
 						return
 					end
@@ -321,7 +365,7 @@ function handle_elemental(cmdParams)
 	
 		local tiers = {' II',''}
 		for k in ipairs(tiers) do
-			if spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'').id] == 0 and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'')) < player.mp then
+			if spell_recasts[get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'').id] < spell_latency and actual_cost(get_spell_table_by_name(elements.nuke[state.ElementalMode.value]..''..tiers[k]..'')) < player.mp then
 				windower.chat.input('/ma "'..elements.nuke[state.ElementalMode.value]..''..tiers[k]..'" <t>')
 				return
 			end
@@ -340,7 +384,7 @@ function handle_elemental(cmdParams)
 		local tierlist = {['ara3']='ra III',['ara2']='ra II',['ara']='ra'}
 		if command == 'ara' then
 			for i in ipairs(tierkey) do
-				if spell_recasts[get_spell_table_by_name(elements.nukera[state.ElementalMode.value]..''..tierlist[tierkey[i]]..'').id] == 0 and actual_cost(get_spell_table_by_name(elements.nukera[state.ElementalMode.value]..''..tierlist[tierkey[i]]..'')) < player.mp then
+				if spell_recasts[get_spell_table_by_name(elements.nukera[state.ElementalMode.value]..''..tierlist[tierkey[i]]..'').id] < spell_latency and actual_cost(get_spell_table_by_name(elements.nukera[state.ElementalMode.value]..''..tierlist[tierkey[i]]..'')) < player.mp then
 					windower.chat.input('/ma "'..elements.nukera[state.ElementalMode.value]..''..tierlist[tierkey[i]]..'" <t>')
 					return
 				end
@@ -373,7 +417,7 @@ function handle_elemental(cmdParams)
 			windower.chat.input('/ma "Phalanx" <me>')
 		else
 			local spell_recasts = windower.ffxi.get_spell_recasts()
-			if (player.target.type == 'SELF' or not player.target.in_party) and buffactive[elements.storm_of[state.ElementalMode.value]] and not buffactive['Klimaform'] and spell_recasts[287] == 0 then
+			if (player.target.type == 'SELF' or not player.target.in_party) and buffactive[elements.storm_of[state.ElementalMode.value]] and not buffactive['Klimaform'] and spell_recasts[287] < spell_latency then
 				windower.chat.input('/ma "Klimaform" <me>')
 			else
 				windower.chat.input('/ma "'..elements.storm_of[state.ElementalMode.value]..'"')
@@ -388,14 +432,20 @@ end
 
 function job_tick()
 	if check_geo() then return true end
+	if check_buff() then return true end
+	if check_buffup() then return true end
 	return false
 end
 
 function check_geo()
-	if state.AutoBuffMode.value and not moving and not areas.Cities:contains(world.area) then
-		if not player.indi and indispell ~= 'None' then
-			windower.chat.input('/ma "Indi-'..indispell..'" <me>')
+	if state.AutoBuffMode.value and not areas.Cities:contains(world.area) then
+		if not player.indi and autoindi ~= 'None' then
+			windower.chat.input('/ma "Indi-'..autoindi..'" <me>')
 			tickdelay = (framerate * 2.1)
+			return true
+		elseif autoentrust ~= 'None' and windower.ffxi.get_ability_recasts()[93] < latency then
+			send_command('@input /ja "Entrust" <me>; wait 1.1; input /ma "Indi-'..autoentrust..'" '..autoentrustee)
+			tickdelay = (framerate * 3.5)
 			return true
 		elseif pet.isvalid then
 			local pet = windower.ffxi.get_mob_by_target("pet")
@@ -406,9 +456,9 @@ function check_geo()
 			else
 				return false
 			end
-		elseif not pet.isvalid and geospell ~= 'None' and (windower.ffxi.get_mob_by_target('bt') or geo_buffs:contains(geospell)) then
-			windower.chat.input('/ma "Geo-'..geospell..'" <bt>')
-			tickdelay = (framerate * 2)
+		elseif not pet.isvalid and autogeo ~= 'None' and (windower.ffxi.get_mob_by_target('bt') or geo_buffs:contains(autogeo)) then
+			windower.chat.input('/ma "Geo-'..autogeo..'" <bt>')
+			tickdelay = (framerate * 3.1)
 			return true
 		else
 			return false
@@ -455,7 +505,7 @@ windower.raw_register_event('prerender', function()
         luopan_txtbox = luopan_txtbox..'\\cs(0,255,0)'..last_geo..':\\cs(255,255,255)\n'
         for i,v in pairs(windower.ffxi.get_mob_array()) do
             local DistanceBetween = ((myluopan.x - v.x)*(myluopan.x-v.x) + (myluopan.y-v.y)*(myluopan.y-v.y)):sqrt()
-            if DistanceBetween < (6 + v.model_size) and (v.status == 1 or v.status == 0) and v.name ~= "" and v.name ~= nil and v.name ~= "Luopan" and v.valid_target and v.model_size > 0 then 
+            if DistanceBetween < (6 + v.model_size) and not (v.status == 2 or v.status == 3) and v.name ~= "" and v.name ~= nil and v.name ~= "Luopan" and v.valid_target and v.model_size > 0 then 
                 if buff_list:contains(last_geo) and v.in_party then
                     luopan_txtbox = luopan_txtbox..v.name.." "..string.format("%.2f",DistanceBetween).."\n"
                     geo_count = geo_count + 1
@@ -489,10 +539,75 @@ windower.raw_register_event('prerender', function()
     end
      
     luopan.value = luopan_txtbox
-    if state.ShowDistance.value and ((myluopan and geo_count ~= 0) or (buffactive['Colure Active'] and indi_count ~= 0)) then 
+    if state.ShowDistance and state.ShowDistance.value and ((myluopan and geo_count ~= 0) or (buffactive['Colure Active'] and indi_count ~= 0)) then 
         luopan:visible(true)
     else
         luopan:visible(false)
     end
      
 end)
+
+function check_buff()
+	if state.AutoBuffMode.value and not areas.Cities:contains(world.area) then
+		local spell_recasts = windower.ffxi.get_spell_recasts()
+		for i in pairs(buff_spell_lists['Auto']) do
+			if not buffactive[buff_spell_lists['Auto'][i].Buff] and spell_recasts[buff_spell_lists['Auto'][i].SpellID] < latency and silent_can_use(buff_spell_lists['Auto'][i].SpellID) then
+				windower.chat.input('/ma "'..buff_spell_lists['Auto'][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
+	else
+		return false
+	end
+end
+
+function check_buffup()
+	if buffup ~= '' then
+		local needsbuff = false
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) then
+				needsbuff = true
+				break
+			end
+		end
+	
+		if not needsbuff then
+			add_to_chat(217, 'All '..buffup..' buffs are up!')
+			buffup = ''
+			return false
+		end
+		
+		local spell_recasts = windower.ffxi.get_spell_recasts()
+		
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) and spell_recasts[buff_spell_lists[buffup][i].SpellID] < latency then
+				windower.chat.input('/ma "'..buff_spell_lists[buffup][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
+		
+		return false
+	else
+		return false
+	end
+end
+
+buff_spell_lists = {
+	Auto = {	
+		{Name='Haste',Buff='Haste',SpellID=57},
+		{Name='Refresh',Buff='Refresh',SpellID=109},
+		{Name='Stoneskin',Buff='Stoneskin',SpellID=54},
+	},
+	
+	Default = {
+		{Name='Haste',Buff='Haste',SpellID=57},
+		{Name='Refresh',Buff='Refresh',SpellID=109},
+		{Name='Aquaveil',Buff='Aquaveil',SpellID=55},
+		{Name='Stoneskin',Buff='Stoneskin',SpellID=54},
+		{Name='Blink',Buff='Blink',SpellID=53},
+		{Name='Regen',Buff='Regen',SpellID=108},
+		{Name='Phalanx',Buff='Phalanx',SpellID=106},
+	},
+}

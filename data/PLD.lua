@@ -16,7 +16,6 @@ function job_setup()
     state.Buff.Cover = buffactive.Cover or false
 	state.Stance = M{['description']='Stance','Hasso','Seigan','None'}
 
-	state.EquipShield = M(false, 'Shield Swapping Defense Mode')
 	state.CurrentStep = M{['description']='Current Step', 'Box Step', 'Quickstep'}
 
 	--List of which WS you plan to use TP bonus WS with. (Atonement uses but doesn't need to switch out.)
@@ -28,7 +27,7 @@ function job_setup()
 	autofood = 'Miso Ramen'
 	
 	update_melee_groups()
-	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoTankMode","AutoWSMode","AutoFoodMode","AutoNukeMode","AutoStunMode","AutoDefenseMode","AutoBuffMode","EquipShield",},{"Weapons","OffenseMode","WeaponskillMode","Stance","IdleMode","Passive","RuneElement","PhysicalDefenseMode","MagicalDefenseMode","ResistDefenseMode","TreasureMode",})
+	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoTankMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoNukeMode","AutoStunMode","AutoDefenseMode","AutoBuffMode"},{"AutoSambaMode","Weapons","OffenseMode","WeaponskillMode","Stance","IdleMode","Passive","RuneElement","PhysicalDefenseMode","MagicalDefenseMode","ResistDefenseMode","CastingMode","TreasureMode",})
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -39,14 +38,20 @@ end
 
 function job_filtered_action(spell, eventArgs)
 	if spell.type == 'WeaponSkill' then
-        if player.equipment.main == 'Nibiru Cudgel' then
+		local available_ws = S(windower.ffxi.get_abilities().weapon_skills)
+		-- WS 172 is Flash Nova, meaning a Spear is equipped.
+		if available_ws:contains(172) then
             if spell.english == "Chant du Cygne" then
+				send_command('@input /ws "True Strike" '..spell.target.raw)
                 cancel_spell()
-				send_command('@input /ws "Realmrazer" '..spell.target.raw)
+				eventArgs.cancel = true
+            elseif spell.english == "Savage Blade" then
+                send_command('@input /ws "Realmrazer" '..spell.target.raw)
+                cancel_spell()
 				eventArgs.cancel = true
             elseif spell.english == "Sanguine Blade" then
+                send_command('@input /ws "Flash Nova" '..spell.target.raw)
                 cancel_spell()
-				send_command('@input /ws "Flash Nova" '..spell.target.raw)
 				eventArgs.cancel = true
             end
         end
@@ -62,7 +67,7 @@ function job_precast(spell, spellMap, eventArgs)
 	if spell.name == 'Flash' then
 		local abil_recasts = windower.ffxi.get_ability_recasts()
 		local spell_recasts = windower.ffxi.get_spell_recasts()
-		if abil_recasts[80] == 0 and not silent_check_amnesia() and spell_recasts[112] == 0 and state.AutoEmblem.value then
+		if abil_recasts[80] < latency and not silent_check_amnesia() and spell_recasts[112] < spell_latency and state.AutoEmblem.value then
 			eventArgs.cancel = true
 			windower.chat.input('/ja "Divine Emblem" <me>')
 			windower.chat.input:schedule(1,'/ma "Flash" '..spell.target.raw..'')
@@ -136,11 +141,6 @@ end
 function job_state_change(stateField, newValue, oldValue)
     classes.CustomDefenseGroups:clear()
     classes.CustomDefenseGroups:append(state.ExtraDefenseMode.current)
-    if state.EquipShield.value == true then
-		enable('main','sub','range')
-        classes.CustomDefenseGroups:append(state.DefenseMode.current .. 'Shield')
-    end
-
     classes.CustomMeleeGroups:clear()
     classes.CustomMeleeGroups:append(state.ExtraDefenseMode.current)
 end
@@ -160,7 +160,7 @@ function job_self_command(commandArgs, eventArgs)
 		if player.sub_job == 'RUN' then
 			local abil_recasts = windower.ffxi.get_ability_recasts()
 			
-			if abil_recasts[24] == 0 then
+			if abil_recasts[24] < latency then
 				send_command('input /ja "Swordplay" <me>')
 			end
 
@@ -170,15 +170,15 @@ function job_self_command(commandArgs, eventArgs)
 			if player.target.type ~= "MONSTER" then
 				add_to_chat(123,'Abort: You are not targeting a monster.')
 				return
-			elseif spell_recasts[584] == 0 then
+			elseif spell_recasts[584] < spell_latency then
 				send_command('input /ma "Sheep Song" <t>')
-			elseif spell_recasts[598] == 0 then
+			elseif spell_recasts[598] < spell_latency then
 				send_command('input /ma "Soporific" <t>')
-			elseif spell_recasts[605] == 0 then
+			elseif spell_recasts[605] < spell_latency then
 				send_command('input /ma "Geist Wall" <t>')
-			elseif spell_recasts[575] == 0 then
+			elseif spell_recasts[575] < spell_latency then
 				send_command('input /ma "Jettatura" <t>')
-			elseif spell_recasts[592] == 0 then
+			elseif spell_recasts[592] < spell_latency then
 				send_command('input /ma "Blank Gaze" <t>')
 			elseif not check_auto_tank_ws() then
 				if not state.AutoTankMode.value then add_to_chat(123,'All Enmity Blue Magic on cooldown.') end
@@ -193,15 +193,15 @@ function job_self_command(commandArgs, eventArgs)
 				if buffactive['Berserk'] then send_command('cancel berserk') end
 			end
 			
-			if abil_recasts[5] == 0 and player.target.type == "MONSTER" then
+			if abil_recasts[5] < latency and player.target.type == "MONSTER" then
 				send_command('input /ja "Provoke" <t>')
-			elseif abil_recasts[2] == 0 then
+			elseif abil_recasts[2] < latency then
 				send_command('input /ja "Warcry" <me>')
-			elseif abil_recasts[3] == 0 then
+			elseif abil_recasts[3] < latency then
 				send_command('input /ja "Defender" <me>')
-			elseif abil_recasts[4] == 0 then
+			elseif abil_recasts[4] < latency then
 				send_command('input /ja "Aggressor" <me>')
-			elseif abil_recasts[1] == 0 then
+			elseif abil_recasts[1] < latency then
 				send_command('input /ja "Berserk" <me>')
 			elseif not check_auto_tank_ws() then
 				if not state.AutoTankMode.value then add_to_chat(123,'All Enmity Warrior Job Abilities on cooldown.') end
@@ -212,14 +212,14 @@ function job_self_command(commandArgs, eventArgs)
 			local under3FMs = not buffactive['Finishing Move 3'] and not buffactive['Finishing Move 4'] and not buffactive['Finishing Move 5']
         
 			if under3FMs then
-				if abil_recasts[220] == 0 then
+				if abil_recasts[220] < latency then
 				send_command('@input /ja "'..state.CurrentStep.value..'" <t>')
 				return
 				end
-			elseif abil_recasts[221] == 0 then
+			elseif abil_recasts[221] < latency then
 				send_command('input /ja "Animated Flourish" <t>')
 				return
-			elseif abil_recasts[220] == 0 and not buffactive['Finishing Move 5'] then
+			elseif abil_recasts[220] < latency and not buffactive['Finishing Move 5'] then
 				send_command('@input /ja "'..state.CurrentStep.value..'" <t>')
 				return
 			elseif not check_auto_tank_ws() then
@@ -299,11 +299,7 @@ function job_customize_defense_set(defenseSet)
     if state.ExtraDefenseMode.value ~= 'None' then
         defenseSet = set_combine(defenseSet, sets[state.ExtraDefenseMode.value])
     end
-    
-    if state.EquipShield.value == true then
-        defenseSet = set_combine(defenseSet, sets[state.DefenseMode.current .. 'Shield'])
-    end
-    
+
     return defenseSet
 end
 
@@ -330,11 +326,7 @@ function display_current_job_state(eventArgs)
     if state.ExtraDefenseMode.value ~= 'None' then
         msg = msg .. ', Extra: ' .. state.ExtraDefenseMode.value
     end
-    
-    if state.EquipShield.value == true then
-        msg = msg .. ', Force Equip Shield'
-    end
-    
+   
     if state.Kiting.value == true then
         msg = msg .. ', Kiting'
     end
@@ -377,6 +369,8 @@ end
 
 function job_tick()
 	if check_hasso() then return true end
+	if check_buff() then return true end
+	if check_buffup() then return true end
 	if state.AutoTankMode.value and player.target.type == "MONSTER" and not moving then
 		if check_flash() then return true
 		else 
@@ -391,7 +385,7 @@ end
 function check_flash()
 	local spell_recasts = windower.ffxi.get_spell_recasts()
 
-	if spell_recasts[112] == 0 then
+	if spell_recasts[112] < spell_latency then
 		send_command('input /ma "Flash" <t>')
 		tickdelay = (framerate * 2)
 		return true
@@ -415,11 +409,11 @@ function check_hasso()
 		
 		local abil_recasts = windower.ffxi.get_ability_recasts()
 		
-		if state.Stance.value == 'Hasso' and abil_recasts[138] == 0 then
+		if state.Stance.value == 'Hasso' and abil_recasts[138] < latency then
 			windower.chat.input('/ja "Hasso" <me>')
 			tickdelay = (framerate * 1.8)
 			return true
-		elseif state.Stance.value == 'Seigan' and abil_recasts[139] == 0 then
+		elseif state.Stance.value == 'Seigan' and abil_recasts[139] < latency then
 			windower.chat.input('/ja "Seigan" <me>')
 			tickdelay = (framerate * 1.8)
 			return true
@@ -430,3 +424,70 @@ function check_hasso()
 
 	return false
 end
+
+function check_buff()
+	if state.AutoBuffMode.value and not areas.Cities:contains(world.area) then
+		local spell_recasts = windower.ffxi.get_spell_recasts()
+		for i in pairs(buff_spell_lists['Auto']) do
+			if not buffactive[buff_spell_lists['Auto'][i].Buff] and spell_recasts[buff_spell_lists['Auto'][i].SpellID] < latency and silent_can_use(buff_spell_lists['Auto'][i].SpellID) then
+				windower.chat.input('/ma "'..buff_spell_lists['Auto'][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
+	else
+		return false
+	end
+end
+
+function check_buffup()
+	if buffup ~= '' then
+		local needsbuff = false
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) then
+				needsbuff = true
+				break
+			end
+		end
+	
+		if not needsbuff then
+			add_to_chat(217, 'All '..buffup..' buffs are up!')
+			buffup = ''
+			return false
+		end
+		
+		local spell_recasts = windower.ffxi.get_spell_recasts()
+		
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) and spell_recasts[buff_spell_lists[buffup][i].SpellID] < latency then
+				windower.chat.input('/ma "'..buff_spell_lists[buffup][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
+		
+		return false
+	else
+		return false
+	end
+end
+
+buff_spell_lists = {
+	Auto = {	
+		{Name='Crusade',Buff='Enmity Boost',SpellID=476},
+		{Name='Reprisal',Buff='Reprisal',SpellID=97},
+		{Name='Phalanx',Buff='Phalanx',SpellID=106},
+	},
+	
+	Default = {
+		{Name='Crusade',Buff='Enmity Boost',SpellID=476},
+		{Name='Reprisal',Buff='Reprisal',SpellID=97},
+		{Name='Haste',Buff='Haste',SpellID=57},
+		{Name='Refresh',Buff='Refresh',SpellID=109},
+		{Name='Aquaveil',Buff='Aquaveil',SpellID=55},
+		{Name='Stoneskin',Buff='Stoneskin',SpellID=54},
+		{Name='Blink',Buff='Blink',SpellID=53},
+		{Name='Regen',Buff='Regen',SpellID=108},
+		{Name='Phalanx',Buff='Phalanx',SpellID=106},
+	},
+}

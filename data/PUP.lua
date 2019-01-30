@@ -37,10 +37,12 @@ function job_setup()
     autows = "Victory Smite"
 	autofood = 'Akamochi'
 	lastpettp = 0
+	deactivatehpp = 100
+	repairhpp = 45
 
 	update_pet_mode()
 	update_melee_groups()
-	init_job_states({"Capacity","AutoPuppetMode","PetWSGear","AutoRepairMode","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","TreasureMode",})
+	init_job_states({"Capacity","AutoPuppetMode","PetWSGear","AutoRepairMode","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"AutoSambaMode","Weapons","OffenseMode","WeaponskillMode","IdleMode","Passive","RuneElement","TreasureMode",})
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -160,17 +162,32 @@ end
 -- Called for custom player commands.
 function job_self_command(commandArgs, eventArgs)
 	if commandArgs[1] == 'maneuver' then
-        if pet.isvalid then
-            local man = defaultManeuvers[state.PetMode.value]
-            if man and tonumber(commandArgs[2]) then
-                man = man[tonumber(commandArgs[2])]
-            end
-
-            if man then
-                send_command('input /pet "'..man..'" <me>')
-            end
+		if pet.isvalid then
+			if commandArgs[2] == nil then
+				for i = 1,8 do
+					local maneuver = defaultManeuvers[state.PetMode.Value][i]
+					if maneuver then
+						local maneuversActive = buffactive[maneuver.Name] or 0
+						if maneuversActive < maneuver.Amount then
+							windower.chat.input('/pet "'..maneuver.Name..'" <me>')
+							return
+						end
+					else
+						return
+					end
+				end
+				add_to_chat(123,'Current Maneuvers match Default')
+			elseif S{'1','2','3','4','5','6','7','8'}:contains(commandArgs[2]) then
+				if defaultManeuvers[state.PetMode.Value][tonumber(commandArgs[2])] then
+					windower.chat.input('/pet "'..defaultManeuvers[state.PetMode.Value][tonumber(commandArgs[2])].Name..'" <me>')
+				else
+					add_to_chat(123,'Error: You don\'t have that many maneuvers listed.')
+				end
+			else
+				add_to_chat(123,'Error: Maneuver command format is wrong.')
+			end
         else
-            add_to_chat(123,'No valid pet.')
+            add_to_chat(123,'Error: No valid pet.')
         end
     end
 end
@@ -274,22 +291,22 @@ function check_auto_pet()
 
 	if not pet.isvalid then
 
-		if abil_recasts[205] == 0 then
+		if abil_recasts[205] < latency then
 			windower.chat.input('/ja "Activate" <me>')
 			tickdelay = (framerate * .5)
 			return true
-		elseif abil_recasts[115] == 0 then
+		elseif abil_recasts[115] < latency then
 			windower.chat.input('/ja "Deus Ex Automata" <me>')
 			tickdelay = (framerate * .5)
 			return true
 		end
 
 	elseif pet.status == "Idle" then
-		if pet.max_mp > 50 and pet.mpp < 10 and pet.hpp == 100 and abil_recasts[208] == 0 then
+		if pet.max_mp > 50 and pet.mpp < 10 and pet.hpp >= deactivatehpp and abil_recasts[208] < latency then
 			windower.chat.input('/pet "Deactivate" <me>')
 			tickdelay = (framerate * .5)
 			return true
-		elseif player.target.type == "MONSTER" and abil_recasts[207] == 0 then
+		elseif player.target.type == "MONSTER" and abil_recasts[207] < latency then
 			windower.chat.input('/pet "Deploy" <t>')
 			tickdelay = (framerate * .5)
 			return true
@@ -301,10 +318,10 @@ end
 
 function check_repair()
 
-	if state.AutoRepairMode.value and pet.isvalid and pet.hpp < 45 then
+	if state.AutoRepairMode.value and pet.isvalid and pet.hpp < repairhpp then
 		local abil_recasts = windower.ffxi.get_ability_recasts()
 
-		if abil_recasts[206] == 0 and item_available('Automat. Oil +3') then
+		if abil_recasts[206] < latency and item_available('Automat. Oil +3') then
 			windower.chat.input('/ja "Repair" <me>')
 			tickdelay = (framerate * .5)
 			return true
@@ -315,21 +332,21 @@ function check_repair()
 end
 
 function check_maneuver()
-	if state.AutoBuffMode.value and pet.isvalid and pet.status == 'Engaged' and windower.ffxi.get_ability_recasts()[210] == 0 then
-		if not buffactive[defaultManeuvers[state.PetMode.value][1]] then
-			windower.chat.input('/pet '..defaultManeuvers[state.PetMode.value][1]..' <me>')
-			tickdelay = (framerate * .5)
-			return true
-		elseif not buffactive[defaultManeuvers[state.PetMode.value][2]] then
-			windower.chat.input('/pet '..defaultManeuvers[state.PetMode.value][2]..' <me>')
-			tickdelay = (framerate * .5)
-			return true
-		elseif not buffactive[defaultManeuvers[state.PetMode.value][3]] then
-			windower.chat.input('/pet '..defaultManeuvers[state.PetMode.value][3]..' <me>')
-			tickdelay = (framerate * .5)
-			return true
-		end
-	end
+    if state.AutoBuffMode.value and pet.isvalid and pet.status == 'Engaged' and windower.ffxi.get_ability_recasts()[210] < latency then
+        for i = 1,8 do
+            local maneuver = defaultManeuvers[state.PetMode.Value][i]
+            if maneuver then
+                local maneuversActive = buffactive[maneuver.Name] or 0
+                if maneuversActive < maneuver.Amount then
+                    windower.chat.input('/pet "'..maneuver.Name..'" <me>')
+                    tickdelay = (framerate * .5)
+                    return true
+                end
+			else
+				return false
+            end
+        end
+    end
 
 	return false
 end

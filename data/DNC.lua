@@ -45,10 +45,9 @@ function job_setup()
 	state.Buff['Fan Dance'] = buffactive['Fan Dance'] or false
 	state.Buff['Aftermath: Lv.3'] = buffactive['Aftermath: Lv.3'] or false
 	
-    state.MainStep = M{['description']='Main Step', 'Box Step', 'Quickstep', 'Feather Step', 'Stutter Step'}
-    state.AltStep = M{['description']='Alt Step', 'Quickstep', 'Feather Step', 'Stutter Step', 'Box Step'}
-	state.AutoSamba = M{['description']='Auto Samba', 'Off', 'Haste Samba', 'Aspir Samba II', 'Drain Samba III'}
-    state.UseAltStep = M(false, 'Use Alt Step')
+    state.MainStep = M{['description']='Main Step', 'Box Step','Quickstep','Feather Step','Stutter Step'}
+    state.AltStep = M{['description']='Alt Step', 'Feather Step','Quickstep','Stutter Step','Box Step'}
+    state.UseAltStep = M(true, 'Use Alt Step')
     state.SelectStepTarget = M(false, 'Select Step Target')
     state.IgnoreTargetting = M(false, 'Ignore Targetting')
 	state.DanceStance = M{['description']='Dance Stance','None','Saber Dance','Fan Dance'}
@@ -62,7 +61,7 @@ function job_setup()
 	autofood = 'Soy Ramen'
 	
     update_melee_groups()
-	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"Weapons","OffenseMode","WeaponskillMode","IdleMode","DanceStance","Passive","RuneElement","TreasureMode",})
+	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"AutoSambaMode","Weapons","OffenseMode","WeaponskillMode","IdleMode","DanceStance","Passive","RuneElement","TreasureMode",})
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -79,27 +78,27 @@ function job_precast(spell, spellMap, eventArgs)
 
 	if spell.type == 'WeaponSkill' and state.AutoBuffMode.value and player.tp > 1099 then
 		local abil_recasts = windower.ffxi.get_ability_recasts()
-		if under3FMs() and abil_recasts[220] == 0 and (abil_recasts[236] == 0 or state.Buff['Presto']) and player.status == 'Engaged' then
+		if under3FMs() and abil_recasts[220] < latency and (abil_recasts[236] < latency or state.Buff['Presto']) and player.status == 'Engaged' then
 			eventArgs.cancel = true
 			windower.send_command('gs c step')
 			windower.chat.input:schedule(2.3,'/ws "'..spell.english..'" '..spell.target.raw..'')
 			return
-		elseif not under3FMs() and not state.Buff['Building Flourish'] and abil_recasts[226] == 0 then
+		elseif not under3FMs() and not state.Buff['Building Flourish'] and abil_recasts[226] < latency then
 			eventArgs.cancel = true
 			windower.chat.input('/ja "Climactic Flourish" <me>')
 			windower.chat.input:schedule(1,'/ws "'..spell.english..'" '..spell.target.raw..'')
 			return
-		elseif not under3FMs() and not state.Buff['Climactic Flourish'] and abil_recasts[222] == 0 then
+		elseif not under3FMs() and not state.Buff['Climactic Flourish'] and abil_recasts[222] < latency then
 			eventArgs.cancel = true
 			windower.chat.input('/ja "Building Flourish" <me>')
 			windower.chat.input:schedule(1,'/ws "'..spell.english..'" '..spell.target.raw..'')
 			return
-		elseif player.sub_job == 'SAM' and player.tp > 1850 and abil_recasts[140] == 0 then
+		elseif player.sub_job == 'SAM' and player.tp > 1850 and abil_recasts[140] < latency then
 			eventArgs.cancel = true
 			windower.chat.input('/ja "Sekkanoki" <me>')
 			windower.chat.input:schedule(1,'/ws "'..spell.english..'" '..spell.target.raw..'')
 			return
-		elseif player.sub_job == 'SAM' and abil_recasts[134] == 0 then
+		elseif player.sub_job == 'SAM' and abil_recasts[134] < latency then
 			eventArgs.cancel = true
 			windower.chat.input('/ja "Meditate" <me>')
 			windower.chat.input:schedule(1,'/ws "'..spell.english..'" '..spell.target.raw..'')
@@ -108,7 +107,7 @@ function job_precast(spell, spellMap, eventArgs)
     elseif spell.type == 'Step' and player.tp > 99 then
         local abil_recasts = windower.ffxi.get_ability_recasts()
 
-        if player.main_job_level >= 77 and abil_recasts[236] == 0 and abil_recasts[220] == 0 and under3FMs() and player.status == 'Engaged' then
+        if player.main_job_level >= 77 and abil_recasts[236] < latency and abil_recasts[220] < latency and under3FMs() and player.status == 'Engaged' then
             eventArgs.cancel = true
 			windower.chat.input('/ja "Presto" <me>')
 			windower.chat.input:schedule(1.1,'/ja "'..spell.english..'" '..spell.target.raw..'')
@@ -142,11 +141,16 @@ end
 -- to the general aftercast() code in Mote-Include.
 function job_aftercast(spell, spellMap, eventArgs)
     -- Lock feet after using Mana Wall.
-    if not spell.interrupted and spell.type == 'WeaponSkill' and state.Buff['Climactic Flourish'] and not under3FMs() and player.tp < 999 then
-		local abil_recasts = windower.ffxi.get_ability_recasts()
-		if abil_recasts[222] == 0 then
-		windower.chat.input:schedule(3,'/ja "Reverse Flourish" <me>')
-		windower.chat.input('/ja "Reverse Flourish" <me>')
+    if not spell.interrupted then
+	
+		if spell.type == 'WeaponSkill' and state.Buff['Climactic Flourish'] and not under3FMs() and player.tp < 999 then
+			local abil_recasts = windower.ffxi.get_ability_recasts()
+			if abil_recasts[222] < latency then
+				windower.chat.input:schedule(3,'/ja "Reverse Flourish" <me>')
+				windower.chat.input('/ja "Reverse Flourish" <me>')
+			end
+		elseif state.UseAltStep.value and spell.english == state[state.CurrentStep.current..'Step'].current then
+			state.CurrentStep:cycle()
 		end
     end
 end
@@ -263,7 +267,6 @@ function job_self_command(commandArgs, eventArgs)
         local doStep = ''
         if state.UseAltStep.value == true then
             doStep = state[state.CurrentStep.current..'Step'].current
-            state.CurrentStep:cycle()
         else
             doStep = state.MainStep.current
         end        
@@ -307,22 +310,18 @@ function check_buff()
 	if state.AutoBuffMode.value then
 		local abil_recasts = windower.ffxi.get_ability_recasts()
 	
-		if not buffactive['Finishing Move 1'] and not buffactive['Finishing Move 2'] and not buffactive['Finishing Move 3'] and not buffactive['Finishing Move 4'] and not buffactive['Finishing Move 5'] and not buffactive['Finishing Move (6+)'] and abil_recasts[223] == 0 then
+		if not buffactive['Finishing Move 1'] and not buffactive['Finishing Move 2'] and not buffactive['Finishing Move 3'] and not buffactive['Finishing Move 4'] and not buffactive['Finishing Move 5'] and not buffactive['Finishing Move (6+)'] and abil_recasts[223] < latency then
 			windower.chat.input('/ja "No Foot Rise" <me>')
 			tickdelay = (framerate * 1.8)
 			return true
 		end
 		
 		if player.in_combat then
-			if not buffactive[''..state.AutoSamba.value..''] and abil_recasts[216] == 0 and state.AutoSamba.value ~= 'Off' and player.tp > 400 then
-				windower.chat.input('/ja "'..state.AutoSamba.value..'" <me>')
-				tickdelay = (framerate * 1.8)
-				return true
-			elseif player.sub_job == 'WAR' and not buffactive.Berserk and abil_recasts[1] == 0 then
+			if player.sub_job == 'WAR' and not buffactive.Berserk and abil_recasts[1] < latency then
 				windower.chat.input('/ja "Berserk" <me>')
 				tickdelay = (framerate * 1.8)
 				return true
-			elseif player.sub_job == 'WAR' and not buffactive.Aggressor and abil_recasts[4] == 0 then
+			elseif player.sub_job == 'WAR' and not buffactive.Aggressor and abil_recasts[4] < latency then
 				windower.chat.input('/ja "Aggressor" <me>')
 				tickdelay = (framerate * 1.8)
 				return true
@@ -340,11 +339,11 @@ function check_dance()
 		
 		local abil_recasts = windower.ffxi.get_ability_recasts()
 		
-		if state.DanceStance.value == 'Saber Dance' and abil_recasts[219] == 0 then
+		if state.DanceStance.value == 'Saber Dance' and abil_recasts[219] < latency then
 			windower.chat.input('/ja "Saber Dance" <me>')
 			tickdelay = (framerate * 1.8)
 			return true
-		elseif state.DanceStance.value == 'Fan Dance' and abil_recasts[224] == 0 then
+		elseif state.DanceStance.value == 'Fan Dance' and abil_recasts[224] < latency then
 			windower.chat.input('/ja "Fan Dance" <me>')
 			tickdelay = (framerate * 1.8)
 			return true

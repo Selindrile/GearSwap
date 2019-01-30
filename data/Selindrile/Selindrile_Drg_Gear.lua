@@ -18,7 +18,6 @@ function user_setup()
 	send_command('bind ^` input /ja "Hasso" <me>')
 	send_command('bind !` input /ja "Seigan" <me>')
 	send_command('bind ^f11 gs c cycle MagicalDefenseMode')
-	send_command('bind !f11 gs c cycle ExtraMeleeMode')
 	send_command('bind @f7 gs c toggle AutoJumpMode')
 	send_command('bind @` gs c cycle SkillchainMode')
 end

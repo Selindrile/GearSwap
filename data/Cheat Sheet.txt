@@ -10,7 +10,7 @@ My Stream Discord, ( https://discord.gg/ug6xtvQ ) this is the best way to reach 
 	alternatively you can connect with me through a messenger (They're linked to my FFXIAH account.) If you're relatively computer savvy,
 	it shouldn't be too hard, if not, I'm happy to help explain more or answer questions even if you do get it working.
 
-My Dropbox ( https://www.dropbox.com/sh/20vy32liub3glxz/AAAiIVHAasFdwCK1SZdZz7d_a?dl=0 )
+My Dropbox ( https://www.dropbox.com/sh/flhraba7cf23a7k/AADfZmGmsXcYamFth8UkLoy0a?dl=0 )
 
 
 Again PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME, however feel free to shoot me a way to contact you outside of game, through
@@ -19,6 +19,11 @@ Again PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME, however feel 
 	
 For full functionality my gearswap and init files do depend on a few other addons that can be found in your launcher, I'll list them here: 
 	Addons: Shortcuts, Cancel, Itemizer.    Plugins: Timers, Run
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To make use of other types of gearswap files along with mine, place them in the common folder, and make sure to
+name them Character_Job.lua.
 	
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Macros and More~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -89,7 +94,7 @@ For full functionality my gearswap and init files do depend on a few other addon
 :Macro:
 Thf:		/console gs c toggle AmbushMode		(Equips Ambush gear on TP and non SA/TA WS)
 Blu:		/console gs c toggle LearningMode	(Locks learning gear in at all times.)
-Pld:		/console gs c toggle EquipShield	(Allows Weapon/Shield to swap with F10/F11)
+Pld/Run:	/console gs c toggle TankAutoDefense (Maintains PDT in autodefense instead of leaving defense altogether)
 Brd:		/console gs c cycle ExtraSongsMode   (Your next song plays as a dummy song.) [Ctrl+~]
 Blm:		/console gs c cycle RecoverMode		(Nukes in converts elemental damage to MP gear)
 Blm2:		/console gs c cycle MagicBurstMode	(Single makes your next spell burst, while lock keeps it bursting until you toggle again.) [Win+~]
@@ -225,21 +230,16 @@ My scripts\init.txt loads Request, which is an addon that can be used to answer 
 It also loads a few other addons which I've written or found from other sources.
 Non-Official addon mentioned here can be downloaded from: https://www.dropbox.com/sh/qz5rb5je202cbu3/AAAxozfBv_8agarM0NCnPTiZa?dl=0
 
---- Item related combinations. These are defaults, can be changed in Character-Globals.lua ---
+--- Item Handling ---
 
-[Ctrl+Alt+Win+?]	= Obtain the item linked to the ? key from your satchel. (Requires the Itemizer Addon)
-[Ctrl+?]			= Equip (and usually lock) the item in place.
-[Alt+?]				= Use the item. (if usable)
-[Ctrl+Alt+?]		= Unlock, unequip the item, and stow it in satchel. (Requires the Itemizer Addon)
+Items are handled by the useitem command, witht he following syntax:
+gs c useitem slot item name
 
-[H]					= Warp Ring.
-[N]					= Nexus Cape.
-[Z]					= Capacity Cape.
-[Y]					= Capacity Ring.
-[[]					= Trizek Ring.
-[]]					= Echad Ring.
-[K]					= Facility Ring.
-[U]					= Reraise Earring.
+For example:
+windower.send_command('bind ^h gs c useitem ring2 Warp Ring')
+
+As a Macro:
+/console gs c useitem ring2 Warp Ring
 
 [Control + Z] Capacity Mode
 Will automatically use capacity items and keep capacity cape on, for this to work it

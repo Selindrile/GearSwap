@@ -28,7 +28,7 @@ function job_setup()
 	
 	update_melee_groups()
 
-	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoFoodMode","AutoNukeMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"Weapons","OffenseMode","WeaponskillMode","Stance","IdleMode","Passive","RuneElement","CastingMode","TreasureMode",})
+	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoNukeMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"AutoSambaMode","Weapons","OffenseMode","WeaponskillMode","Stance","IdleMode","Passive","RuneElement","CastingMode","TreasureMode",})
 end
 	
 -------------------------------------------------------------------------------------------------------------------
@@ -41,17 +41,17 @@ function job_precast(spell, spellMap, eventArgs)
 
 	if spell.type == 'WeaponSkill' and state.AutoBuffMode.value then
 		local abil_recasts = windower.ffxi.get_ability_recasts()
-		if spell.english == 'Entropy' and not buffactive['Sekkanoki'] and abil_recasts[95] == 0 then
+		if spell.english == 'Entropy' and not buffactive['Sekkanoki'] and abil_recasts[95] < latency then
 			eventArgs.cancel = true
 			windower.chat.input('/ja "Consume Mana" <me>')
 			windower.chat.input:schedule(1,'/ws "Entropy" <t>')
 			return
-		elseif player.sub_job == 'SAM' and not buffactive['Consume Mana'] and player.tp > 1850 and abil_recasts[140] == 0 then
+		elseif player.sub_job == 'SAM' and not buffactive['Consume Mana'] and player.tp > 1850 and abil_recasts[140] < latency then
 			eventArgs.cancel = true
 			windower.chat.input('/ja "Sekkanoki" <me>')
 			windower.chat.input:schedule(1,'/ws "'..spell.english..'" '..spell.target.raw..'')
 			return
-		elseif player.sub_job == 'SAM' and abil_recasts[134] == 0 then
+		elseif player.sub_job == 'SAM' and abil_recasts[134] < latency then
 			eventArgs.cancel = true
 			windower.chat.input('/ja "Meditate" <me>')
 			windower.chat.input:schedule(1,'/ws "'..spell.english..'" '..spell.target.raw..'')
@@ -83,11 +83,6 @@ end
 
 -- Modify the default melee set after it was constructed.
 function job_customize_melee_set(meleeSet)
-
-    if state.ExtraMeleeMode.value ~= 'None' then
-        meleeSet = set_combine(meleeSet, sets[state.ExtraMeleeMode.value])
-    end
-
     if state.Buff.Souleater and state.DefenseMode.current == 'None' then
         meleeSet = set_combine(meleeSet, sets.buff.Souleater)
     end
@@ -151,10 +146,6 @@ function job_post_midcast(spell, spellMap, eventArgs)
         if state.MagicBurstMode.value ~= 'Off' then equip(sets.MagicBurst) end
 		if spell.element == world.weather_element or spell.element == world.day_element then
 			if state.CastingMode.value == 'Fodder' then
-				if item_available('Twilight Cape') and not state.Capacity.value then
-					sets.TwilightCape = {back="Twilight Cape"}
-					equip(sets.TwilightCape)
-				end
 				if spell.element == world.day_element then
 					if item_available('Zodiac Ring') then
 						sets.ZodiacRing = {ring2="Zodiac Ring"}
@@ -180,6 +171,7 @@ end
 function job_tick()
 	if check_hasso() then return true end
 	if check_buff() then return true end
+	if check_buffup() then return true end
 	return false
 end
 
@@ -214,11 +206,11 @@ function check_hasso()
 		
 		local abil_recasts = windower.ffxi.get_ability_recasts()
 		
-		if state.Stance.value == 'Hasso' and abil_recasts[138] == 0 then
+		if state.Stance.value == 'Hasso' and abil_recasts[138] < latency then
 			windower.chat.input('/ja "Hasso" <me>')
 			tickdelay = framerate
 			return true
-		elseif state.Stance.value == 'Seigan' and abil_recasts[139] == 0 then
+		elseif state.Stance.value == 'Seigan' and abil_recasts[139] < latency then
 			windower.chat.input('/ja "Seigan" <me>')
 			tickdelay = framerate
 			return true
@@ -231,30 +223,81 @@ function check_hasso()
 end
 
 function check_buff()
-	if state.AutoBuffMode.value and player.in_combat then
+	if state.AutoBuffMode.value and not areas.Cities:contains(world.area) then
+		local spell_recasts = windower.ffxi.get_spell_recasts()
+		for i in pairs(buff_spell_lists['Auto']) do
+			if not buffactive[buff_spell_lists['Auto'][i].Buff] and spell_recasts[buff_spell_lists['Auto'][i].SpellID] < latency and silent_can_use(buff_spell_lists['Auto'][i].SpellID) then
+				windower.chat.input('/ma "'..buff_spell_lists['Auto'][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
 		
-		local abil_recasts = windower.ffxi.get_ability_recasts()
+		if player.in_combat then
+			local abil_recasts = windower.ffxi.get_ability_recasts()
 
-		if not buffactive['Last Resort'] and abil_recasts[87] == 0 then
-			windower.chat.input('/ja "Last Resort" <me>')
-			tickdelay = (framerate * 1.8)
-			return true
-		elseif not buffactive['Scarlet Delirium'] and abil_recasts[44] == 0 then
-			windower.chat.input('/ja "Scarlet Delirium" <me>')
-			tickdelay = (framerate * 1.8)
-			return true
-		elseif player.sub_job == 'WAR' and not buffactive.Berserk and abil_recasts[1] == 0 then
-			windower.chat.input('/ja "Berserk" <me>')
-			tickdelay = (framerate * 1.8)
-			return true
-		elseif player.sub_job == 'WAR' and not buffactive.Aggressor and abil_recasts[4] == 0 then
-			windower.chat.input('/ja "Aggressor" <me>')
-			tickdelay = (framerate * 1.8)
-			return true
-		else
-			return false
+			if not buffactive['Last Resort'] and abil_recasts[87] < latency then
+				windower.chat.input('/ja "Last Resort" <me>')
+				tickdelay = (framerate * 1.8)
+				return true
+			elseif not buffactive['Scarlet Delirium'] and abil_recasts[44] < latency then
+				windower.chat.input('/ja "Scarlet Delirium" <me>')
+				tickdelay = (framerate * 1.8)
+				return true
+			elseif player.sub_job == 'WAR' and not buffactive.Berserk and abil_recasts[1] < latency then
+				windower.chat.input('/ja "Berserk" <me>')
+				tickdelay = (framerate * 1.8)
+				return true
+			elseif player.sub_job == 'WAR' and not buffactive.Aggressor and abil_recasts[4] < latency then
+				windower.chat.input('/ja "Aggressor" <me>')
+				tickdelay = (framerate * 1.8)
+				return true
+			else
+				return false
+			end
 		end
 	end
-		
 	return false
 end
+
+function check_buffup()
+	if buffup ~= '' then
+		local needsbuff = false
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) then
+				needsbuff = true
+				break
+			end
+		end
+	
+		if not needsbuff then
+			add_to_chat(217, 'All '..buffup..' buffs are up!')
+			buffup = ''
+			return false
+		end
+		
+		local spell_recasts = windower.ffxi.get_spell_recasts()
+		
+		for i in pairs(buff_spell_lists[buffup]) do
+			if not buffactive[buff_spell_lists[buffup][i].Buff] and silent_can_use(buff_spell_lists[buffup][i].SpellID) and spell_recasts[buff_spell_lists[buffup][i].SpellID] < latency then
+				windower.chat.input('/ma "'..buff_spell_lists[buffup][i].Name..'" <me>')
+				tickdelay = (framerate * 2)
+				return true
+			end
+		end
+		
+		return false
+	else
+		return false
+	end
+end
+
+buff_spell_lists = {
+	Auto = {	
+		{Name='Dread Spikes',Buff='Dread Spikes',SpellID=277},
+	},
+	
+	Default = {
+		{Name='Dread Spikes',Buff='Dread Spikes',SpellID=277},
+	},
+}

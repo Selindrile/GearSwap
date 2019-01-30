@@ -169,15 +169,15 @@ end
 
 local function able_to_use_action()
     if pending.action_type == 'Ability' then
-        return windower.ffxi.get_ability_recasts()[res.job_abilities[pending.id].recast_id] == 0
+        return windower.ffxi.get_ability_recasts()[res.job_abilities[pending.id].recast_id] < latency
     elseif pending.action_type == 'Magic' then
-        return windower.ffxi.get_spell_recasts()[res.spells[pending.id].recast_id] == 0
+        return windower.ffxi.get_spell_recasts()[res.spells[pending.id].recast_id] < spell_latency
     end
     return true
 end
 
 local function able_to_use_weaponskill()
-    if windower.ffxi.get_player().vitals.tp >= 1000 and not buffactive['amnesia'] then
+    if windower.ffxi.get_player().vitals.tp >= rangedautowstp and not buffactive['amnesia'] then
 		return true
 	else
 		return false
@@ -223,12 +223,35 @@ function process_queue()
         pending = queue:pop()
     elseif target then
         if state.AutoWSMode.value and rangedautows ~= '' and able_to_use_weaponskill() then
-            pending = {
-                ['prefix'] = '/weaponskill',
-                ['english'] = rangedautows,
-                ['target'] = target,
-                ['action_type'] = 'Ability',
-            }
+			if relic_weapons:contains(player.equipment.range) and state.RelicAftermath.value and (not buffactive['Aftermath']) then
+				pending = {
+					['prefix'] = '/weaponskill',
+					['english'] = data.weaponskills.relic[player.equipment.range],
+					['target'] = target,
+					['action_type'] = 'Ability',
+				}	
+			elseif (buffactive['Aftermath: Lv.3'] or not mythic_weapons:contains(player.equipment.range)) and windower.ffxi.get_player().vitals.tp >= autowstp then
+				pending = {
+					['prefix'] = '/weaponskill',
+					['english'] = rangedautows,
+					['target'] = target,
+					['action_type'] = 'Ability',
+				}
+			elseif windower.ffxi.get_player().vitals.tp == 3000 then
+				pending = {
+					['prefix'] = '/weaponskill',
+					['english'] = data.weaponskills.mythic[player.equipment.range],
+					['target'] = target,
+					['action_type'] = 'Ability',
+				}
+			else
+				pending = {
+					['prefix'] = '/range',
+					['english'] = 'Ranged',
+					['target'] = target,
+					['action_type'] = 'Ranged Attack',
+				}
+			end
         else
             pending = {
                 ['prefix'] = '/range',
@@ -336,14 +359,6 @@ register_unhandled_command(function (...)
     if commands[1] and commands[1]:lower() == 'rh' then
         if commands[2] and commands[2]:lower() == 'process' then
             process_queue()
-        elseif commands[2] and commands[2]:lower() == 'set' then
-            if commands[3] then
-                windower.add_to_chat(217, "Rnghelper : Setting weaponskill to %s":format(commands[3]))
-                weaponskill = commands[3]
-            else
-                windower.add_to_chat(217, "Rnghelper : Clearing weaponskill.")
-                weaponskill = nil
-            end
         elseif commands[2] and commands[2]:lower() == 'print' then
             if pending then
                 windower.add_to_chat(217, pending.prefix .. pending.english .. pending.target)
@@ -361,31 +376,31 @@ register_unhandled_command(function (...)
             pending = nil
             completion = false
             queue:clear()
-        elseif commands[2] and commands[2]:lower() == 'enable' then
-            if enabled then
-                --windower.add_to_chat(217, "Rnghelper : Already enabled.")
-            else
-                --windower.add_to_chat(217, "Rnghelper : Enabling.")
-                enabled = true
-            end
-        elseif commands[2] and commands[2]:lower() == 'disable' then
-            if not enabled then
-                --windower.add_to_chat(217, "Rnghelper : Already disabled.")
-            else
-                --windower.add_to_chat(217, "Rnghelper : Disabling.")
-				target = nil
-				pending = nil
-				completion = false
-				queue:clear()
-                enabled = false
-            end
-        elseif commands[2] and commands[2]:lower() == 'toggle' then
-            if enabled then
-                --windower.add_to_chat(217, "Rnghelper : Disabling.")
-                enabled = false
-            else
-                --windower.add_to_chat(217, "Rnghelper : Enabling.")
-                enabled = true
+        elseif commands[2] and commands[2]:lower() == 'enable' then	
+            if enabled then	
+                --windower.add_to_chat(217, "Rnghelper : Already enabled.")	
+            else	
+                --windower.add_to_chat(217, "Rnghelper : Enabling.")	
+                enabled = true	
+            end	
+        elseif commands[2] and commands[2]:lower() == 'disable' then	
+            if not enabled then	
+                --windower.add_to_chat(217, "Rnghelper : Already disabled.")	
+            else	
+                --windower.add_to_chat(217, "Rnghelper : Disabling.")	
+				target = nil	
+				pending = nil	
+				completion = false	
+				queue:clear()	
+                enabled = false	
+            end	
+        elseif commands[2] and commands[2]:lower() == 'toggle' then	
+            if enabled then	
+                --windower.add_to_chat(217, "Rnghelper : Disabling.")	
+                enabled = false	
+            else	
+                --windower.add_to_chat(217, "Rnghelper : Enabling.")	
+                enabled = true	
             end
         end
         return true

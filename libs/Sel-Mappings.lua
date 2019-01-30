@@ -112,7 +112,7 @@ data.weaponskills.relic = {
     ["Guttler"] = "Onslaught",
     ["Bravura"] = "Metatron Torment",
     ["Apocalypse"] = "Catastrophe",
-    ["Gungnir"] = "Gierskogul",
+    ["Gungnir"] = "Geirskogul",
     ["Kikoku"] = "Blade: Metsu",
     ["Amanomurakumo"] = "Tachi: Kaiten",
     ["Mjollnir"] = "Randgrith",
@@ -174,13 +174,24 @@ relic_weapons = S{'Spharai','Mandau','Excalibur','Ragnarok','Guttler','Bravura',
 'Gungnir','Kikoku','Amanomurakumo','Mjollnir','Claustrum','Yoichinoyumi','Annihilator'}
 
 rema_ranged_weapons = S{'Fomalhaut','Death Penalty','Armageddon','Fail-Not','Gandiva','Yoichinoyumi','Annihilator'}
-rema_ranged_weapons_ammo = S{['Fomalhaut'] = 'Chrono Bullet',
+
+rema_ranged_weapons_ammo = {['Fomalhaut'] = 'Chrono Bullet',
 								['Death Penalty'] = 'Living Bullet',
 								['Armageddon'] = 'Devastating Bullet',
 								['Fail-Not'] = 'Chrono Arrow',
 								['Gandiva'] = "Artemis's Arrow",
+								['Gastraphetes'] = "Quelling Bolt",
 								['Yoichinoyumi'] = "Yoichi's Arrow",
 								['Annihilator'] = 'Eradicating Bullet'}
+								
+rema_ranged_weapons_ammo_pouch = {['Fomalhaut'] = 'Chr. Bul. Pouch',
+									['Death Penalty'] = 'Liv. Bul. Pouch',
+									['Armageddon'] = 'Dev. Bul. Pouch',
+									['Fail-Not'] = 'Chrono Quiver',
+									['Gandiva'] = "Artemis's Quiver",
+									['Gastraphetes'] = "Quelling B. Quiver",
+									['Yoichinoyumi'] = "Yoichi's Quiver",
+									['Annihilator'] = 'Era. Bul. Pouch'}
 
 elemental_obi_weaponskills = S{'Wildfire','Leaden Salute','Sanguine Blade','Aeolian Edge','Cataclysm','Trueflight','Tachi: Jinpu','Flash Nova'}
 
@@ -295,6 +306,7 @@ bayld_items = {'Tlalpoloani','Macoquetza','Camatlatia','Icoyoca','Tlamini','Suij
 'Uk\'uxkaj Cap'}
 	
 cprings = L{"Trizek Ring","Vocation Ring","Capacity Ring","Facility Ring"}
+xprings = L{"Echad Ring","Calibur Ring","Emperor Band","Empress Band","Resolution Ring"}
 cprings_count = 1
 
 tool_map = {
@@ -495,6 +507,22 @@ unify_prefix = {['/ma'] = '/ma', ['/magic']='/ma',['/jobability'] = '/ja',['/ja'
     ['/so']='/ma',['/ninjutsu']='/ma',['/weaponskill']='/ws',['/ws']='/ws',['/ra']='/ra',['/rangedattack']='/ra',['/nin']='/ma',
     ['/throw']='/ra',['/range']='/ra',['/shoot']='/ra',['/monsterskill']='/ms',['/ms']='/ms',['/pet']='/ja',['Monster']='Monster',['/bstpet']='/ja'}	
 	
+	
+spell_stepdown = {
+	['Aspir III'] = 'Aspir II',
+	['Aspir II'] = 'Aspir',
+	['Sleepga II'] = 'Sleepga',
+	['Sleep II'] = 'Sleep',
+	['Arise'] = 'Raise III',
+	['Raise III'] = 'Raise II',
+	['Raise II'] = 'Raise',
+	['Reraise IV'] = 'Reraise III',
+	['Reraise III'] = 'Reraise II',
+	['Reraise II'] = 'Reraise',
+	['Gravity II'] = 'Gravity',
+	['Horde Lullaby II'] = 'Horde Lullaby',
+	['Foe Lullaby II'] = 'Foe Lullaby',
+}
 -------------------------------------------------------------------------------------------------------------------
 -- Tables to specify general area groupings.  Creates the 'areas' table to be referenced in job files.
 -- Zone names provided by world.area/world.zone are currently in all-caps, so defining the same way here.
@@ -571,8 +599,10 @@ areas.Assault = S{
     "Bhaflau Remnants",
     "Silver Sea Remnants"
 }
+-- Proc weapon areas, where proc weapon sets in the weapon mode will not be skipped
+areas.ProcZones = S{
 
-
+}
 -------------------------------------------------------------------------------------------------------------------
 -- Lists of certain NPCs.
 -------------------------------------------------------------------------------------------------------------------

@@ -237,10 +237,16 @@ function on_incoming_chunk_for_th(id, data, modified, injected, blocked)
         local message_id = data:unpack('H',0x19)%32768
 
         -- Remove mobs that die from our tagged mobs list.
-        if info.tagged_mobs[target_id] then
+        if message_id == 6 or message_id == 20 then
+			if being_attacked and not player.in_combat then
+				being_attacked = false
+				if player.status == 'Idle' and not midaction() and not pet_midaction() then
+					send_command('gs c forceequip')
+				end
+			end
             -- 6 == actor defeats target
             -- 20 == target falls to the ground
-            if message_id == 6 or message_id == 20 then
+            if info.tagged_mobs[target_id] then
                 if _settings.debug_mode then add_to_chat(123,'Mob '..target_id..' died. Removing from tagged mobs table.') end
                 info.tagged_mobs[target_id] = nil
             end

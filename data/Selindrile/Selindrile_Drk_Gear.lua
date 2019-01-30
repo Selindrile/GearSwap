@@ -7,14 +7,13 @@ function user_setup()
     state.MagicalDefenseMode:options('MDT', 'MDTReraise')
 	state.ResistDefenseMode:options('MEVA')
 	state.IdleMode:options('Normal', 'PDT','Refresh','Reraise')
-	state.Weapons:options('Montante','Misanthropy')
+	state.Weapons:options('Montante','Anguta')
     state.ExtraMeleeMode = M{['description']='Extra Melee Mode','None'}
 	state.Passive = M{['description'] = 'Passive Mode','None','MP','Twilight'}
 
 	-- Additional local binds
 	send_command('bind ^` input /ja "Hasso" <me>')
 	send_command('bind !` input /ja "Seigan" <me>')
-    send_command('bind !f11 gs c cycle ExtraMeleeMode')
 	send_command('bind @` gs c cycle SkillchainMode')
 	
 	select_default_macro_book()
@@ -71,7 +70,7 @@ function init_gear_sets()
 	sets.midcast['Enfeebling Magic'] = {ammo="Pemphredo Tathlum",
 		head="Carmine Mask +1",neck="Erra Pendant",ear1="Gwati Earring",ear2="Digni. Earring",
 		body="Flamma Korazin +2",hands="Flam. Manopolas +2",ring1="Stikini Ring",ring2="Stikini Ring",
-		back="Toro Cape",waist="Eschan Stone",legs="Flamma Dirs +1",feet="Flam. Gambieras +2"}
+		back="Toro Cape",waist="Eschan Stone",legs="Flamma Dirs +2",feet="Flam. Gambieras +2"}
 		   
 	sets.midcast['Dread Spikes'] = set_combine(sets.midcast['Dark Magic'], {})
 	sets.midcast.Absorb = set_combine(sets.midcast['Dark Magic'], {back="Ankou Mantle"})
@@ -518,7 +517,7 @@ function init_gear_sets()
 	
 	-- Weapons sets
 	sets.weapons.Montante = {main="Montante +1",sub="Utu Grip"}
-	sets.weapons.Misanthropy = {main="Misanthropy",sub="Utu Grip"}
+	sets.weapons.Anguta = {main="Anguta",sub="Utu Grip"}
 	
     end
 	
