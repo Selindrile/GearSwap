@@ -2032,7 +2032,7 @@ function sub_job_change(newSubjob, oldSubjob)
 	
     if extra_user_setup then
         extra_user_setup()
-	end
+    end
     
     if job_sub_job_change then
         job_sub_job_change(newSubjob, oldSubjob)
