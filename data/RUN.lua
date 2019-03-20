@@ -1,4 +1,4 @@
--- NOTE: I do not play run, so this will not be maintained for 'active' use. 
+-- NOTE: I do not play run, so this will not be maintained for 'active' use.
 -- It is added to the repository to allow people to have a baseline to build from,
 -- and make sure it is up-to-date with the library API.
 
@@ -19,6 +19,7 @@ end
 function job_setup()
 
 	state.Buff['Aftermath: Lv.3'] = buffactive['Aftermath: Lv.3'] or false
+<<<<<<< HEAD
 	state.Buff['Valiance'] = buffactive['Valiance'] or false
 	state.Buff['Vallation'] = buffactive['Vallation'] or false
 	state.Buff['Embolden'] = buffactive['Embolden'] or false
@@ -26,9 +27,18 @@ function job_setup()
     state.Buff.Seigan = buffactive.Seigan or false
 	state.Stance = M{['description']='Stance','Hasso','Seigan','None'}
 	
+=======
+  state.Buff.Hasso = buffactive.Hasso or false
+  state.Buff.Seigan = buffactive.Seigan or false
+	state.Stance = M{['description']='Stance','Hasso','Seigan','None'}
+
+	--List of which WS you plan to use TP bonus WS with.
+	moonshade_ws = S{'Chant du Cygne', 'Savage Blade','Requiescat','Resolution','Ruinator'}
+
+>>>>>>> a6261fdb27f42ae86a9094e98c85455d397a997c
 	autows = 'Resolution'
 	autofood = 'Miso Ramen'
-	
+
 	update_melee_groups()
 	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoTankMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoNukeMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"AutoSambaMode","Weapons","OffenseMode","WeaponskillMode","Stance","IdleMode","Passive","RuneElement","PhysicalDefenseMode","MagicalDefenseMode","ResistDefenseMode","TreasureMode",})
 end
@@ -48,7 +58,7 @@ function job_filter_precast(spell, spellMap, eventArgs)
 			send_command('@input /ja "Vallation" <me>')
 		end
 	end
-	
+
 end
 
 function job_precast(spell, spellMap, eventArgs)
@@ -72,12 +82,13 @@ function job_precast(spell, spellMap, eventArgs)
 			return
 		end
 	end
-	
+
 end
 
 function job_post_precast(spell, spellMap, eventArgs)
 
 	if spell.type == 'WeaponSkill' then
+<<<<<<< HEAD
 		local WSset = standardize_set(get_precast_set(spell, spellMap))
 		local wsacc = check_ws_acc()
 		
@@ -92,6 +103,20 @@ function job_post_precast(spell, spellMap, eventArgs)
 				end
 			end
 		end
+=======
+    -- Replace Moonshade Earring if we're at cap TP
+    if player.tp == 3000 and moonshade_ws:contains(spell.english) then
+			if check_ws_acc():contains('Acc') then
+				if sets.AccMaxTP then
+					equip(sets.AccMaxTP)
+				end
+
+			elseif sets.MaxTP then
+					equip(sets.MaxTP)
+			end
+		end
+
+>>>>>>> a6261fdb27f42ae86a9094e98c85455d397a997c
 	elseif spell.english == 'Lunge' or spell.english == 'Swipe' then
         if weather_rune_match() then
 			if item_available('Hachirin-no-Obi') then
@@ -102,7 +127,7 @@ function job_post_precast(spell, spellMap, eventArgs)
 			equip(sets.element[spell.element])
 		end
     end
-	
+
 end
 
 -- Run after the default midcast() is done.
@@ -129,43 +154,43 @@ end
 -- Modify the default melee set after it was constructed.
 function job_customize_melee_set(meleeSet)
 
-	if buffactive['Battuta'] and sets.buff.Battuta then 
+	if buffactive['Battuta'] and sets.buff.Battuta then
 		meleeSet = set_combine(meleeSet, sets.buff.Battuta)
 	end
 
-    return meleeSet
+  return meleeSet
 
 end
 
 function job_customize_idle_set(idleSet)
 
-    return idleSet
+  return idleSet
 end
 
 function job_customize_defense_set(defenseSet)
-    if state.ExtraDefenseMode.value ~= 'None' and state.DefenseMode.value ~= 'None' then
-        defenseSet = set_combine(defenseSet, sets[state.ExtraDefenseMode.value])
-    end
+  if state.ExtraDefenseMode.value ~= 'None' and state.DefenseMode.value ~= 'None' then
+    defenseSet = set_combine(defenseSet, sets[state.ExtraDefenseMode.value])
+  end
 
-	if buffactive['Battuta'] and sets.buff.Battuta and player.status == 'Engaged' and state.DefenseMode.value == 'Physical' and (not state.PhysicalDefenseMode.value:contains('NoParry')) and (player.target and player.target.distance < (3.2 + player.target.model_size)) then 
+	if buffactive['Battuta'] and sets.buff.Battuta and player.status == 'Engaged' and state.DefenseMode.value == 'Physical' and (not state.PhysicalDefenseMode.value:contains('NoParry')) and (player.target and player.target.distance < (3.2 + player.target.model_size)) then
 		defenseSet = set_combine(defenseSet, sets.buff.Battuta)
 	end
-	
-    return defenseSet
+
+  return defenseSet
 end
 
 -- Modify the default idle set after it was constructed.
 function job_customize_idle_set(idleSet)
-    if player.mpp < 51 and (state.IdleMode.value == 'Normal' or state.IdleMode.value == 'Sphere') and state.DefenseMode.value == 'None' then
-        idleSet = set_combine(idleSet, sets.latent_refresh)
-    end
+  if player.mpp < 51 and (state.IdleMode.value == 'Normal' or state.IdleMode.value == 'Sphere') and state.DefenseMode.value == 'None' then
+    idleSet = set_combine(idleSet, sets.latent_refresh)
+  end
 
-    return idleSet
+  return idleSet
 end
 
 function job_update(cmdParams, eventArgs)
 	update_melee_groups()
-	
+
 	if player.sub_job ~= 'SAM' and state.Stance.value ~= "None" then
 		state.Stance:set("None")
 	end
@@ -177,10 +202,10 @@ end
 
 -- Handle notifications of general user state change.
 function job_state_change(stateField, newValue, oldValue)
-    classes.CustomDefenseGroups:clear()
-    classes.CustomDefenseGroups:append(state.ExtraDefenseMode.current)
-    classes.CustomMeleeGroups:clear()
-    classes.CustomMeleeGroups:append(state.ExtraDefenseMode.current)
+  classes.CustomDefenseGroups:clear()
+  classes.CustomDefenseGroups:append(state.ExtraDefenseMode.current)
+  classes.CustomMeleeGroups:clear()
+  classes.CustomMeleeGroups:append(state.ExtraDefenseMode.current)
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -196,9 +221,10 @@ function job_self_command(commandArgs, eventArgs)
 		if player.target.type ~= "MONSTER" then
 			add_to_chat(123,'Abort: You are not targeting a monster.')
 			return
-	
+
 		elseif player.sub_job == 'BLU' then
 			local spell_recasts = windower.ffxi.get_spell_recasts()
+<<<<<<< HEAD
 					
 			if spell_recasts[584] < spell_latency then
 				windower.chat.input('/ma "Sheep Song" <t>')
@@ -257,19 +283,60 @@ function job_self_command(commandArgs, eventArgs)
 				windower.chat.input('/ja "Aggressor" <me>')
 			elseif abil_recasts[1] < latency then
 				windower.chat.input('/ja "Berserk" <me>')
+=======
+
+			if spell_recasts[584] == 0 then
+				send_command('input /ma "Sheep Song" <t>')
+			elseif spell_recasts[598] == 0 then
+				send_command('input /ma "Soporific" <t>')
+			elseif spell_recasts[605] == 0 then
+				send_command('input /ma "Geist Wall" <t>')
+			elseif spell_recasts[575] == 0 then
+				send_command('input /ma "Jettatura" <t>')
+			elseif spell_recasts[592] == 0 then
+				send_command('input /ma "Blank Gaze" <t>')
+			elseif not check_auto_tank_ws() then
+				if not state.AutoTankMode.value then add_to_chat(123,'All Enmity Blue Magic on cooldown.') end
+			end
+
+		elseif player.sub_job == 'WAR' then
+			local abil_recasts = windower.ffxi.get_ability_recasts()
+
+			if state.HybridMode.value ~= 'Normal' and buffactive['Berserk'] then
+				send_command('cancel berserk')
+			end
+
+			if abil_recasts[5] == 0 then
+				send_command('input /ja "Provoke" <t>')
+			elseif abil_recasts[2] == 0 then
+				send_command('input /ja "Warcry" <me>')
+			elseif abil_recasts[3] == 0 then
+				send_command('input /ja "Defender" <me>')
+			elseif abil_recasts[4] == 0 then
+				send_command('input /ja "Aggressor" <me>')
+			elseif abil_recasts[1] == 0 then
+				send_command('input /ja "Berserk" <me>')
+>>>>>>> a6261fdb27f42ae86a9094e98c85455d397a997c
 			elseif not check_auto_tank_ws() then
 				if not state.AutoTankMode.value then add_to_chat(123,'All Enmity Warrior Job Abilities on cooldown.') end
 			end
-			
+
 		elseif player.sub_job == 'DNC' then
 			local abil_recasts = windower.ffxi.get_ability_recasts()
 			local under3FMs = not buffactive['Finishing Move 3'] and not buffactive['Finishing Move 4'] and not buffactive['Finishing Move 5']
-        
+
 			if under3FMs then
+<<<<<<< HEAD
 				if abil_recasts[220] < latency then
 				send_command('@input /ja "'..state.CurrentStep.value..'" <t>')
 				state.CurrentStep:cycle()
 				return
+=======
+				if abil_recasts[220] == 0 then
+					send_command('@input /ja "'..state.CurrentStep.value..'" <t>')
+					state.CurrentStep:cycle()
+					return
+>>>>>>> a6261fdb27f42ae86a9094e98c85455d397a997c
 				end
 			elseif abil_recasts[221] < latency then
 				windower.chat.input('/ja "Animated Flourish" <t>')
@@ -294,9 +361,9 @@ end
 function weather_rune_match()
     weather_rune = buffactive[elements.rune_of[world.weather_element] or '']
     day_rune = buffactive[elements.rune_of[world.day_element] or '']
-    
+
     if weather_rune or day_rune then
-		return true
+			return true
 	else
 		return false
 	end
@@ -307,9 +374,9 @@ function rune_count(rune)
     local count = 0
     local current_time = os.time()
     for _,entry in pairs(rune_timers) do
-        if entry.rune == rune and entry.expires > current_time then
-            count = count + 1
-        end
+      if entry.rune == rune and entry.expires > current_time then
+        count = count + 1
+      end
     end
     return count
 end
@@ -351,19 +418,24 @@ end
 function update_melee_groups()
 	if player.equipment.main then
 		classes.CustomMeleeGroups:clear()
-		
+
 		if player.equipment.main == "Epeolatry" and state.Buff['Aftermath: Lv.3'] then
 				classes.CustomMeleeGroups:append('AM')
 		end
-	end	
+	end
 end
 
 function check_hasso()
 	if not (state.Stance.value == 'None' or state.Buff.Hasso or state.Buff.Seigan) and player.sub_job == 'SAM' and player.in_combat then
-		
+
 		local abil_recasts = windower.ffxi.get_ability_recasts()
+<<<<<<< HEAD
 		
 		if state.Stance.value == 'Hasso' and abil_recasts[138] < latency then
+=======
+
+		if state.Stance.value == 'Hasso' and abil_recasts[138] == 0 then
+>>>>>>> a6261fdb27f42ae86a9094e98c85455d397a997c
 			windower.chat.input('/ja "Hasso" <me>')
 			tickdelay = os.clock() + 1.8
 			return true
@@ -372,13 +444,14 @@ function check_hasso()
 			tickdelay = os.clock() + 1.8
 			return true
 		end
-	
+
 	end
-		
+
 	return false
 end
 
 function check_buff()
+<<<<<<< HEAD
 	if state.AutoBuffMode.value and not areas.Cities:contains(world.area) then
 		local spell_recasts = windower.ffxi.get_spell_recasts()
 		for i in pairs(buff_spell_lists['Auto']) do
@@ -411,11 +484,36 @@ function check_buff()
 			else
 				return false
 			end
+=======
+	if state.AutoBuffMode.value and player.in_combat then
+
+		local abil_recasts = windower.ffxi.get_ability_recasts()
+
+		if not buffactive['Swordplay'] and abil_recasts[24] == 0 then
+			windower.chat.input('/ja "Swordplay" <me>')
+			tickdelay = 110
+			return true
+		elseif player.sub_job == 'DRK' and not buffactive['Last Resort'] and abil_recasts[87] == 0 then
+			windower.chat.input('/ja "Last Resort" <me>')
+			tickdelay = 110
+			return true
+		elseif player.sub_job == 'WAR' and not buffactive.Berserk and abil_recasts[1] == 0 then
+			windower.chat.input('/ja "Berserk" <me>')
+			tickdelay = 110
+			return true
+		elseif player.sub_job == 'WAR' and not buffactive.Aggressor and abil_recasts[4] == 0 then
+			windower.chat.input('/ja "Aggressor" <me>')
+			tickdelay = 110
+			return true
+		else
+			return false
+>>>>>>> a6261fdb27f42ae86a9094e98c85455d397a997c
 		end
 	end
-		
+
 	return false
 end
+<<<<<<< HEAD
 
 function check_buffup()
 	if buffup ~= '' then
@@ -477,3 +575,5 @@ buff_spell_lists = {
 		{Name='Phalanx',	Buff='Phalanx',			SpellID=106,	Reapply=false},
 	},
 }
+=======
+>>>>>>> a6261fdb27f42ae86a9094e98c85455d397a997c
