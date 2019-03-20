@@ -511,7 +511,7 @@ function global_unload()
 	send_command('unbind @delete')
 
 	send_command('unbind %q')
-    send_command('unbind ^q')
+	send_command('unbind ^q')
 	send_command('unbind !q')
 	send_command('unbind @q')
 	
