@@ -1,5 +1,4 @@
 -- Universal items that are the same for all characters, and logic to determine which item choices from quests have been made.
-<<<<<<< HEAD
 sets.TrizekRing = {ring2="Trizek Ring"}
 sets.EchadRing = {ring2="Echad Ring"}
 sets.FacilityRing = {ring2="Facility Ring"}
@@ -12,19 +11,6 @@ sets.Nexus = {back="Nexus Cape"}
 sets.Warp = {ring2="Warp Ring"}
 sets.RREar = {ear2="Reraise Earring"}
 sets.BehemothSuit = {body="Behemoth Suit +1",hands=empty,legs=empty,feet=empty}
-=======
---sets.TrizekRing = {ring2="Trizek Ring"}
---sets.EchadRing = {ring2="Echad Ring"}
---sets.FacilityRing = {ring2="Facility Ring"}
---sets.CapacityRing = {ring2="Capacity Ring"}
---sets.VocationRing = {ring2="Vocation Ring"}
---sets.HollaRing = {ring2="Dim. Ring (Holla)"}
---sets.DemRing = {ring2="Dim. Ring (Dem)"}
---sets.MeaRing = {ring2="Dim. Ring (Mea)"}
---sets.Nexus = {back="Nexus Cape"}
---sets.Warp = {ring2="Warp Ring"}
---sets.RREar = {ear2="Reraise Earring"}
->>>>>>> a6261fdb27f42ae86a9094e98c85455d397a997c
 
 if player.inventory["Adoulin's Refuge +1"] or player.safe["Adoulin's Refuge +1"] or player.safe2["Adoulin's Refuge +1"] or player.storage["Adoulin's Refuge +1"] or player.locker["Adoulin's Refuge +1"] or player.satchel["Adoulin's Refuge +1"] or player.sack["Adoulin's Refuge +1"] or player.case["Adoulin's Refuge +1"] or player.wardrobe["Adoulin's Refuge +1"] or player.wardrobe2["Adoulin's Refuge +1"] or player.wardrobe3["Adoulin's Refuge +1"] or player.wardrobe4["Adoulin's Refuge +1"] then
 	sets.Reive = {neck="Adoulin's Refuge +1"}
