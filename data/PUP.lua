@@ -23,11 +23,11 @@ function job_setup()
 
 	state.PartyChatWS = M(false, 'Report pet weaponskills in party chat.')
 
-  -- Subset of modes that use magic
-  magicPetModes = S{'Nuke','Heal','Magic'}
+    -- Subset of modes that use magic
+    magicPetModes = S{'Nuke','Heal','Magic'}
 
-  -- Var to track the current pet mode.
-  state.PetMode = M{['description']='Pet Mode', 'None','Melee','Ranged','Tank','LightTank','Magic','Heal','Nuke'}
+    -- Var to track the current pet mode.
+    state.PetMode = M{['description']='Pet Mode', 'None','Melee','Ranged','Tank','LightTank','Magic','Heal','Nuke'}
 
 	state.AutoPuppetMode = M(false, 'Auto Puppet Mode')
 	state.AutoRepairMode = M(true, 'Auto Repair Mode')

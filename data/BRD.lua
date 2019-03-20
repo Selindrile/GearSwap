@@ -32,16 +32,12 @@ end
 -- Setup vars that are user-independent.  state.Buff vars initialized here will automatically be tracked.
 function job_setup()
 
-<<<<<<< HEAD
     state.ExtraSongsMode = M{['description']='Extra Songs','None','Dummy','DummyLock','FullLength','FullLengthLock'}
-=======
-  state.ExtraSongsMode = M{['description']='Extra Songs','None','Dummy','Dummy Lock','Full Length','Full Length Lock'}
->>>>>>> a6261fdb27f42ae86a9094e98c85455d397a997c
 
-  state.Buff['Aftermath: Lv.3'] = buffactive['Aftermath: Lv.3'] or false
-  state.Buff['Pianissimo'] = buffactive['Pianissimo'] or false
-  state.Buff['Nightingale'] = buffactive['Nightingale'] or false
-  state.RecoverMode = M('35%', '60%', 'Always', 'Never')
+	state.Buff['Aftermath: Lv.3'] = buffactive['Aftermath: Lv.3'] or false
+    state.Buff['Pianissimo'] = buffactive['Pianissimo'] or false
+	state.Buff['Nightingale'] = buffactive['Nightingale'] or false
+	state.RecoverMode = M('35%', '60%', 'Always', 'Never')
 
 	--List of which WS you plan to use TP bonus WS with.
 	moonshade_ws = S{'Rudra\'s Storm'}
@@ -88,7 +84,7 @@ end
 function job_filter_precast(spell, spellMap, eventArgs)
     if spell.type == 'BardSong' and not spell.targets.Enemy then
 		local spell_recasts = windower.ffxi.get_spell_recasts()
-
+		
         -- Auto-Pianissimo
         if ((spell.target.type == 'PLAYER' and not spell.target.charmed) or (spell.target.type == 'NPC')) and spell.target.in_party and not state.Buff['Pianissimo'] then
             if spell_recasts[spell.recast_id] < 1.5 then
@@ -118,9 +114,9 @@ end
 
 function job_post_precast(spell, spellMap, eventArgs)
 	if spell.type == 'BardSong' then
-
+	
 		if state.Buff['Nightingale'] then
-
+		
 			-- Replicate midcast in precast for nightingale including layering.
             local generalClass = get_song_class(spell)
 			if generalClass and sets.midcast[generalClass] then
@@ -144,20 +140,14 @@ function job_post_precast(spell, spellMap, eventArgs)
 					equip(sets.midcast[get_spell_map(spell, default_spell_map)])
 				end
 			end
-<<<<<<< HEAD
 			
 			if not spell.targets.Enemy and state.ExtraSongsMode.value:contains('FullLength') then
-=======
-
-			if state.ExtraSongsMode.value == 'Full Length' or state.ExtraSongsMode.value == 'Full Length Lock' then
->>>>>>> a6261fdb27f42ae86a9094e98c85455d397a997c
 				equip(sets.midcast.Daurdabla)
 			end
-
+		
 		end
 
 	elseif spell.type == 'WeaponSkill' then
-<<<<<<< HEAD
 		local WSset = standardize_set(get_precast_set(spell, spellMap))
 		local wsacc = check_ws_acc()
 		
@@ -169,18 +159,6 @@ function job_post_precast(spell, spellMap, eventArgs)
 				elseif sets.MaxTP then
 					equip(sets.MaxTP[spell.english] or sets.MaxTP)
 				else
-=======
-        -- Replace Moonshade Earring if we're at cap TP
-        if player.tp == 3000 and moonshade_ws:contains(spell.english) then
-
-			if check_ws_acc():contains('Acc') or (state.Buff['Sneak Attack'] or state.Buff['Trick Attack']) then
-				if sets.AccMaxTP then
-					equip(sets.AccMaxTP)
-				end
-			else
-				if sets.MaxTP then
-					equip(sets.MaxTP)
->>>>>>> a6261fdb27f42ae86a9094e98c85455d397a997c
 				end
 			end
 		end
@@ -270,10 +248,6 @@ end
 
 -- Called by the 'update' self-command.
 function job_update(cmdParams, eventArgs)
-<<<<<<< HEAD
-=======
-  update_combat_form()
->>>>>>> a6261fdb27f42ae86a9094e98c85455d397a997c
 	update_melee_groups()
 end
 

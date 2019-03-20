@@ -1245,7 +1245,45 @@ function init_gear_sets()
 	sets.weapons.ProcStaff = {main="Terra's Staff",sub=empty}
 
 end
-	
+
+
+function user_bind_ws(var)
+	if state.Weapons.value == 'Ragnarok' then
+		--- Bind Ragnarok WeaponSkills
+		send_command('bind %q input /ws "Resolution" <t>')
+		send_command('bind ^q input /ws "Scourge" <t>')
+		send_command('bind !q input /ws "Scourge" <t>')
+		autows = 'Resolution'
+
+	elseif state.Weapons.value == 'Greatsword' then
+		--- Bind Algol WeaponSkills
+		send_command('bind %q input /ws "Resolution" <t>')
+		autows = 'Resolution'
+
+	elseif state.Weapons.value == 'Chango' then
+		--- Bind Chango WeaponSkills
+		send_command('bind !q input /ws "King/s Justice" <t>')
+		send_command('bind %q input /ws "Upheaval" <t>')
+		send_command('bind ^q input /ws "Ukko/s Fury" <t>')
+		autows = 'Upheaval'
+
+	elseif state.Weapons.value == 'Bravura' then
+		--- Bind Bravura WeaponSkills
+		send_command('bind !q input /ws "Metatron Torment" <t>')
+		send_command('bind %q input /ws "Upheaval" <t>')
+		send_command('bind ^q input /ws "Ukko/s Fury" <t>')
+		autows = 'Upheaval'
+
+	elseif state.Weapons.value == 'Sword' then
+		--- Bind Sword WeaponSkills
+		send_command('bind %q input /ws "Savage Blade" <t>')
+		send_command('bind !q input /ws "Red Lotus Blade" <t>')
+		send_command('bind ^q input /ws "Flat Blade" <t>')
+		autows = 'Savage Blade'
+	end
+end
+
+
 -- Select default macro book on initial load or subjob change.
 function select_default_macro_book()
     -- Default macro set/book
