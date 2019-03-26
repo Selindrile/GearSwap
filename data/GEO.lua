@@ -520,16 +520,17 @@ windower.raw_register_event('prerender', function()
     local luopan_txtbox = ''
     local indi_count = 0
     local geo_count = 0
+    local battle_target = false
+    battle_target = windower.ffxi.get_mob_by_target('bt')
 
     if myluopan and last_geo then
         luopan_txtbox = luopan_txtbox..'\\cs(0,255,0)'..last_geo..':\\cs(255,255,255)\n'
-        local battle_target = windower.ffxi.get_mob_by_target('bt')
         for i,v in pairs(windower.ffxi.get_mob_array()) do
             local DistanceBetween = ((myluopan.x - v.x)*(myluopan.x-v.x) + (myluopan.y-v.y)*(myluopan.y-v.y)):sqrt()
             if DistanceBetween < (6 + v.model_size) and not (v.status == 2 or v.status == 3) and v.name ~= "" and v.name ~= nil and v.name ~= "Luopan" and v.valid_target and v.model_size > 0 then
                 if debuff_list:contains(last_geo) then
 					if not v.in_party and v.is_npc and ignore_list:contains(v.name) == false then
-						if v.id == battle_target.id then
+						if not false == battle_target and v.id == battle_target.id then
 						  luopan_txtbox = luopan_txtbox..'\\cs(230,118,116)'..v.name.." "..string.format("%.2f",DistanceBetween).."\\cs(255,255,255)\n"
 						else
 						  luopan_txtbox = luopan_txtbox..v.name.." "..string.format("%.2f",DistanceBetween).."\n"
@@ -551,13 +552,12 @@ windower.raw_register_event('prerender', function()
             luopan_txtbox = luopan_txtbox..'\n'
         end
         luopan_txtbox = luopan_txtbox..'\\cs(0,255,0)'..last_indi..'\\cs(255,255,255)\n'
-        local battle_target = windower.ffxi.get_mob_by_target('bt')
         for i,v in pairs(windower.ffxi.get_mob_array()) do
             local DistanceBetween = ((s.x - v.x)*(s.x-v.x) + (s.y-v.y)*(s.y-v.y)):sqrt()
             if DistanceBetween < (6 + v.model_size) and (v.status == 1 or v.status == 0) and v.name ~= "" and v.name ~= nil and v.name ~= "Luopan" and v.name ~= s.name and v.valid_target and v.model_size > 0 then
                 if debuff_list:contains(last_indi) then
 					if not v.in_party == false and v.is_npc and not ignore_list:contains(v.name) then
-						if v.id == battle_target.id then
+						if not false == battle_target and v.id == battle_target.id then
 							luopan_txtbox = luopan_txtbox..'\\cs(230,118,116)'..v.name.." "..string.format("%.2f",DistanceBetween).."\\cs(255,255,255)\n"
 						else
 							luopan_txtbox = luopan_txtbox..v.name.." "..string.format("%.2f",DistanceBetween).."\n"
