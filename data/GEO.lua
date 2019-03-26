@@ -530,7 +530,7 @@ windower.raw_register_event('prerender', function()
             if DistanceBetween < (6 + v.model_size) and not (v.status == 2 or v.status == 3) and v.name ~= "" and v.name ~= nil and v.name ~= "Luopan" and v.valid_target and v.model_size > 0 then
                 if debuff_list:contains(last_geo) then
 					if not v.in_party and v.is_npc and ignore_list:contains(v.name) == false then
-						if not false == battle_target and v.id == battle_target.id then
+						if battle_target and v.id == battle_target.id then
 						  luopan_txtbox = luopan_txtbox..'\\cs(230,118,116)'..v.name.." "..string.format("%.2f",DistanceBetween).."\\cs(255,255,255)\n"
 						else
 						  luopan_txtbox = luopan_txtbox..v.name.." "..string.format("%.2f",DistanceBetween).."\n"
@@ -557,7 +557,7 @@ windower.raw_register_event('prerender', function()
             if DistanceBetween < (6 + v.model_size) and (v.status == 1 or v.status == 0) and v.name ~= "" and v.name ~= nil and v.name ~= "Luopan" and v.name ~= s.name and v.valid_target and v.model_size > 0 then
                 if debuff_list:contains(last_indi) then
 					if not v.in_party == false and v.is_npc and not ignore_list:contains(v.name) then
-						if not false == battle_target and v.id == battle_target.id then
+						if v.id == battle_target.id then
 							luopan_txtbox = luopan_txtbox..'\\cs(230,118,116)'..v.name.." "..string.format("%.2f",DistanceBetween).."\\cs(255,255,255)\n"
 						else
 							luopan_txtbox = luopan_txtbox..v.name.." "..string.format("%.2f",DistanceBetween).."\n"
