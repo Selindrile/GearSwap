@@ -510,6 +510,8 @@ luopan:bg_alpha(0)--128
 luopan:stroke_width(2)
 luopan:stroke_transparency(192)
 
+bt_color = '\\cs(230,118,116)'
+
 windower.raw_register_event('prerender', function()
     local s = windower.ffxi.get_mob_by_target('me')
     if windower.ffxi.get_mob_by_target('pet') then
@@ -521,24 +523,23 @@ windower.raw_register_event('prerender', function()
     local indi_count = 0
     local geo_count = 0
     local battle_target = windower.ffxi.get_mob_by_target('bt') or false
-
     if myluopan and last_geo then
-        luopan_txtbox = luopan_txtbox..'\\cs(0,255,0)Geo-'..last_geo..':\\cs(255,255,255)\n'
+        luopan_txtbox = luopan_txtbox..' \\cs(0,255,0)Geo-'..last_geo..':\\cs(255,255,255)\n'
         for i,v in pairs(windower.ffxi.get_mob_array()) do
             local DistanceBetween = ((myluopan.x - v.x)*(myluopan.x-v.x) + (myluopan.y-v.y)*(myluopan.y-v.y)):sqrt()
             if DistanceBetween < (6 + v.model_size) and not (v.status == 2 or v.status == 3) and v.name ~= "" and v.name ~= nil and v.name ~= "Luopan" and v.valid_target and v.model_size > 0 then
                 if debuff_list:contains(last_geo) then
-					if not v.in_party and v.is_npc and ignore_list:contains(v.name) == false then
-						if battle_target and v.id == battle_target.id then
-							luopan_txtbox = luopan_txtbox..'\\cs(230,118,116)'..v.name.." "..string.format("%.2f",DistanceBetween).."\\cs(255,255,255)\n"
-						else
-							luopan_txtbox = luopan_txtbox..v.name.." "..string.format("%.2f",DistanceBetween).."\n"
-						end
-						geo_count = geo_count + 1
+					if v.in_party == false and v.is_npc == true and ignore_list:contains(v.name) == false then
+            if not battle_target == false and battle_target.id == v.id then
+              luopan_txtbox = luopan_txtbox..' '..bt_color..v.name.." "..string.format("%.2f",DistanceBetween).."\\cs(255,255,255)\n"
+            else
+              luopan_txtbox = luopan_txtbox..' '..v.name.." "..string.format("%.2f",DistanceBetween).."\n"
+            end
+            geo_count = geo_count + 1
 					end
                 else
-					if v.in_party then
-						luopan_txtbox = luopan_txtbox..v.name.." "..string.format("%.2f",DistanceBetween).."\n"
+					if v.in_party == true then
+						luopan_txtbox = luopan_txtbox..' '..v.name.." "..string.format("%.2f",DistanceBetween).."\n"
 						geo_count = geo_count + 1
 					end
                 end
@@ -547,30 +548,30 @@ windower.raw_register_event('prerender', function()
     end
 
     if buffactive['Colure Active'] and last_indi then
-        if myluopan then
-            luopan_txtbox = luopan_txtbox..'\n'
-        end
-        luopan_txtbox = luopan_txtbox..'\\cs(0,255,0)Indi-'..last_indi..':\\cs(255,255,255)\n'
-        for i,v in pairs(windower.ffxi.get_mob_array()) do
-            local DistanceBetween = ((s.x - v.x)*(s.x-v.x) + (s.y-v.y)*(s.y-v.y)):sqrt()
-            if DistanceBetween < (6 + v.model_size) and (v.status == 1 or v.status == 0) and v.name ~= "" and v.name ~= nil and v.name ~= "Luopan" and v.name ~= s.name and v.valid_target and v.model_size > 0 then
-                if debuff_list:contains(last_indi) then
-					if not v.in_party == false and v.is_npc and not ignore_list:contains(v.name) then
-						if not false == battle_target and v.id == battle_target.id then
-							luopan_txtbox = luopan_txtbox..'\\cs(230,118,116)'..v.name.." "..string.format("%.2f",DistanceBetween).."\\cs(255,255,255)\n"
-						else
-							luopan_txtbox = luopan_txtbox..v.name.." "..string.format("%.2f",DistanceBetween).."\n"
-						end
-						indi_count = indi_count + 1
-					end
-                else
-					if v.in_party then
-					  luopan_txtbox = luopan_txtbox..v.name.." "..string.format("%.2f",DistanceBetween).."\n"
-					  indi_count = indi_count + 1
-					 end
-                end
+      if myluopan then
+        luopan_txtbox = luopan_txtbox..'\n'
+      end
+      luopan_txtbox = luopan_txtbox..' \\cs(0,255,0)Indi-'..last_indi..':\\cs(255,255,255)\n'
+      for i,v in pairs(windower.ffxi.get_mob_array()) do
+        local DistanceBetween = ((s.x - v.x)*(s.x-v.x) + (s.y-v.y)*(s.y-v.y)):sqrt()
+        if DistanceBetween < (6 + v.model_size) and (v.status == 1 or v.status == 0) and v.name ~= "" and v.name ~= nil and v.name ~= "Luopan" and v.name ~= s.name and v.valid_target and v.model_size > 0 then
+          if debuff_list:contains(last_indi) then
+            if v.in_party == false and v.is_npc == true and ignore_list:contains(v.name) == false then
+              if not battle_target == false and battle_target.id == v.id then
+                luopan_txtbox = luopan_txtbox..' '..bt_color..v.name.." "..string.format("%.2f",DistanceBetween).."\\cs(255,255,255)\n"
+              else
+                luopan_txtbox = luopan_txtbox..' '..v.name.." "..string.format("%.2f",DistanceBetween).."\n"
+              end
+              indi_count = indi_count + 1
             end
+          else
+            if v.in_party then
+              luopan_txtbox = luopan_txtbox..' '..v.name.." "..string.format("%.2f",DistanceBetween).."\n"
+              indi_count = indi_count + 1
+            end
+          end
         end
+      end
     end
 
     luopan.value = luopan_txtbox
