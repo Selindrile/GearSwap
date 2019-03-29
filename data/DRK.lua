@@ -160,14 +160,13 @@ function job_post_midcast(spell, spellMap, eventArgs)
 			equip(sets.element[spell.element])
 		end
 	elseif spell.skill == 'Dark Magic' then
-		if spell.english:startswith('Absorb') then
-			if state.Buff['Dark Seal'] and sets.buff['Dark Seal'] then
-				equip(sets.buff['Dark Seal'])
-			end
-			if state.Buff['Nether Void'] and sets.buff['Nether Void'] then
-				equip(sets.buff['Nether Void'])
-			end
-		elseif (spell.english == 'Drain II' or spell.english == 'Drain III') and state.DrainSwapWeaponMode.value ~= 'Never' then
+		if state.Buff['Nether Void'] and sets.buff['Nether Void'] and spell.english:startswith('Absorb') then
+			equip(sets.buff['Nether Void'])
+		end
+		if state.Buff['Dark Seal'] and sets.buff['Dark Seal'] and (spell.english:startswith('Absorb') or spell.english == 'Dread Spikes' or spell.english == 'Drain II' or spell.english == 'Drain III') then
+			equip(sets.buff['Dark Seal'])
+		end
+		if (spell.english == 'Drain II' or spell.english == 'Drain III') and state.DrainSwapWeaponMode.value ~= 'Never' then
 			if sets.DrainWeapon and (state.DrainSwapWeaponMode.value == 'Always' or tonumber(state.DrainSwapWeaponMode.value) > player.tp) then
 				enable('main','sub','range','ammo')
 				equip(sets.DrainWeapon)
