@@ -4,25 +4,25 @@
 
 --[[
     Custom commands:
-
+    
     gs c step
         Uses the currently configured step on the target, with either <t> or <stnpc> depending on setting.
 
     gs c step t
         Uses the currently configured step on the target, but forces use of <t>.
-
-
+    
+    
     Configuration commands:
-
+    
     gs c cycle mainstep
         Cycles through the available steps to use as the primary step when using one of the above commands.
-
+        
     gs c cycle altstep
         Cycles through the available steps to use for alternating with the configured main step.
-
+        
     gs c toggle usealtstep
         Toggles whether or not to use an alternate step.
-
+        
     gs c toggle selectsteptarget
         Toggles whether or not to use <stnpc> (as opposed to <t>) when using a step.
 --]]
@@ -44,7 +44,7 @@ function job_setup()
 	state.Buff['Saber Dance'] = buffactive['Saber Dance'] or false
 	state.Buff['Fan Dance'] = buffactive['Fan Dance'] or false
 	state.Buff['Aftermath: Lv.3'] = buffactive['Aftermath: Lv.3'] or false
-
+	
     state.MainStep = M{['description']='Main Step', 'Box Step','Quickstep','Feather Step','Stutter Step'}
     state.AltStep = M{['description']='Alt Step', 'Feather Step','Quickstep','Stutter Step','Box Step'}
     state.UseAltStep = M(true, 'Use Alt Step')
@@ -54,13 +54,13 @@ function job_setup()
 	state.DanceStance = M{['description']='Dance Stance','None','Saber Dance','Fan Dance'}
 
     state.CurrentStep = M{['description']='Current Step', 'Main', 'Alt'}
-
+	
 	--List of which WS you plan to use TP bonus WS with.
 	moonshade_ws = S{"Rudra's Storm"}
 
 	autows = "Rudra's Storm"
 	autofood = 'Soy Ramen'
-
+	
     update_melee_groups()
 	init_job_states({"Capacity","AutoRuneMode","AutoTrustMode","AutoWSMode","AutoShadowMode","AutoFoodMode","AutoStunMode","AutoDefenseMode","AutoBuffMode",},{"AutoSambaMode","Weapons","OffenseMode","WeaponskillMode","IdleMode","DanceStance","Passive","RuneElement","TreasureMode",})
 end
@@ -120,7 +120,7 @@ function job_post_precast(spell, spellMap, eventArgs)
 	if spell.type == 'WeaponSkill' then
 		local WSset = standardize_set(get_precast_set(spell, spellMap))
 		local wsacc = check_ws_acc()
-
+		
 		if (WSset.ear1 == "Moonshade Earring" or WSset.ear2 == "Moonshade Earring") then
 			-- Replace Moonshade Earring if we're at cap TP
 			if get_effective_player_tp(spell, WSset) > 3200 then
@@ -148,7 +148,7 @@ end
 function job_aftercast(spell, spellMap, eventArgs)
     -- Lock feet after using Mana Wall.
     if not spell.interrupted then
-
+	
 		if spell.type == 'WeaponSkill' and state.Buff['Climactic Flourish'] and not under3FMs() and player.tp < 999 then
 			local abil_recasts = windower.ffxi.get_ability_recasts()
 			if abil_recasts[222] < latency then
@@ -186,7 +186,7 @@ function job_customize_idle_set(idleSet)
     if player.hpp < 80 and not areas.Cities:contains(world.area) then
         idleSet = set_combine(idleSet, sets.ExtraRegen)
     end
-
+    
     return idleSet
 end
 
@@ -199,7 +199,7 @@ function job_customize_melee_set(meleeSet)
             meleeSet = set_combine(meleeSet, sets.buff['Climactic Flourish'])
         end
     end
-
+    
     return meleeSet
 end
 
@@ -210,7 +210,7 @@ function job_auto_change_target(spell, action, spellMap, eventArgs)
             state.IgnoreTargetting:reset()
             eventArgs.handled = true
         end
-
+        
         eventArgs.SelectNPCTargets = state.SelectStepTarget.value
     end
 end
@@ -220,23 +220,23 @@ end
 -- Set eventArgs.handled to true if display was handled, and you don't want the default info shown.
 function display_current_job_state(eventArgs)
     local msg = 'Melee'
-
+    
     if state.CombatForm.has_value then
         msg = msg .. ' (' .. state.CombatForm.value .. ')'
     end
-
+    
     msg = msg .. ': '
-
+    
     msg = msg .. state.OffenseMode.value
     if state.HybridMode.value ~= 'Normal' then
         msg = msg .. '/' .. state.HybridMode.value
     end
     msg = msg .. ', WS: ' .. state.WeaponskillMode.value
-
+    
     if state.DefenseMode.value ~= 'None' then
         msg = msg .. ', ' .. 'Defense: ' .. state.DefenseMode.value .. ' (' .. state[state.DefenseMode.value .. 'DefenseMode'].value .. ')'
     end
-
+    
     if state.Kiting.value then
         msg = msg .. ', Kiting'
     end
@@ -246,7 +246,7 @@ function display_current_job_state(eventArgs)
     if state.UseAltStep.value == true then
         msg = msg .. '/'..state.AltStep.current
     end
-
+    
     msg = msg .. ']'
 
     if state.SelectStepTarget.value == true then
@@ -275,11 +275,9 @@ function job_self_command(commandArgs, eventArgs)
             doStep = state[state.CurrentStep.current..'Step'].current
         else
             doStep = state.MainStep.current
-        end
-
+        end        
+        
         send_command('@input /ja "'..doStep..'" <t>')
-    elseif commandArgs[1]:lower() == 'runeelement' and player.sub_job == 'RUN' then
-  		windower.chat.input('/ja "'..state.RuneElement.value..'" <me>')
     end
 end
 
@@ -298,8 +296,8 @@ function update_melee_groups()
 
 	if state.Buff['Saber Dance'] then
 		classes.CustomMeleeGroups:append('Saber')
-	end
-
+	end	
+	
 	if player.equipment.main and player.equipment.main == "Terpsichore" and state.Buff['Aftermath: Lv.3'] then
 		classes.CustomMeleeGroups:append('AM')
 	end
@@ -317,13 +315,13 @@ function check_buff()
 
 	if state.AutoBuffMode.value then
 		local abil_recasts = windower.ffxi.get_ability_recasts()
-
+	
 		if not buffactive['Finishing Move 1'] and not buffactive['Finishing Move 2'] and not buffactive['Finishing Move 3'] and not buffactive['Finishing Move 4'] and not buffactive['Finishing Move 5'] and not buffactive['Finishing Move (6+)'] and abil_recasts[223] < latency then
 			windower.chat.input('/ja "No Foot Rise" <me>')
 			tickdelay = os.clock() + 1.8
 			return true
 		end
-
+		
 		if player.in_combat then
 			if player.sub_job == 'WAR' and not buffactive.Berserk and abil_recasts[1] < latency then
 				windower.chat.input('/ja "Berserk" <me>')
@@ -344,9 +342,9 @@ end
 function check_dance()
 
 	if state.DanceStance.value ~= 'None' and not (state.Buff['Saber Dance'] or state.Buff['Fan Dance']) and player.in_combat then
-
+		
 		local abil_recasts = windower.ffxi.get_ability_recasts()
-
+		
 		if state.DanceStance.value == 'Saber Dance' and abil_recasts[219] < latency then
 			windower.chat.input('/ja "Saber Dance" <me>')
 			tickdelay = os.clock() + 1.8
