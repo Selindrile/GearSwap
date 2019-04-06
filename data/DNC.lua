@@ -275,9 +275,11 @@ function job_self_command(commandArgs, eventArgs)
             doStep = state[state.CurrentStep.current..'Step'].current
         else
             doStep = state.MainStep.current
-        end        
-        
+        end
+
         send_command('@input /ja "'..doStep..'" <t>')
+    elseif commandArgs[1]:lower() == 'runeelement' and player.sub_job == 'RUN' then
+  		windower.chat.input('/ja "'..state.RuneElement.value..'" <me>')
     end
 end
 
