@@ -103,9 +103,9 @@ function job_pet_midcast(spell, spellMap, eventArgs)
 end
 
 function job_pet_aftercast(spell, spellMap, eventArgs)
-	if spell.english = 'Provoke' then
+	if spell.english == 'Provoke' then
 		PupVokeReady = os.clock() +	PupVokeRecast
-	elseif spell.english = 'Flash' then
+	elseif spell.english == 'Flash' then
 		PupFlashReady = os.clock() + PupFlashRecast
     elseif petWeaponskills:contains(spell.english) then
 		if state.PartyChatWS.value then
@@ -170,7 +170,7 @@ function job_get_spell_map(spell, default_spell_map)
 end
 
 function job_customize_idle_set(idleSet)
-	if pet.isvalid and and sets.midcast.Pet then
+	if pet.isvalid and sets.midcast.Pet then
 		if state.PetWSGear.value and pet.tp and pet.tp > 999 then
 			if sets.midcast.Pet.PetWSGear and sets.midcast.Pet.PetWSGear[state.PetMode.value] then
 				idleSet = set_combine(idleSet, sets.midcast.Pet.PetWSGear[state.PetMode.value])
