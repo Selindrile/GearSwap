@@ -185,6 +185,12 @@ function job_post_precast(spell, spellMap, eventArgs)
 					equip(sets.precast.RA.Flurry2)
 				end
 			end
+		else
+			if sets.precast.RA[state.Weapons.value] then
+				equip(sets.precast.RA[state.Weapons.value])
+			else
+				equip(sets.precast.RA)
+			end
 		end
 
 		if statusammo then
