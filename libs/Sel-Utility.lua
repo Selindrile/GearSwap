@@ -2309,7 +2309,7 @@ end
 
 function item_equipped(item)
 	for k, v in pairs(player.equipment) do
-		if v == item then
+		if v:lower() == item:lower() then
 			return true
 		end
 	end
