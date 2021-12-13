@@ -1,13 +1,13 @@
-function user_setup()
+function user_job_setup()
 	-- Options: Override default values
     state.OffenseMode:options('Normal','SomeAcc','Acc','FullAcc', 'Fodder')
     state.WeaponskillMode:options('Match','Normal', 'SomeAcc', 'Acc', 'FullAcc', 'Fodder')
-    state.HybridMode:options('Normal', 'PDT','PDTOnly')
+    state.HybridMode:options('Normal', 'PDT')
     state.PhysicalDefenseMode:options('PDT', 'HP')
 	state.MagicalDefenseMode:options('MDT')
 	state.ResistDefenseMode:options('MEVA')
 	state.IdleMode:options('Normal', 'PDT')
-	state.Weapons:options('Godhands','ProcStaff','ProcClub','Barehanded','ProcSword','ProcGreatSword','ProcScythe','ProcPolearm','ProcGreatKatana')
+	state.Weapons:options('Godhands','Staff','ProcStaff','ProcClub','Barehanded','ProcSword','ProcGreatSword','ProcScythe','ProcPolearm','ProcGreatKatana')
 
     state.ExtraMeleeMode = M{['description']='Extra Melee Mode', 'None'}
 
@@ -32,6 +32,7 @@ function init_gear_sets()
 	-- Precast sets to enhance JAs on use
 	sets.precast.JA['Hundred Fists'] = {legs="Hesychast's Hose +1"}
 	sets.precast.JA['Boost'] = {} --hands="Anchorite's Gloves +1"
+	sets.precast.JA['Boost'].OutOfCombat = {} --hands="Anchorite's Gloves +1", Remove Haste and Add Slow Gear.
 	sets.precast.JA['Dodge'] = {feet="Anchorite's Gaiters +1"}
 	sets.precast.JA['Focus'] = {head="Anchorite's Crown +1"}
 	sets.precast.JA['Counterstance'] = {} --feet="Hesychast's Gaiters +1"
@@ -43,7 +44,7 @@ function init_gear_sets()
 	
 	sets.precast.JA['Chakra'] = {
 		head="Dampening Tam",
-		body="Emet Harness +1",hands="Hesychast's Gloves +1",
+		body="Malignance Tabard",hands="Hesychast's Gloves +1",
 		legs="Hes. Hose +1",feet="Anch. Gaiters +1"}
 
 	-- Waltz set (chr and vit)
@@ -53,20 +54,20 @@ function init_gear_sets()
 	sets.precast.Waltz['Healing Waltz'] = {}
 
 	sets.precast.Step = {ammo="Falcon Eye",
-		head="Dampening Tam",neck="Moonbeam Nodowa",ear1="Zennaroi Earring",ear2="Telos Earring",
-		body="Bhikku Cyclas +1",hands="Hesychast's Gloves +1",ring1="Ramuh Ring +1",ring2="Ramuh Ring +1",
-		back="Segomo's Mantle",waist="Olseni Belt",legs="Hiza. Hizayoroi +2",feet=gear.herculean_acc_feet}
+		head="Malignance Chapeau",neck="Moonbeam Nodowa",ear1="Mache Earring +1",ear2="Telos Earring",
+		body="Malignance Tabard",hands="Hesychast's Gloves +1",ring1="Ramuh Ring +1",ring2="Ramuh Ring +1",
+		back="Segomo's Mantle",waist="Olseni Belt",legs="Hiza. Hizayoroi +2",feet="Malignance Boots"}
 		
 	sets.precast.Flourish1 = {ammo="Falcon Eye",
-		head="Dampening Tam",neck="Moonbeam Nodowa",ear1="Zennaroi Earring",ear2="Telos Earring",
-		body="Mekosu. Harness",hands="Hesychast's Gloves +1",ring1="Ramuh Ring +1",ring2="Ramuh Ring +1",
-		back="Segomo's Mantle",waist="Olseni Belt",legs="Mummu Kecks +2",feet=gear.herculean_acc_feet}
+		head="Malignance Chapeau",neck="Moonbeam Nodowa",ear1="Mache Earring +1",ear2="Telos Earring",
+		body="Malignance Tabard",hands="Hesychast's Gloves +1",ring1="Ramuh Ring +1",ring2="Ramuh Ring +1",
+		back="Segomo's Mantle",waist="Olseni Belt",legs="Mummu Kecks +2",feet="Malignance Boots"}
 
 
 	-- Fast cast sets for spells
 	
 	sets.precast.FC = {ammo="Impatiens",
-	head=gear.herculean_fc_head,neck="Voltsurge Torque",ear1="Enchntr. Earring +1",ear2="Loquacious Earring",
+	head=gear.herculean_fc_head,neck="Voltsurge Torque",ear1="Enchntr. Earring +1",ear2="Loquac. Earring",
 	body="Dread Jupon",hands="Leyline Gloves",ring2="Lebeche Ring",ring2="Kishar Ring",
 	legs="Rawhide Trousers"}
 
@@ -75,13 +76,13 @@ function init_gear_sets()
        
 	-- Weaponskill sets
 	-- Default set for any weaponskill that isn't any more specifically defined
-	sets.precast.WS = {ammo="Ginsen",
+	sets.precast.WS = {ammo="Voluspa Tathlum",
 		head="Adhemar Bonnet +1",neck="Fotia Gorget",ear1="Brutal Earring",ear2="Sherida Earring",
-		body="Ken. Samue",hands="Adhemar Wrist. +1",ring1="Niqmaddu Ring",ring2="Regal Ring",
-		back="Segomo's Mantle",waist="Fotia Belt",legs="Tatena. Haidate +1",feet=gear.herculean_ta_feet}
+		body="Ken. Samue",hands="Adhemar Wrist. +1",ring1="Niqmaddu Ring",ring2="Gere Ring",
+		back="Segomo's Mantle",waist="Fotia Belt",legs="Hiza. Hizayoroi +2",feet=gear.herculean_ta_feet}
 	sets.precast.WSSomeAcc = {ammo="Falcon Eye",head="Dampening Tam",legs="Hiza. Hizayoroi +2"}
-	sets.precast.WSAcc = {ammo="Falcon Eye",head="Dampening Tam",neck="Combatant's Torque",ear1="Cessance Earring",ring2="Ramuh Ring +1",waist="Olseni Belt",legs="Hiza. Hizayoroi +2",feet=gear.herculean_acc_feet}
-	sets.precast.WSFullAcc = {ammo="Falcon Eye",head="Mummu Bonnet +2",neck="Moonbeam Nodowa",ear1="Zennaroi Earring",ear2="Telos Earring",body="Mummu Jacket +2",hands="Ryuo Tekko",ring1="Ramuh Ring +1",ring2="Ramuh Ring +1",waist="Olseni Belt",legs="Hiza. Hizayoroi +2",feet=gear.herculean_acc_feet}
+	sets.precast.WSAcc = {ammo="Falcon Eye",head="Dampening Tam",neck="Combatant's Torque",ear1="Cessance Earring",ring2="Ramuh Ring +1",body="Malignance Tabard",waist="Olseni Belt",legs="Hiza. Hizayoroi +2",feet="Malignance Boots"}
+	sets.precast.WSFullAcc = {ammo="Falcon Eye",head="Mummu Bonnet +2",neck="Moonbeam Nodowa",ear1="Mache Earring +1",ear2="Telos Earring",body="Malignance Tabard",hands="Ryuo Tekko",ring1="Ramuh Ring +1",ring2="Ramuh Ring +1",waist="Olseni Belt",legs="Hiza. Hizayoroi +2",feet="Malignance Boots"}
 	sets.precast.WSFodder = {}
 	sets.precast.WS.SomeAcc = set_combine(sets.precast.WS, sets.precast.WSSomeAcc)	
 	sets.precast.WS.Acc = set_combine(sets.precast.WS, sets.precast.WSAcc)
@@ -97,7 +98,7 @@ function init_gear_sets()
 	sets.precast.WS["Victory Smite"]   = set_combine(sets.precast.WS, {ear1="Moonshade Earring",body="Abnoba Kaftan",hands="Ryuo Tekko",ring2="Begrudging Ring",legs="Mummu Kecks +2",feet="Mummu Gamash. +2"})
 	sets.precast.WS['Shijin Spiral']   = set_combine(sets.precast.WS, {head="Dampening Tam"})
 	sets.precast.WS['Dragon Kick']     = set_combine(sets.precast.WS, {waist="Grunfeld Rope"})
-	sets.precast.WS['Tornado Kick']    = set_combine(sets.precast.WS, {ring1="Spiral Ring"})
+	sets.precast.WS['Tornado Kick']    = set_combine(sets.precast.WS, {})
 	sets.precast.WS['Spinning Attack'] = set_combine(sets.precast.WS, {waist="Grunfeld Rope"})
 
 	sets.precast.WS["Raging Fists"].SomeAcc = set_combine(sets.precast.WS["Raging Fists"], sets.precast.WSSomeAcc)
@@ -137,20 +138,20 @@ function init_gear_sets()
 	sets.precast.WS["Tornado Kick"].Fodder = set_combine(sets.precast.WS["Tornado Kick"], sets.precast.WSFodder)
 
 
-	sets.precast.WS['Cataclysm'] = {ammo="Dosis Tathlum",
+	sets.precast.WS['Cataclysm'] = {ammo="Ghastly Tathlum +1",
 		neck="Baetyl Pendant",ear1="Friomisi Earring",ear2="Crematio Earring",
-		hands=gear.herculean_dt_hands,ring1="Shiva Ring +1",
+		hands="Malignance Gloves",ring1="Shiva Ring +1",
 		back="Toro Cape",legs="Nahtirah Trousers"}
 	
 	-- Swap to these on Moonshade using WS if at 3000 TP
 	sets.MaxTP = {ear1="Brutal Earring",ear2="Sherida Earring",}
-	sets.AccMaxTP = {ear1="Zennaroi Earring",ear2="Telos Earring"}
+	sets.AccMaxTP = {ear1="Mache Earring +1",ear2="Telos Earring"}
 	
 	-- Midcast Sets
-	sets.midcast.FastRecast = {ammo="Staunch Tathlum",
-		head=gear.herculean_fc_head,neck="Voltsurge Torque",ear1="Enchntr. Earring +1",ear2="Loquacious Earring",
-		body="Dread Jupon",hands="Leyline Gloves",ring2="Defending Ring",ring2="Prolix Ring",
-		back="Moonlight Cape",waist="Black Belt",legs=gear.herculean_dt_legs,feet="Hippo. Socks +1"}
+	sets.midcast.FastRecast = {ammo="Staunch Tathlum +1",
+		head=gear.herculean_fc_head,neck="Voltsurge Torque",ear1="Enchntr. Earring +1",ear2="Loquac. Earring",
+		body="Dread Jupon",hands="Leyline Gloves",ring1="Defending Ring",ring2="Prolix Ring",
+		back="Moonlight Cape",waist="Black Belt",legs="Nyame Flanchard",feet="Hippo. Socks +1"}
 		
 	-- Specific spells
 	sets.midcast.Utsusemi = set_combine(sets.midcast.FastRecast, {back="Mujin Mantle"})
@@ -162,42 +163,42 @@ function init_gear_sets()
 	
 
 	-- Idle sets
-	sets.idle = {ammo="Staunch Tathlum",
+	sets.idle = {ammo="Staunch Tathlum +1",
 		head="Dampening Tam",neck="Loricate Torque +1",ear1="Etiolation Earring",ear2="Sanare Earring",
-		body="Emet Harness +1",hands=gear.herculean_dt_hands,ring1="Defending Ring",ring2="Sheltered Ring",
-		back="Moonlight Cape",waist="Black Belt",legs=gear.herculean_dt_legs,feet="Hippo. Socks +1"}
+		body="Malignance Tabard",hands="Malignance Gloves",ring1="Defending Ring",ring2="Sheltered Ring",
+		back="Moonlight Cape",waist="Black Belt",legs="Nyame Flanchard",feet="Hippo. Socks +1"}
 
-	sets.idle.Weak = {ammo="Staunch Tathlum",
+	sets.idle.Weak = {ammo="Staunch Tathlum +1",
 		head="Dampening Tam",neck="Loricate Torque +1",ear1="Etiolation Earring",ear2="Sanare Earring",
-		body="Hesychast's Cyclas",hands=gear.herculean_dt_hands,ring1="Defending Ring",ring2="Sheltered Ring",
-		back="Moonlight Cape",waist="Black Belt",legs=gear.herculean_dt_legs,feet="Hippo. Socks +1"}
+		body="Malignance Tabard",hands="Malignance Gloves",ring1="Defending Ring",ring2="Sheltered Ring",
+		back="Moonlight Cape",waist="Black Belt",legs="Nyame Flanchard",feet="Hippo. Socks +1"}
 
-	sets.idle.PDT = {ammo="Staunch Tathlum",
-		head="Genmei Kabuto",neck="Loricate Torque +1",ear1="Etiolation Earring",ear2="Sanare Earring",
-		body="Emet Harness +1",hands=gear.herculean_dt_hands,ring1="Defending Ring",ring2="Dark Ring",
-		back="Moonlight Cape",waist="Black Belt",legs=gear.herculean_dt_legs,feet="Hippo. Socks +1"}		
+	sets.idle.PDT = {ammo="Staunch Tathlum +1",
+		head="Nyame Helm",neck="Loricate Torque +1",ear1="Etiolation Earring",ear2="Sanare Earring",
+		body="Malignance Tabard",hands="Malignance Gloves",ring1="Defending Ring",ring2="Dark Ring",
+		back="Moonlight Cape",waist="Black Belt",legs="Nyame Flanchard",feet="Hippo. Socks +1"}		
 
 	-- Defense sets
-	sets.defense.PDT = {ammo="Staunch Tathlum",
-		head="Genmei Kabuto",neck="Loricate Torque +1",ear1="Etiolation Earring",ear2="Sanare Earring",
-		body="Emet Harness +1",hands=gear.herculean_dt_hands,ring1="Defending Ring",ring2="Dark Ring",
-		back="Moonlight Cape",waist="Black Belt",legs=gear.herculean_dt_legs,feet=gear.herculean_acc_feet}
+	sets.defense.PDT = {ammo="Staunch Tathlum +1",
+		head="Nyame Helm",neck="Loricate Torque +1",ear1="Etiolation Earring",ear2="Sanare Earring",
+		body="Malignance Tabard",hands="Malignance Gloves",ring1="Defending Ring",ring2="Dark Ring",
+		back="Moonlight Cape",waist="Black Belt",legs="Nyame Flanchard",feet="Malignance Boots"}
 		
 	-- Defense sets
-	sets.defense.HP = {ammo="Staunch Tathlum",
-		head="Genmei Kabuto",neck="Loricate Torque +1",ear1="Etiolation Earring",ear2="Sanare Earring",
-		body="Emet Harness +1",hands=gear.herculean_dt_hands,ring1="Defending Ring",ring2="Dark Ring",
-		back="Segomo's Mantle",waist="Black Belt",legs=gear.herculean_dt_legs,feet="Hippo. Socks +1"}
+	sets.defense.HP = {ammo="Staunch Tathlum +1",
+		head="Nyame Helm",neck="Loricate Torque +1",ear1="Etiolation Earring",ear2="Sanare Earring",
+		body="Malignance Tabard",hands="Malignance Gloves",ring1="Defending Ring",ring2="Dark Ring",
+		back="Segomo's Mantle",waist="Black Belt",legs="Nyame Flanchard",feet="Hippo. Socks +1"}
 
-	sets.defense.MDT = {ammo="Staunch Tathlum",
+	sets.defense.MDT = {ammo="Staunch Tathlum +1",
 		head="Dampening Tam",neck="Warder's Charm +1",ear1="Etiolation Earring",ear2="Sanare Earring",
-		body="Emet Harness +1",hands=gear.herculean_dt_hands,ring1="Defending Ring",ring2="Shadow Ring",
-		back="Moonlight Cape",waist="Flax Sash",legs=gear.herculean_dt_legs,feet="Hippo. Socks +1"}
+		body="Malignance Tabard",hands="Malignance Gloves",ring1="Defending Ring",ring2="Shadow Ring",
+		back="Moonlight Cape",waist="Carrier's Sash",legs="Nyame Flanchard",feet="Hippo. Socks +1"}
 		
-	sets.defense.MEVA = {ammo="Staunch Tathlum",
+	sets.defense.MEVA = {ammo="Staunch Tathlum +1",
 		head=empty,neck="Warder's Charm +1",ear1="Etiolation Earring",ear2="Sanare Earring",
 		body="Respite Cloak",hands="Leyline Gloves",ring1="Vengeful Ring",Ring2="Purity Ring",
-		back="Toro Cape",waist="Flax Sash",legs="Samnuha Tights",feet=gear.herculean_acc_feet}
+		back="Toro Cape",waist="Carrier's Sash",legs="Samnuha Tights",feet="Malignance Boots"}
 
 	sets.Kiting = {feet="Herald's Gaiters"}
 
@@ -209,64 +210,48 @@ function init_gear_sets()
 	-- EG: sets.engaged.Dagger.Accuracy.Evasion
 
 	-- Normal melee sets
-	sets.engaged = {ammo="Ginsen",
+	sets.engaged = {ammo="Aurgelmir Orb +1",
 		head="Dampening Tam",neck="Moonbeam Nodowa",ear1="Brutal Earring",ear2="Sherida Earring",
-		body="Ken. Samue",hands="Adhemar Wrist. +1",ring1="Niqmaddu Ring",ring2="Epona's Ring",
+		body="Ken. Samue",hands="Adhemar Wrist. +1",ring1="Niqmaddu Ring",ring2="Gere Ring",
 		back="Segomo's Mantle",waist="Windbuffet Belt +1",legs="Samnuha Tights",feet=gear.herculean_ta_feet}
 	sets.engaged.SomeAcc = {ammo="Falcon Eye",
 		head="Dampening Tam",neck="Moonbeam Nodowa",ear1="Brutal Earring",ear2="Sherida Earring",
-		body="Ken. Samue",hands="Adhemar Wrist. +1",ring1="Niqmaddu Ring",ring2="Epona's Ring",
+		body="Ken. Samue",hands="Adhemar Wrist. +1",ring1="Niqmaddu Ring",ring2="Gere Ring",
 		back="Segomo's Mantle",waist="Windbuffet Belt +1",legs="Samnuha Tights",feet=gear.herculean_ta_feet}
 	sets.engaged.Acc = {ammo="Falcon Eye",
 		head="Dampening Tam",neck="Moonbeam Nodowa",ear1="Cessance Earring",ear2="Sherida Earring",
-		body="Ken. Samue",hands="Ryuo Tekko",ring1="Niqmaddu Ring",ring2="Ramuh Ring +1",
-		back="Segomo's Mantle",waist="Olseni Belt",legs="Mummu Kecks +2",feet=gear.herculean_acc_feet}
+		body="Malignance Tabard",hands="Ryuo Tekko",ring1="Niqmaddu Ring",ring2="Ramuh Ring +1",
+		back="Segomo's Mantle",waist="Olseni Belt",legs="Mummu Kecks +2",feet="Malignance Boots"}
 	sets.engaged.FullAcc = {ammo="Falcon Eye",
-		head="Mummu Bonnet +2",neck="Moonbeam Nodowa",ear1="Zennaroi Earring",ear2="Telos Earring",
-		body="Mummu Jacket +2",hands="Ryuo Tekko",ring1="Ramuh Ring +1",ring2="Ramuh Ring +1",
-		back="Segomo's Mantle",waist="Olseni Belt",legs="Hiza. Hizayoroi +2",feet=gear.herculean_acc_feet}
-	sets.engaged.Fodder = {ammo="Ginsen",
+		head="Mummu Bonnet +2",neck="Moonbeam Nodowa",ear1="Mache Earring +1",ear2="Telos Earring",
+		body="Malignance Tabard",hands="Ryuo Tekko",ring1="Ramuh Ring +1",ring2="Ramuh Ring +1",
+		back="Segomo's Mantle",waist="Olseni Belt",legs="Hiza. Hizayoroi +2",feet="Malignance Boots"}
+	sets.engaged.Fodder = {ammo="Aurgelmir Orb +1",
 		head="Dampening Tam",neck="Moonbeam Nodowa",ear1="Brutal Earring",ear2="Sherida Earring",
-		body="Adhemar Jacket +1",hands="Adhemar Wrist. +1",ring1="Niqmaddu Ring",ring2="Epona's Ring",
-		back="Segomo's Mantle",waist="Windbuffet Belt +1",legs="Samnuha Tights",feet="Soku. Sune-Ate"}
+		body="Ken. Samue",hands="Adhemar Wrist. +1",ring1="Niqmaddu Ring",ring2="Gere Ring",
+		back="Segomo's Mantle",waist="Windbuffet Belt +1",legs="Samnuha Tights",feet=gear.herculean_ta_feet}
 
 	-- Defensive melee hybrid sets
-	sets.engaged.PDT = {ammo="Ginsen",
-		head="Genmei Kabuto",neck="Loricate Torque +1",ear1="Brutal Earring",ear2="Sherida Earring",
-		body="Emet Harness +1",hands=gear.herculean_dt_hands,ring1="Defending Ring",ring2="Dark Ring",
-		back="Moonlight Cape",waist="Black Belt",legs=gear.herculean_dt_legs,feet="Hippo. Socks +1"}
+	sets.engaged.PDT = {ammo="Aurgelmir Orb +1",
+		head="Nyame Helm",neck="Loricate Torque +1",ear1="Brutal Earring",ear2="Sherida Earring",
+		body="Malignance Tabard",hands="Malignance Gloves",ring1="Defending Ring",ring2="Dark Ring",
+		back="Moonlight Cape",waist="Black Belt",legs="Nyame Flanchard",feet="Hippo. Socks +1"}
 	sets.engaged.SomeAcc.PDT = {ammo="Falcon Eye",
 		head="Dampening Tam",neck="Moonbeam Nodowa",ear1="Brutal Earring",ear2="Sherida Earring",
-		body="Emet Harness +1",hands=gear.herculean_dt_hands,ring1="Defending Ring",ring2="Dark Ring",
-		back="Moonlight Cape",waist="Black Belt",legs=gear.herculean_dt_legs,feet="Hippo. Socks +1"}
+		body="Malignance Tabard",hands="Malignance Gloves",ring1="Defending Ring",ring2="Dark Ring",
+		back="Moonlight Cape",waist="Black Belt",legs="Nyame Flanchard",feet="Hippo. Socks +1"}
 	sets.engaged.Acc.PDT = {ammo="Falcon Eye",
 		head="Dampening Tam",neck="Moonbeam Nodowa",ear1="Cessance Earring",ear2="Sherida Earring",
-		body="Emet Harness +1",hands=gear.herculean_dt_hands,ring1="Defending Ring",ring2="Patricius Ring",
-		back="Segomo's Mantle",waist="Olseni Belt",legs=gear.herculean_dt_legs,feet="Hippo. Socks +1"}
+		body="Malignance Tabard",hands="Malignance Gloves",ring1="Defending Ring",ring2="Patricius Ring",
+		back="Segomo's Mantle",waist="Olseni Belt",legs="Nyame Flanchard",feet="Hippo. Socks +1"}
 	sets.engaged.FullAcc.PDT = {ammo="Falcon Eye",
-		head="Dampening Tam",neck="Moonbeam Nodowa",ear1="Zennaroi Earring",ear2="Telos Earring",
-		body="Bhikku Cyclas +1",hands="Hesychast's Gloves +1",ring1="Defending Ring",ring2="Patricius Ring",
-		back="Segomo's Mantle",waist="Olseni Belt",legs=gear.herculean_dt_legs,feet="Hippo. Socks +1"}
-	sets.engaged.Fodder.PDT = {ammo="Staunch Tathlum",
-		head="Genmei Kabuto",neck="Loricate Torque +1",ear1="Brutal Earring",ear2="Sherida Earring",
-		body="Emet Harness +1",hands=gear.herculean_dt_hands,ring1="Defending Ring",ring2="Dark Ring",
-		back="Moonlight Cape",waist="Black Belt",legs=gear.herculean_dt_legs,feet="Hippo. Socks +1"}
-	sets.engaged.PDTOnly = {ammo="Ginsen",
-		head="Genmei Kabuto",neck="Moonbeam Nodowa",ear1="Brutal Earring",ear2="Sherida Earring",
-		body="Emet Harness +1",hands="Adhemar Wrist. +1",ring1="Niqmaddu Ring",ring2="Patricius Ring",
-		back="Solemnity Cape",waist="Black Belt",legs="Hesychast's Hose +1",feet="Soku. Sune-Ate"}
-	sets.engaged.SomeAcc.PDTOnly = {ammo="Ginsen",
-		head="Dampening Tam",neck="Moonbeam Nodowa",ear1="Cessance Earring",ear2="Sherida Earring",
-		body="Emet Harness +1",hands="Hes. Gloves +1",ring1="Niqmaddu Ring",ring2="Patricius Ring",
-		back="Solemnity Cape",waist="Black Belt",legs="Hesychast's Hose +1",feet="Soku. Sune-Ate"}
-	sets.engaged.Acc.PDTOnly = {ammo="Falcon Eye",
-		head="Dampening Tam",neck="Moonbeam Nodowa",ear1="Cessance Earring",ear2="Sherida Earring",
-		body="Emet Harness +1",hands="Hesychast's Gloves +1",ring1="Niqmaddu Ring",ring2="Patricius Ring",
-		back="Solemnity Cape",waist="Black Belt",legs="Samnuha Tights",feet=gear.herculean_acc_feet}
-	sets.engaged.FullAcc.PDTOnly = {ammo="Falcon Eye",
-		head="Dampening Tam",neck="Moonbeam Nodowa",ear1="Zennaroi Earring",ear2="Telos Earring",
-		body="Emet Harness +1",hands="Hesychast's Gloves +1",ring1="Ramuh Ring +1",ring2="Patricius Ring",
-		back="Solemnity Cape",waist="Black Belt",legs="Samnuha Tights",feet=gear.herculean_acc_feet}
+		head="Dampening Tam",neck="Moonbeam Nodowa",ear1="Mache Earring +1",ear2="Telos Earring",
+		body="Malignance Tabard",hands="Hesychast's Gloves +1",ring1="Defending Ring",ring2="Patricius Ring",
+		back="Segomo's Mantle",waist="Olseni Belt",legs="Nyame Flanchard",feet="Hippo. Socks +1"}
+	sets.engaged.Fodder.PDT = {ammo="Staunch Tathlum +1",
+		head="Nyame Helm",neck="Loricate Torque +1",ear1="Brutal Earring",ear2="Sherida Earring",
+		body="Malignance Tabard",hands="Malignance Gloves",ring1="Defending Ring",ring2="Dark Ring",
+		back="Moonlight Cape",waist="Black Belt",legs="Nyame Flanchard",feet="Hippo. Socks +1"}
 
 	-- Hundred Fists/Impetus melee set mods
 	
@@ -281,8 +266,9 @@ function init_gear_sets()
 
 	sets.buff.Doom = set_combine(sets.buff.Doom, {})
 	sets.buff.Sleep = {head="Frenzy Sallet"}
-	sets.buff.Impetus = {} --body="Bhikku Cyclas +1"
+	sets.buff.Impetus = {body="Bhikku Cyclas +1"}
 	sets.buff.Footwork = {feet="Shukuyu Sune-Ate"}
+	sets.buff.Boost = {} --waist="Ask Sash"
 	
 	sets.FootworkWS = {feet="Shukuyu Sune-Ate"}
 	sets.DayIdle = {}
@@ -294,6 +280,7 @@ function init_gear_sets()
 	-- Weapons sets
 	sets.weapons.Godhands = {main="Godhands"}
 	sets.weapons.Barehanded = {main=empty}
+	sets.weapons.Staff = {main="Malignance Pole",sub="Bloodrain Strap"}
 	sets.weapons.ProcStaff = {main="Terra's Staff"}
 	sets.weapons.ProcClub = {main="Mafic Cudgel"}
 	sets.weapons.ProcSword = {main="Ark Sword",sub=empty}

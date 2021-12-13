@@ -1,16 +1,4 @@
 --Place for settings and custom functions to work across one characters, all jobs.
-
---Time Related Settings:
---To determine your offset the first time, uncomment time_offset and set time_test to true,
---Once you see delay numbers start spamming your chat, (Must be outside of town.)
---(Also you can't have Commitment or Dedication Buffs) then Equip to ring1 and use "Capacity Ring",
---(Not a Trizek or Calibur ring, "specifically Capacity Ring") your time_offset should appear in chat.
---Set time_offset to the number mentioned in your chat and reload.
---If the number spammed in your chat matches up with the seconds remaining on
---your Capacity Ring's recast, your time_offset is correct, set time_test to false and reload.
-
---time_offset = 0
-time_test = false
 latency = .75
 
 --If this is set to true it will prevent you from casting shadows when you have more up than that spell would generate.
@@ -37,6 +25,7 @@ state.DisplayMode = M(true, 'Display Mode') --Set this to false if you don't wan
 --Options for automation.
 state.ReEquip 		  		= M(true, 'ReEquip Mode')		 --Set this to false if you don't want to equip your current Weapon set when you aren't wearing any weapons.
 state.AutoArts 		  		= M(true, 'AutoArts') 		 --Set this to false if you don't want to automatically try to keep up Solace/Arts.
+state.AutoLockstyle	 	    = M(true, 'AutoLockstyle Mode') --Set this to false if you don't want gearswap to automatically lockstyle on load and weapon change.
 state.CancelStoneskin 		= M(true, 'Cancel Stone Skin') --Set this to false if you don't want to automatically cancel stoneskin when you're slept.
 state.SkipProcWeapons 		= M(true, 'Skip Proc Weapons') --Set this to false if you want to display weapon sets fulltime rather than just Aby/Voidwatch.
 state.NotifyBuffs	  		= M(false, 'Notify Buffs') 	 --Set this to true if you want to notify your party when you recieve a specific buff/debuff. (List Below)
@@ -59,12 +48,12 @@ send_command('bind @f8 gs c toggle AutoNukeMode') --Turns auto-nuke mode on and 
 send_command('bind ^f8 gs c toggle AutoStunMode') --Turns auto-stun mode off and on.
 send_command('bind !f8 gs c toggle AutoDefenseMode') --Turns auto-defense mode off and on.
 send_command('bind ^@!f8 gs c toggle AutoTrustMode') --Summons trusts automatically.
-send_command('bind @pause gs c toggle AutoBuffMode') --Automatically keeps certain buffs up, job-dependant.
+send_command('bind @pause gs c cycle AutoBuffMode') --Automatically keeps certain buffs up, job-dependant.
 send_command('bind @scrolllock gs c cycle Passive') --Changes offense settings such as accuracy.
 send_command('bind f9 gs c cycle OffenseMode') --Changes offense settings such as accuracy.
 send_command('bind ^f9 gs c cycle HybridMode') --Changes defense settings for melee such as PDT.
 send_command('bind @f9 gs c cycle RangedMode') --Changes ranged offense settings such as accuracy.
-send_command('bind !f9 gs c cycle WeaponskillMode') --Allows automatic weaponskilling if the job is setup to handle it.
+send_command('bind !f9 gs c cycle WeaponskillMode') --Changes weaponskill offense settings such as accuracy.
 send_command('bind f10 gs c set DefenseMode Physical') --Turns your physical defense set on.
 send_command('bind ^f10 gs c cycle PhysicalDefenseMode') --Changes your physical defense set.
 send_command('bind !f10 gs c toggle Kiting') --Keeps your kiting gear on..
@@ -95,3 +84,11 @@ bayld_items = {'Tlalpoloani','Macoquetza','Camatlatia','Icoyoca','Tlamini','Suij
 'Chocaliztli Boots','Maochinoli','Xiutleato','Hatxiik','Kuakuakait','Azukinagamitsu','Atetepeyorg',
 'Kaquljaan','Ajjub Bow','Baqil Staff','Ixtab','Tamaxchi','Otomi Helm','Otomi Gloves','Kaabnax Hat',
 'Kaabnax Trousers','Ejekamal Mask','Ejekamal Boots','Quiahuiz Helm','Quiahuiz Trousers','Uk\'uxkaj Cap'}
+
+--[[ List of all Bayld Items.
+bayld_items = {'Tlalpoloani','Macoquetza','Camatlatia','Icoyoca','Tlamini','Suijingiri Kanemitsu','Zoquittihuitz',
+'Quauhpilli Helm','Chocaliztli Mask','Xux Hat','Quauhpilli Gloves','Xux Trousers','Chocaliztli Boots','Maochinoli',
+'Hatxiik','Kuakuakait','Azukinagamitsu','Atetepeyorg','Kaquljaan','Ajjub Bow','Baqil Staff','Ixtab','Otomi Helm',
+'Otomi Gloves','Kaabnax Hat','Kaabnax Trousers','Ejekamal Mask','Ejekamal Boots','Quiahuiz Helm','Quiahuiz Trousers',
+'Uk\'uxkaj Cap'}
+]]

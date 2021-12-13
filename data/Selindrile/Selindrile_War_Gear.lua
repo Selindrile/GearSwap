@@ -1,4 +1,4 @@
-function user_setup()
+function user_job_setup()
 	-- Options: Override default values
     state.OffenseMode:options('Normal','SomeAcc','Acc','FullAcc','Fodder')
     state.WeaponskillMode:options('Match','Normal','SomeAcc','Acc','FullAcc','Fodder')
@@ -61,15 +61,15 @@ function init_gear_sets()
 	-- Fast cast sets for spells
 
 	sets.precast.FC = {ammo="Impatiens",
-		head="Carmine Mask +1",neck="Voltsurge Torque",ear1="Enchntr. Earring +1",ear2="Loquacious Earring",
+		head="Carmine Mask +1",neck="Voltsurge Torque",ear1="Enchntr. Earring +1",ear2="Loquac. Earring",
 		body="Odyss. Chestplate",hands="Leyline Gloves",ring1="Lebeche Ring",ring2="Prolix Ring",
-		back="Moonlight Cape",waist="Flume Belt",legs=gear.odyssean_fc_legs,feet="Odyssean Greaves"}
+		back="Moonlight Cape",waist="Flume Belt +1",legs=gear.odyssean_fc_legs,feet="Odyssean Greaves"}
 	
 	sets.precast.FC.Utsusemi = set_combine(sets.precast.FC, {})
 
 	-- Midcast Sets
-	sets.midcast.FastRecast = {ammo="Staunch Tathlum",
-		head="Carmine Mask +1",neck="Voltsurge Torque",ear1="Enchntr. Earring +1",ear2="Loquacious Earring",
+	sets.midcast.FastRecast = {ammo="Staunch Tathlum +1",
+		head="Carmine Mask +1",neck="Voltsurge Torque",ear1="Enchntr. Earring +1",ear2="Loquac. Earring",
 		body="Odyss. Chestplate",hands="Leyline Gloves",ring1="Lebeche Ring",ring2="Prolix Ring",
 		back="Moonlight Cape",waist="Tempus Fugit",legs=gear.odyssean_fc_legs,feet="Odyssean Greaves"}
 	
@@ -143,11 +143,19 @@ function init_gear_sets()
 
 	-- Swap to these on Moonshade using WS if at 3000 TP
 	sets.MaxTP = {ear1="Lugra Earring +1",ear2="Lugra Earring",}
-	sets.AccMaxTP = {ear1="Zennaroi Earring",ear2="Telos Earring"}
-	sets.AccDayMaxTPWSEars = {ear1="Zennaroi Earring",ear2="Telos Earring"}
+	sets.AccMaxTP = {ear1="Mache Earring +1",ear2="Telos Earring"}
+	sets.AccDayMaxTPWSEars = {ear1="Mache Earring +1",ear2="Telos Earring"}
 	sets.DayMaxTPWSEars = {ear1="Ishvara Earring",ear2="Brutal Earring",}
-	sets.AccDayWSEars = {ear1="Zennaroi Earring",ear2="Telos Earring"}
+	sets.AccDayWSEars = {ear1="Mache Earring +1",ear2="Telos Earring"}
 	sets.DayWSEars = {ear1="Brutal Earring",ear2="Moonshade Earring"}
+	
+	--Specialty WS set overwrites.
+	sets.AccWSMightyCharge = {}
+	sets.AccWSCharge = {}
+	sets.AccWSMightyCharge = {}
+	sets.WSMightyCharge = {}
+	sets.WSCharge = {}
+	sets.WSMighty = {}
 
      -- Sets to return to when not performing an action.
            
@@ -155,34 +163,34 @@ function init_gear_sets()
      sets.resting = {}
            
 	-- Idle sets
-	sets.idle = {ammo="Staunch Tathlum",
-		head="Genmei Barbuta",neck="Loricate Torque +1",ear1="Genmei Earring",ear2="Ethereal Earring",
+	sets.idle = {ammo="Staunch Tathlum +1",
+		head="Nyame Helm",neck="Loricate Torque +1",ear1="Genmei Earring",ear2="Ethereal Earring",
 		body="Tartarus Platemail",hands="Sulev. Gauntlets +2",ring1="Defending Ring",ring2="Dark Ring",
-		back="Shadow Mantle",waist="Flume Belt",legs="Sulev. Cuisses +2",feet="Amm Greaves"}
+		back="Shadow Mantle",waist="Flume Belt +1",legs="Sulev. Cuisses +2",feet="Amm Greaves"}
 		
 	sets.idle.Weak = set_combine(sets.idle, {head="Twilight Helm",body="Twilight Mail"})
 		
 	sets.idle.Reraise = set_combine(sets.idle, {head="Twilight Helm",body="Twilight Mail"})
 	
 	-- Defense sets
-	sets.defense.PDT = {ammo="Staunch Tathlum",
-		head="Genmei Barbuta",neck="Loricate Torque +1",ear1="Genmei Earring",ear2="Ethereal Earring",
-		body="Tartarus Platemail",hands="Sulev. Gauntlets +2",ring1="Moonbeam Ring",ring2="Moonbeam Ring",
-		back="Shadow Mantle",waist="Flume Belt",legs="Sulev. Cuisses +2",feet="Amm Greaves"}
+	sets.defense.PDT = {ammo="Staunch Tathlum +1",
+		head="Nyame Helm",neck="Loricate Torque +1",ear1="Genmei Earring",ear2="Ethereal Earring",
+		body="Tartarus Platemail",hands="Sulev. Gauntlets +2",ring1="Gelatinous Ring +1",ring2="Moonlight Ring",
+		back="Shadow Mantle",waist="Flume Belt +1",legs="Sulev. Cuisses +2",feet="Amm Greaves"}
 		
 	sets.defense.PDTReraise = set_combine(sets.defense.PDT, {head="Twilight Helm",body="Twilight Mail"})
 
-	sets.defense.MDT = {ammo="Staunch Tathlum",
-		head="Genmei Barbuta",neck="Warder's Charm +1",ear1="Genmei Earring",ear2="Ethereal Earring",
-		body="Tartarus Platemail",hands="Sulev. Gauntlets +2",ring1="Moonbeam Ring",ring2="Moonbeam Ring",
-		back="Moonlight Cape",waist="Flume Belt",legs="Sulev. Cuisses +2",feet="Amm Greaves"}
+	sets.defense.MDT = {ammo="Staunch Tathlum +1",
+		head="Nyame Helm",neck="Warder's Charm +1",ear1="Genmei Earring",ear2="Ethereal Earring",
+		body="Tartarus Platemail",hands="Sulev. Gauntlets +2",ring1="Gelatinous Ring +1",ring2="Moonlight Ring",
+		back="Moonlight Cape",waist="Flume Belt +1",legs="Sulev. Cuisses +2",feet="Amm Greaves"}
 		
 	sets.defense.MDTReraise = set_combine(sets.defense.MDT, {head="Twilight Helm",body="Twilight Mail"})
 		
-	sets.defense.MEVA = {ammo="Staunch Tathlum",
-		head="Genmei Barbuta",neck="Warder's Charm +1",ear1="Genmei Earring",ear2="Ethereal Earring",
-		body="Tartarus Platemail",hands="Sulev. Gauntlets +2",ring1="Moonbeam Ring",ring2="Moonbeam Ring",
-		back="Moonlight Cape",waist="Flume Belt",legs="Sulev. Cuisses +2",feet="Amm Greaves"}
+	sets.defense.MEVA = {ammo="Staunch Tathlum +1",
+		head="Nyame Helm",neck="Warder's Charm +1",ear1="Genmei Earring",ear2="Ethereal Earring",
+		body="Tartarus Platemail",hands="Sulev. Gauntlets +2",ring1="Gelatinous Ring +1",ring2="Moonlight Ring",
+		back="Moonlight Cape",waist="Flume Belt +1",legs="Sulev. Cuisses +2",feet="Amm Greaves"}
 
 	sets.Kiting = {}
 	sets.Reraise = {head="Twilight Helm",body="Twilight Mail"}
@@ -190,23 +198,23 @@ function init_gear_sets()
 	sets.buff.Sleep = {head="Frenzy Sallet"}
      
             -- Engaged sets
-	sets.engaged = {ammo="Ginsen",
+	sets.engaged = {ammo="Aurgelmir Orb +1",
 		head="Flam. Zucchetto +2",neck="Asperity Necklace",ear1="Brutal Earring",ear2="Cessance Earring",
 		body=gear.valorous_wsd_body,hands=gear.valorous_acc_hands,ring1="Petrov Ring",ring2="Niqmaddu Ring",
 		back="Cichol's Mantle",waist="Ioskeha Belt",legs="Sulev. Cuisses +2",feet="Flam. Gambieras +2"}
-    sets.engaged.SomeAcc = {ammo="Ginsen",
+    sets.engaged.SomeAcc = {ammo="Aurgelmir Orb +1",
 		head="Flam. Zucchetto +2",neck="Combatant's Torque",ear1="Brutal Earring",ear2="Cessance Earring",
 		body=gear.valorous_wsd_body,hands=gear.valorous_acc_hands,ring1="Flamma Ring",ring2="Niqmaddu Ring",
 		back="Cichol's Mantle",waist="Ioskeha Belt",legs="Sulev. Cuisses +2",feet="Flam. Gambieras +2"}
-	sets.engaged.Acc = {ammo="Ginsen",
+	sets.engaged.Acc = {ammo="Aurgelmir Orb +1",
 		head="Flam. Zucchetto +2",neck="Combatant's Torque",ear1="Digni. Earring",ear2="Telos Earring",
 		body=gear.valorous_wsd_body,hands=gear.valorous_acc_hands,ring1="Flamma Ring",ring2="Niqmaddu Ring",
 		back="Cichol's Mantle",waist="Ioskeha Belt",legs="Sulev. Cuisses +2",feet="Flam. Gambieras +2"}
-    sets.engaged.FullAcc = {ammo="Ginsen",
-		head="Flam. Zucchetto +2",neck="Combatant's Torque",ear1="Zennaroi Earring",ear2="Telos Earring",
+    sets.engaged.FullAcc = {ammo="Aurgelmir Orb +1",
+		head="Flam. Zucchetto +2",neck="Combatant's Torque",ear1="Mache Earring +1",ear2="Telos Earring",
 		body=gear.valorous_wsd_body,hands=gear.valorous_acc_hands,ring1="Flamma Ring",ring2="Ramuh Ring +1",
 		back="Cichol's Mantle",waist="Ioskeha Belt",legs="Sulev. Cuisses +2",feet="Flam. Gambieras +2"}
-    sets.engaged.Fodder = {ammo="Ginsen",
+    sets.engaged.Fodder = {ammo="Aurgelmir Orb +1",
 		head="Flam. Zucchetto +2",neck="Asperity Necklace",ear1="Brutal Earring",ear2="Cessance Earring",
 		body=gear.valorous_wsd_body,hands=gear.valorous_acc_hands,ring1="Petrov Ring",ring2="Niqmaddu Ring",
 		back="Cichol's Mantle",waist="Ioskeha Belt",legs="Sulev. Cuisses +2",feet="Flam. Gambieras +2"}

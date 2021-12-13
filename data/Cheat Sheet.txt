@@ -1,17 +1,24 @@
-PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME, however feel free to shoot me a way to contact you outside of game, through
-	the game, and I'm happy to help.
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+
+Feel free to contact me OUTSIDE of the game though, and I'm happy to help.
 
 Don't feel disparaged if you can't get it working with this alone a lot of people can't when they're first starting messing with these things.
 
 My github ( https://github.com/Selindrile/GearSwap ) If you obtained this cheatsheet elsewhere this should have the up to date versions of most everything
-	of mine.
+	of mine, but also PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME.
 
 My Stream Discord, ( https://discord.gg/ug6xtvQ ) this is the best way to reach me, in the allchat channel or through DM,
 	alternatively you can connect with me through a messenger (They're linked to my FFXIAH account.) If you're relatively computer savvy,
 	it shouldn't be too hard, if not, I'm happy to help explain more or answer questions even if you do get it working.
-
-My Dropbox ( https://www.dropbox.com/sh/flhraba7cf23a7k/AADfZmGmsXcYamFth8UkLoy0a?dl=0 )
-
 
 Again PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME, however feel free to shoot me a way to contact you outside of game, through
 	the game, and I'm happy to help.
@@ -32,8 +39,8 @@ name them Character_Job.lua.
 
 :Macro:		/console gs c toggle AutoStunMode
 
-[Alt+F8]	= Toggle auto-defense mode, will attempt to automatically swap into and out of defensive sets for
-			the specific move, listed in your Name-Globals file.
+[Alt+F8]	= Toggles AutoDefenseMode, will attempt to automatically swap into and out of defensive sets for specific moves.
+			  Edit options by copying the tables from Windower4\addons\GearSwap\libs\Sel-MonsterAbilities.lua to relevant user files and editing them there.
 
 :Macro:		/console gs c toggle AutoDefenseMode
 
@@ -85,7 +92,7 @@ name them Character_Job.lua.
 [Win+F7]	= Automatic ranged attacks, to change what weaponskill, use //gs c autows while Rnghelper is active
 			  as well as using //gs c toggle autowsmode to turn on and off auto WS during Rnghelper
 			  
-:Macro:		/console gs c toggle rnghelper
+:Macro:		/console gs c toggle RngHelper
 		
 [Win+F10]	= Toggle job specific modes, different depending on jobs some examples:
 				Also sometimes Ctrl/Alt/Win + Grave/Tilde (` or ~) or even Backspace, Backslash, Delete, Dash or Equals.
@@ -163,7 +170,7 @@ Melees:		/console gs c cycle ExtraMeleeMode
 
 [Ctrl+T]	= Change treasurehunter mode, Tag: Equips TH gear for one hit, Fulltime keeps it on always, SATA for Sneak/Trick Attack.
 
-:Macro:		/console gs c cycle treasuremode
+:Macro:		/console gs c cycle TreasureMode
 
 
 [Alt+T]		= Target battle target. (Red mob claimed by party.)
@@ -206,12 +213,6 @@ Can change default options in the gearswap job_character_gear file with:
 autows = 'Savage Blade'
 autowstp = 1250
 
-[Alt+F8]	= Toggles AutoDefenseMode, automatically pushes your F10-F12 keys for defense.
-			  Edit options in your Windower4\addons\GearSwap\libs\Sel-MonsterAbilities.lua file.
-
-:Macro:		/console gs c toggle AutoDefenseMode
-			
-			
 --- Addon and Plugin related combinations. These are in init, but they can be moved elsewhere. ---
 
 [Ctrl+Alt+Win+?]	= Load or reload the Addon or Plugin, the ? is the key specific to the related Addon or Plugin.
@@ -227,7 +228,6 @@ autowstp = 1250
 
 My scripts\init.txt loads Request, which is an addon that can be used to answer player's requests, use it with the Shortcuts addon.
 It also loads a few other addons which I've written or found from other sources.
-Non-Official addon mentioned here can be downloaded from: https://www.dropbox.com/sh/qz5rb5je202cbu3/AAAxozfBv_8agarM0NCnPTiZa?dl=0
 
 --- Item Handling ---
 
@@ -282,8 +282,9 @@ helix - Elemental Helix
 weather - Scholar Weather
 skillchain1 - Tier 1 skillchain
 skillchain2 - Tier 2 skillchain
+skillchain3 - Only works on Fire element, does Liquefaction > Fusion
 skillchain4 - 4 Step skillchain for popping Perfidion
-skillchain6 - 6 Step Skillchain for popping Pluton (Requires you have a strategem up and 5 strategem charges to start)
+skillchain6 - 6 Step Skillchain for popping Pluton (Requires you have a stratagem up and 5 stratagem charges to start)
 wsskillchain - Attempts to start skillchain with a weaponskill and finish with a spell (for conserving stratagems).
 endskillchain - Attempts to end a skillchain with the current element.
 tier1 - Casts a tier 1 spell of that element.
@@ -305,3 +306,14 @@ ara - Highest ara spell of that element
 ara1 - Tier 1 ara
 ara2 - Tier 2 ara
 ara3 - Tier 3 ara
+
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
+PLEASE DO NOT MESSAGE ME ABOUT ANYTHING THIRD PARTY IN GAME
