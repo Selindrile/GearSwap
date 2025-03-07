@@ -108,10 +108,8 @@ end
 
 function job_aftercast(spell, spellMap, eventArgs)
 	if not spell.interrupted then
-		if (spell.english == 'Drain II' or spell.english == 'Drain III') and state.DrainSwapWeaponMode.value ~= 'Never' then
-			if player.equipment.main and sets.DrainWeapon and player.equipment.main == sets.DrainWeapon.main and player.equipment.main ~= sets.weapons[state.Weapons.value].main then
-				equip_weaponset(state.Weapons.value)
-			end
+		if (spell.english == 'Drain II' or spell.english == 'Drain III' or spellMap == "Absorb" or spell.english == 'Dread Spikes') and state.DrainSwapWeaponMode.value ~= 'Never' then			
+				equip_weaponset()			
 		elseif state.UseCustomTimers.value and (spell.english == 'Sleep' or spell.english == 'Sleepga') then
 			send_command('@timers c "'..spell.english..' ['..spell.target.name..']" 60 down spells/00220.png')
 		elseif spell.skill == 'Elemental Magic' and state.MagicBurstMode.value == 'Single' then
