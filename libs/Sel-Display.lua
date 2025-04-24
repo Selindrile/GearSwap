@@ -426,8 +426,10 @@ function update_job_states()
 			if state.Stance.value ~= "None" then
 				stateBox:append(string.format("%sStance: %s%s    ", clr.w, clr.h, state.Stance.value))
 			end
-		else
+		elseif labels[n] then
 			stateBox:append(string.format("%s%s: ${%s}    ", clr.w, labels[n], n))
+		else
+			stateBox:append(string.format("%s%s: %s    ", clr.w, state[n]['description'], state[n].value))
 		end
 	end
 	-- Update and display current info
