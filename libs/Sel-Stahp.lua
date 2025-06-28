@@ -70,6 +70,9 @@ ProshellraAbility = S{"Protectra","Protectra II","Protectra III","Protectra IV",
 				 
 RefreshAbility = S{"Refresh","Refresh II", "Refresh III"
 				 }
+
+RegenAbility = S{"Regen", "Regen II", "Regen III", "Regen IV", "Regen V"
+}
 				 
 PhalanxAbility = S{"Phalanx II"
 				 }
@@ -290,8 +293,16 @@ function check_reaction(act)
 				elseif sets.Self_Refresh then
 					send_command('gs c softequip sets.Self_Refresh')
 				elseif sets.Enhancing_Received then
-					send_command('gs c softequip sets.Phalanx_Received')
-					return
+					send_command('gs c softequip sets.Enhancing_Received')
+				end
+				return
+			elseif RegenAbility:contains(act_info.name) then
+				if sets.Regen_Received then
+					send_command('gs c softequip sets.Regen_Received')
+				elseif sets.midcast.Regen then
+					send_command('gs c softequip sets.midcast.Regen')
+				elseif sets.Enhancing_Received then
+					send_command('gs c softequip sets.Enhancing_Received')
 				end
 				return
 			elseif PhalanxAbility:contains(act_info.name) then
@@ -300,22 +311,20 @@ function check_reaction(act)
 				elseif sets.midcast.Phalanx then
 					send_command('gs c softequip sets.midcast.Phalanx')
 				elseif sets.Enhancing_Received then
-					send_command('gs c softequip sets.Phalanx_Received')
-					return
+					send_command('gs c softequip sets.Enhancing_Received')
 				end
 				return
 			elseif ProshellAbility:contains(act_info.name) then
 				if sets.Sheltered then
 					send_command('gs c softequip sets.Sheltered')
-					return
 				elseif sets.Enhancing_Received then
-					send_command('gs c softequip sets.Phalanx_Received')
-					return
+					send_command('gs c softequip sets.Enhancing_Received')
 				end
+				return
 			elseif sets.Enhancing_Received then
 				send_command('gs c softequip sets.Enhancing_Received')
-				return
 			end
+			return
 		elseif CureAbility:contains(act_info.name) and player.hpp < 75 then
 			if sets.Cure_Received then
 				send_command('gs c softequip sets.Cure_Received')
