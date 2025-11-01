@@ -2266,8 +2266,10 @@ end
 function build_internal_disable()
 	internal_disable = {}
 
-	for i, priority in ipairs(disable_priority) do
-		internal_disable = set_combine(internal_disable, disabled_sets[priority])
+	for _, priority in ipairs(disable_priority) do
+		if disabled_sets[priority] then
+			internal_disable = set_combine(internal_disable, disabled_sets[priority])
+		end
 	end
 end
 
