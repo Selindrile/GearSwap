@@ -108,7 +108,21 @@ function job_filtered_action(spell, eventArgs)
 end
 
 function job_pretarget(spell, spellMap, eventArgs)
-
+	if spell.action_type == 'Ranged Attack' and player.equipment.ammo == 'empty' then
+		if item_available(gear.RAbullet) then
+			equip{ammo=gear.RAbullet}
+		elseif item_available(gear.WSbullet) then
+			equip{ammo=gear.WSbullet}
+		end
+	elseif spell.type == 'CorsairShot' and player.equipment.ammo == 'empty' then
+		if item_available(gear.QDbullet) then
+			enable('ammo')
+			equip{ammo=gear.QDbullet}
+		elseif item_available(gear.MAbullet) then
+			enable('ammo')
+			equip{ammo=gear.MAbullet}
+		end
+	end
 end
 
 function job_precast(spell, spellMap, eventArgs)
@@ -389,7 +403,6 @@ function do_bullet_checks(spell, spellMap, eventArgs)
 			return
 		else
 			add_to_chat(217, 'No ammo ('..tostring(bullet_name)..') available for that action.')
-			eventArgs.cancel = true
 			return
 		end
 	end
