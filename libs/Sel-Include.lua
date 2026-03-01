@@ -2470,7 +2470,9 @@ function buff_change(buff, gain)
 			if  state.CancelStoneskin.value then
 				send_command('cancel stoneskin')
 			end
-		
+			if item_equippable("Lorg Mor") then
+				internal_disable_set({main="Lorg Mor"}, "Sleep")
+			end
 			if item_equippable("Sacrifice Torque") and pet.isvalid then
 				internal_disable_set({neck="Sacrifice Torque"}, "Sleep")
 			elseif player.status == 'Engaged' then
