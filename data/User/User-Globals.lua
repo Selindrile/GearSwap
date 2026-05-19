@@ -3,7 +3,7 @@ latency = .25
 --If this is set to true it will prevent you from casting shadows when you have more up than that spell would generate.
 conserveshadows = false
 --Display related settings.
-
+include('CastStill.lua')
 --Options for automation.
 state.ReEquip 		  		= M(true, 'ReEquip Mode')		 --Set this to false if you don't want to equip your current Weapon set when you aren't wearing any weapons.
 state.AutoArts 		  		= M(true, 'AutoArts') 		 --Set this to false if you don't want to automatically try to keep up Solace/Arts.
@@ -22,9 +22,10 @@ state.NotifyBuffs	  		= M(false, 'Notify Buffs') 	 --Set this to true if you wan
 	~ = Shift Key
 	# = Apps Key
 ]]
-send_command('bind !@^f7 gs c toggle AutoWSMode') --Turns auto-ws mode on and off.
-send_command('bind !^f7 gs c toggle AutoFoodMode') --Turns auto-ws mode on and off.
-send_command('bind f7 gs c cycle Weapons') --Cycle through weapons sets.
+send_command('bind !f1 gs c toggle AutoWSMode') --Turns auto-ws mode on and off.
+send_command('bind !^f1 gs c toggle AutoFoodMode') --Turns auto-ws mode on and off.
+send_command('bind !q gs c cycle Weapons') --Cycle th2rough weapons sets.
+send_command('bind ^q gs c cycleback Weapons') --Cycle through weapons sets.
 send_command('bind @f8 gs c toggle AutoNukeMode') --Turns auto-nuke mode on and off.
 send_command('bind ^f8 gs c toggle AutoStunMode') --Turns auto-stun mode off and on.
 send_command('bind !f8 gs c toggle AutoDefenseMode') --Turns auto-defense mode off and on.
@@ -50,5 +51,52 @@ send_command('bind ^@!f12 gs reload') --Reloads gearswap.
 send_command('bind pause gs c update user') --Runs a quick check to make sure you have the right gear on and checks variables.
 send_command('bind ^@!pause gs org') --Runs organizer.
 send_command('bind ^@!backspace gs c buffup') --Buffup macro because buffs are love.
-
+send_command('bind ^` gs c cycle TreasureMode')
 NotifyBuffs = S{'doom','petrification'}
+
+send_command('bind !backspace input //mr')
+	
+	if player.sub_job == 'WAR' then
+        send_command('bind !numpad/ input /ja "Berserk" <me>')
+        send_command('bind !numpad* input /ja "Warcry" <me>')
+        send_command('bind !numpad- input /ja "Aggressor" <me>')
+	elseif player.sub_job == 'SAM' then
+        send_command('bind !numpad/ input /ja "Meditate" <me>')
+        send_command('bind !numpad* input /ja "Sekkanoki" <me>')
+        send_command('bind !numpad- input /ja "Third Eye" <me>')
+		send_command('bind !numpad+ input /ja "Hasso" <me>')
+	elseif player.sub_job == 'THF' then
+        send_command('bind !numpad/ input /ja "Sneak Attack" <me>')
+        send_command('bind !numpad* input /ja "Trick Attack" <me>')
+        send_command('bind !numpad- input /ja "Third Eye" <me>')
+	elseif player.sub_job == 'DNC' then
+        send_command('bind !numpad/ input /ja "Haste Samba" <me>')
+        send_command('bind !numpad* input /ja "Box Step" <t>')
+        send_command('bind !numpad- input /ja "Quick Step" <t>')
+	elseif player.sub_job == 'NIN' then
+        send_command('bind !numpad/ input /ma "Utsusemi: Ni" <me>')
+        send_command('bind !numpad* input /ma "Utsusemi: Ichi" <me>')
+        send_command('bind !numpad- input /ja "Quick Step" <me>')
+	elseif player.sub_job == 'DRG' then
+        send_command('bind !numpad/ input /ja "Jump" <t>')
+        send_command('bind !numpad* input /ja "High Jump" <t>')
+        send_command('bind !numpad- input /ja "Super Jump" <t>')
+	elseif player.sub_job == 'RUN' then
+        send_command('bind !numpad/ input /ja "Pflug" <me>')
+        send_command('bind !numpad* input /ja "Vallation" <me>')
+        send_command('bind !numpad- input /ja "Valiance" <me>')
+	elseif player.sub_job == 'SCH' then
+        send_command('bind !numpad/ input /ja Accession <me>')
+        send_command('bind !numpad* input /ja "Manifestation" <me>')
+        send_command('bind !numpad- input /ja "Sublimation" <me>')
+		send_command('bind !numpad+ input /ja "Light Arts" <me>')
+		send_command('bind !numpadenter input /ja "Dark Arts" <me>')
+	elseif player.sub_job == 'WHM' then
+		send_command('bind !numpad/ input /ja "Divine seal" <me>')
+        --send_command('bind !numpad* input /ja "Manifestation" <me>')
+        --send_command('bind !numpad- input /ja "Sublimation" <me>')
+		--send_command('bind !numpad+ input /ja "Light Arts" <me>')
+		--send_command('bind !numpadenter input /ja "Dark Arts" <me>')
+		
+
+    end
