@@ -11,7 +11,7 @@ state.AutoLockstyle	 	    = M(true, 'AutoLockstyle Mode') --Set this to false if
 state.CancelStoneskin 		= M(true, 'Cancel Stone Skin') --Set this to false if you don't want to automatically cancel stoneskin when you're slept.
 state.SkipProcWeapons 		= M(true, 'Skip Proc Weapons') --Set this to false if you want to display weapon sets fulltime rather than just Aby/Voidwatch.
 state.NotifyBuffs	  		= M(false, 'Notify Buffs') 	 --Set this to true if you want to notify your party when you recieve a specific buff/debuff. (List Below)
-
+ 
 --[[Binds you may want to change.
 	Bind special characters.
 	@ = Windows Key
