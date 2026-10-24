@@ -655,7 +655,7 @@ function global_on_load()
 			state.SkipProcWeapons:set('False')
 		end
 		
-		set_dual_wield()
+		set_dual_wield:schedule(5)
 		
 		if data.areas.cities:contains(world.area) then
 			in_town = true
