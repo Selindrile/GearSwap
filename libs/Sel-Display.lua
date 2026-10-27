@@ -212,7 +212,7 @@ function update_job_states()
 	}
 	
 	if display.labels then
-		labels = set_combine(lables, display.labels)
+		labels = set_combine(labels, display.labels)
 	end
 
 	stateBox:clear()
