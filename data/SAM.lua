@@ -196,13 +196,35 @@ end
 -- Modify the default melee set after it was constructed.
 function job_customize_melee_set(meleeSet)
 
-	if state.Buff.Hasso and state.DefenseMode.value == 'None' and state.OffenseMode.value ~= 'FullAcc' then
-		meleeSet = set_combine(meleeSet, sets.buff.Hasso)
-	elseif state.Buff.Seigan and state.Buff['Third Eye'] and not state.OffenseMode.value:contains('Acc') then
-		meleeSet = set_combine(meleeSet, sets.buff['Third Eye'])
+	if wielding('Two-Handed') then
+		if state.Buff.Hasso then
+			if state.OffenseMode.value ~= 'FullAcc' then
+				meleeSet = set_combine(meleeSet, sets.buff.Hasso)
+			end
+		elseif state.Buff.Seigan then
+			if state.Buff['Third Eye'] then
+				meleeSet = set_combine(meleeSet, sets.buff['Third Eye'])
+			else
+				meleeSet = set_combine(meleeSet, sets.buff.Seigan)
+			end
+		end
 	end
 
 	return meleeSet
+end
+
+function job_customize_defense_set(defenseSet)
+	if state.DefenseMode.value:contains('Seigan') or state.DefenseMode.value:contains('Counter') then
+		if state.Buff.Seigan then
+			if state.Buff['Third Eye'] then
+				defenseSet = set_combine(defenseSet, sets.buff['Third Eye'])
+			else
+				defenseSet = set_combine(defenseSet, sets.buff.Seigan)
+			end
+		end
+	end
+	
+	return defenseSet
 end
 
 -- Run after the default midcast() is done.
