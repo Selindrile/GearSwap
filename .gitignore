@@ -33,3 +33,4 @@ libs/closetCleaner.lua
 Rename.bat
 Modes.lua
 organizer-lib.lua
+!Mytha*
