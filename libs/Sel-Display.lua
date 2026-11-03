@@ -174,6 +174,7 @@ function update_job_states()
 		ExtraSongsMode = "Songs",
 		ExtraDefenseMode = "Extra Defense",
 		JugMode = "Pet",
+		GainSpell = "Gain",
 		LearningMode = "Learning",
 		LuzafRing = "Luzaf's Ring",
 		MagicBurstMode = "Magic Burst",

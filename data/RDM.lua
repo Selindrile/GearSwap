@@ -60,6 +60,7 @@ function job_setup()
 	state.Buff.Chainspell = buffactive.Chainspell or false
 
 	state.AutoBuffMode = M{['description'] = 'Auto Buff Mode','Off','Auto','AutoMelee','AutoMage'}
+    state.GainSpell = M{['description']='GainSpell','STR','DEX','VIT','AGI','INT','MND','CHR','None'}
 	
 	-- Whether to swap weapons for Temper/Phalanx under a certain tp threshhold even when weapons are locked.
 	state.BuffWeaponsMode	= M{['description'] = 'Buff Weapons Mode','Never','500','1000','Always'}
@@ -387,6 +388,17 @@ function job_get_spell_map(spell, default_spell_map)
 		else
 			return 'HighTierNuke'
 		end
+	end
+end
+
+function job_self_command(commandArgs, eventArgs)
+    if commandArgs[1] == 'gainspell' then
+		if state.GainSpell.value == 'None' then
+			add_to_chat(123,'Gainspell set to [None]')
+		else
+			windower.chat.input('/ma "Gain-'..state.GainSpell.value..'" <me>')
+		end
+		eventArgs.handled = true
 	end
 end
 
