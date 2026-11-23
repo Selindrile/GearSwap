@@ -369,6 +369,14 @@ function apply_grimoire_bonuses(spell, action, spellMap)
         equip(sets.buff['Parsimony'])
     end
 	
+	if state.Buff['Accession'] then
+		if sets.midcast[spell.name] and sets.midcast[spell.name].Accession then
+			equip(sets.midcast[spell.name].Accession)
+		elseif sets.midcast[spellMap] and sets.midcast[spellMap].Accession then
+			equip(sets.midcast[spellMap].Accession)
+		end
+	end
+	
 	if spell.element == world.weather_element then
 		if state.Buff.Celerity then
 			equip(sets.buff['Celerity'])
