@@ -2336,7 +2336,7 @@ function status_change(newStatus, oldStatus)
 			if useItemSlot == 'item' then
 				send_command('put '..useItemName..' satchel')
 			elseif useItemSlot == 'set' then
-				internal_enable_set(sets[useItemName], "UseItem")
+				internal_enable_set("UseItem")
 				if player.inventory[useItemName] then
 					send_command('wait 1;put '..set_to_item(useItemName)..' satchel')
 				end
